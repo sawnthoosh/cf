@@ -81,7 +81,7 @@ nav.scrolled .hbg span { background: var(--k); }
   width: 100%;
   transform-origin: center top;
   overflow: hidden;
-  box-shadow: 0 -30px 60px rgba(0,0,0,0.4); /* Massive drop shadow on top edge */
+  box-shadow: 0 -30px 60px rgba(0,0,0,0.4);
   will-change: transform, filter, opacity;
   background: var(--w);
   border-top-left-radius: 40px; 
@@ -182,7 +182,7 @@ nav.scrolled .hbg span { background: var(--k); }
 .stat-n em { color: var(--p); font-style: normal; }
 .stat-l{font-size:.75rem;font-weight:600;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;}
 
-/* ══════════════ 3D ORBIT SERVICES (CRYSTAL CLEAR) ══════════════ */
+/* ══════════════ 3D ORBIT SERVICES ══════════════ */
 #services { background: var(--g); padding: 120px 5%; overflow: hidden; position: relative; }
 #services::before {
   content: ''; position: absolute; inset: 0;
@@ -204,41 +204,33 @@ nav.scrolled .hbg span { background: var(--k); }
 }
 .svc-center-star span { font-size: 0.7rem; color: var(--p); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 5px; }
 
-/* The Main Ring - NEVER STOPS */
 .svc-ring {
   position: relative; width: 0; height: 0; transform-style: preserve-3d;
   transform: rotateX(65deg); animation: spinRing 45s linear infinite;
 }
 @keyframes spinRing { 0% { transform: rotateX(65deg) rotateZ(0deg); } 100% { transform: rotateX(65deg) rotateZ(360deg); } }
 
-/* Track Lines */
 .svc-ring-line { position: absolute; top: 50%; left: 50%; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
 .svc-ring-line.r1 { width: 850px; height: 850px; border: 1px dashed rgba(0,0,0,0.08); }
 .svc-ring-line.r2 { width: 550px; height: 550px; border: 1px solid rgba(143,30,174,0.15); box-shadow: 0 0 30px rgba(143,30,174,0.05); }
 
-/* Counter-Rotation Math - NEVER STOPS */
 .svc-arm { position: absolute; top: 50%; left: 50%; width: 0; height: 0; transform-style: preserve-3d; }
 .svc-anti-spin { position: absolute; top: 0; left: 0; transform-style: preserve-3d; animation: counterRing 45s linear infinite; }
 @keyframes counterRing { 0% { transform: rotateZ(0deg); } 100% { transform: rotateZ(-360deg); } }
 .svc-anti-arm { position: absolute; top: 0; left: 0; transform-style: preserve-3d; }
 .svc-stand-up { position: absolute; top: 0; left: 0; transform-style: preserve-3d; transform: rotateX(-65deg); }
 
-/* ── CARDS (NO BLUR EVER, ALWAYS CRISP) ── */
 .svc-c {
   position: absolute; top: 50%; left: 50%;
   width: 300px; height: 380px; margin: -190px 0 0 -150px; 
-  background: rgba(255, 255, 255, 0.95); /* Solid clear background */
+  background: rgba(255, 255, 255, 0.95);
   border: 1px solid rgba(0,0,0,0.05); border-radius: 24px; padding: 45px 30px;
   display: flex; flex-direction: column; align-items: center; text-align: center;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 20px 40px rgba(0,0,0,0.06);
   cursor: crosshair; pointer-events: auto;
 }
-
-/* Subtle fade on non-hovered (NO BLUR) */
 .svc-universe:hover .svc-c { opacity: 0.6; transform: scale(0.95); }
-
-/* Massive pop-out on the hovered card */
 .svc-c:hover {
   opacity: 1 !important;
   transform: scale(1.15) translateZ(100px) !important;
@@ -261,13 +253,12 @@ nav.scrolled .hbg span { background: var(--k); }
 .svc-nm { font-family: var(--fh); font-size: 1.3rem; font-weight: 800; color: var(--k); margin-bottom: 15px; letter-spacing: -.02em; }
 .svc-ds { font-size: .88rem; line-height: 1.6; color: var(--muted); }
 
-/* ══════════════ CLIENTS: HOLOGRAPHIC 3D WALL ══════════════ */
+/* ══════════════ CLIENTS ══════════════ */
 #clients { background: var(--w); padding: 120px 5%; overflow: hidden; perspective: 2000px; }
 .cl-wrap {
   width: 100%;
   transform-style: preserve-3d;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  /* The wrapper tilts massively based on mouse JS */
 }
 .cl-g { 
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-top: 60px; 
@@ -280,7 +271,6 @@ nav.scrolled .hbg span { background: var(--k); }
   transform-style: preserve-3d;
   box-shadow: 0 10px 30px rgba(0,0,0,0.03);
 }
-/* Holographic lift on hover */
 .cl-c:hover { 
   transform: translateZ(80px) translateY(-10px) rotateX(10deg); 
   box-shadow: 0 40px 80px rgba(143,30,174,0.15); 
@@ -289,13 +279,13 @@ nav.scrolled .hbg span { background: var(--k); }
 .cl-logo-wrap {
   width: 90px; height: 90px; border-radius: 50%; background: var(--g); display: flex; align-items: center; justify-content: center;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); margin-bottom: 10px;
-  transform: translateZ(30px); /* Pushed off the card */
+  transform: translateZ(30px);
   box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
 .cl-logo-wrap img { width: 55%; height: 55%; object-fit: contain; transition: all 0.5s ease; filter: grayscale(100%); opacity: 0.6; }
 .cl-c:hover .cl-logo-wrap { 
   background: #fff; box-shadow: 0 20px 40px rgba(143,30,174,0.25); 
-  transform: translateZ(60px) scale(1.15); /* Pushed EVEN FURTHER off the card */
+  transform: translateZ(60px) scale(1.15);
 }
 .cl-c:hover .cl-logo-wrap img { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
 .cl-nm { font-family: var(--fh); font-size: 1.15rem; font-weight: 800; color: var(--k); letter-spacing: -.02em; transform: translateZ(20px);}
@@ -374,7 +364,7 @@ footer{background:#020202;padding:80px 5% 30px;border-top:1px solid rgba(255,255
 .ft-soc a{color:rgba(255,255,255,.4);text-decoration:none;font-size:.75rem;font-weight:600;letter-spacing:.05em;transition:color .3s;}
 .ft-soc a:hover{color:var(--y);}
 
-/* ── RESPONSIVE DEGRADATION ── */
+/* ── RESPONSIVE ── */
 @media(max-width: 1024px) {
   .svc-orbit-wrap { height: auto; perspective: none; margin-top: 60px; }
   .svc-universe { position: relative; height: auto; transform: none !important; display: block; }
@@ -389,7 +379,7 @@ footer{background:#020202;padding:80px 5% 30px;border-top:1px solid rgba(255,255
   .cl-g{grid-template-columns:repeat(2, 1fr);}
   .about-vis{height:400px;}
   .ft-g{grid-template-columns:1fr 1fr;gap:40px;}
-  .cl-wrap { transform: none !important; } /* disable heavy 3d wall tilt on tablet */
+  .cl-wrap { transform: none !important; }
 }
 @media(max-width:768px){
   nav{padding:0 5%;}
@@ -437,12 +427,10 @@ footer{background:#020202;padding:80px 5% 30px;border-top:1px solid rgba(255,255
   <div id="hero">
     <div class="hero-video-bg"></div>
     <div class="hero-overlay"></div>
-
     <div class="hero-inner">
       <div class="h-tag">Claim Fame - The real fame story starts here!</div>
       <h1 class="h1">Building Brands<br/>Through <em>Influence.</em></h1>
       <p class="h-sub">Your one-stop creative powerhouse for influencer marketing, social media, PR, performance & production. No fluff — just razor-sharp strategy that feels 100% real.</p>
-
       <div class="h-ctas">
         <a href="#contact" class="btn-p">Get In Touch</a>
         <a href="#services" class="btn-s">View Our Work</a>
@@ -456,23 +444,23 @@ footer{background:#020202;padding:80px 5% 30px;border-top:1px solid rgba(255,255
   <div class="mq-stack">
     <div class="mq-label">Brands We've Collaborated With</div>
     <div class="mq-belt" id="mqb">
-      <div class="mq-item"><img src="kapiva logo.png" alt="Kapiva"></div>
-      <div class="mq-item"><img src="Zouk-Logo.webp" alt="Zouk"></div>
-      <div class="mq-item"><img src="louis stich logi.jpg" alt="Louis Stitch"></div>
-      <div class="mq-item"><img src="Mama earth.png" alt="Mamaearth"></div>
-      <div class="mq-item"><img src="wow skin logo.jpg" alt="WOW Skin"></div>
-      <div class="mq-item"><img src="m caffeine logo.png" alt="mCaffeine"></div>
-      <div class="mq-item"><img src="Boat_Logo.webp" alt="boAt"></div>
-      <div class="mq-item"><img src="SUGAR-Cosmetics-Logo.jpg" alt="Sugar"></div>
-      
-      <div class="mq-item"><img src="kapiva logo.png" alt="Kapiva"></div>
-      <div class="mq-item"><img src="Zouk-Logo.webp" alt="Zouk"></div>
-      <div class="mq-item"><img src="louis stich logi.jpg" alt="Louis Stitch"></div>
-      <div class="mq-item"><img src="Mama earth.png" alt="Mamaearth"></div>
-      <div class="mq-item"><img src="wow skin logo.jpg" alt="WOW Skin"></div>
-      <div class="mq-item"><img src="m caffeine logo.png" alt="mCaffeine"></div>
-      <div class="mq-item"><img src="Boat_Logo.webp" alt="boAt"></div>
-      <div class="mq-item"><img src="SUGAR-Cosmetics-Logo.jpg" alt="Sugar"></div>
+      <div class="mq-item"><img src="assets/kapiva-logo.png" alt="Kapiva"></div>
+      <div class="mq-item"><img src="assets/zouk-logo.webp" alt="Zouk"></div>
+      <div class="mq-item"><img src="assets/louis-stitch-logo.jpg" alt="Louis Stitch"></div>
+      <div class="mq-item"><img src="assets/mama-earth-logo.png" alt="Mamaearth"></div>
+      <div class="mq-item"><img src="assets/wow-skin-logo.jpg" alt="WOW Skin"></div>
+      <div class="mq-item"><img src="assets/mcaffeine-logo.png" alt="mCaffeine"></div>
+      <div class="mq-item"><img src="assets/boat-logo.webp" alt="boAt"></div>
+      <div class="mq-item"><img src="assets/sugar-logo.jpg" alt="Sugar"></div>
+      <!-- Duplicate set for seamless loop -->
+      <div class="mq-item"><img src="assets/kapiva-logo.png" alt="Kapiva"></div>
+      <div class="mq-item"><img src="assets/zouk-logo.webp" alt="Zouk"></div>
+      <div class="mq-item"><img src="assets/louis-stitch-logo.jpg" alt="Louis Stitch"></div>
+      <div class="mq-item"><img src="assets/mama-earth-logo.png" alt="Mamaearth"></div>
+      <div class="mq-item"><img src="assets/wow-skin-logo.jpg" alt="WOW Skin"></div>
+      <div class="mq-item"><img src="assets/mcaffeine-logo.png" alt="mCaffeine"></div>
+      <div class="mq-item"><img src="assets/boat-logo.webp" alt="boAt"></div>
+      <div class="mq-item"><img src="assets/sugar-logo.jpg" alt="Sugar"></div>
     </div>
   </div>
 
@@ -486,7 +474,7 @@ footer{background:#020202;padding:80px 5% 30px;border-top:1px solid rgba(255,255
           <p>
             <strong>Claim Fame</strong>—based in Delhi, stirring things up globally—is your one-stop shop for all your marketing needs. We handle the heavy lifting across influencer marketing, social media, PR, performance marketing, and production, turning your wild ideas into conversations people actually want to have. 
             <br/><br/>
-            No fluff, no fake hype. Just razor-sharp strategy and execution that feels <strong>100% real.</strong> We don’t just build campaigns. We build presence.
+            No fluff, no fake hype. Just razor-sharp strategy and execution that feels <strong>100% real.</strong> We don't just build campaigns. We build presence.
             <br/><br/>
             <em>"The real fame story starts here."</em>
           </p>
@@ -513,104 +501,70 @@ footer{background:#020202;padding:80px 5% 30px;border-top:1px solid rgba(255,255
 
       <div class="svc-orbit-wrap">
         <div class="svc-universe">
-          
           <div class="svc-center-star">CLAIM<br/>FAME<br/><span>Services</span></div>
-          
           <div class="svc-ring-line r1"></div>
           <div class="svc-ring-line r2"></div>
 
           <div class="svc-ring">
-            
             <div class="svc-arm" style="transform: rotateZ(0deg) translateY(-425px);">
-              <div class="svc-anti-spin">
-                <div class="svc-anti-arm" style="transform: rotateZ(0deg);">
-                  <div class="svc-stand-up">
-                    <div class="svc-c">
-                      <div class="svc-n">01</div>
-                      <div class="svc-ic">🎯</div>
-                      <div class="svc-nm">Campaign Strategy</div>
-                      <div class="svc-ds">Data-driven blueprints built around your brand's unique goals and target audience — from concept to execution.</div>
-                    </div>
-                  </div>
+              <div class="svc-anti-spin"><div class="svc-anti-arm" style="transform: rotateZ(0deg);"><div class="svc-stand-up">
+                <div class="svc-c">
+                  <div class="svc-n">01</div><div class="svc-ic">🎯</div>
+                  <div class="svc-nm">Campaign Strategy</div>
+                  <div class="svc-ds">Data-driven blueprints built around your brand's unique goals and target audience — from concept to execution.</div>
                 </div>
-              </div>
+              </div></div></div>
             </div>
 
             <div class="svc-arm" style="transform: rotateZ(60deg) translateY(-425px);">
-              <div class="svc-anti-spin">
-                <div class="svc-anti-arm" style="transform: rotateZ(-60deg);">
-                  <div class="svc-stand-up">
-                    <div class="svc-c">
-                      <div class="svc-n">02</div>
-                      <div class="svc-ic">🤝</div>
-                      <div class="svc-nm">Influencer Marketing</div>
-                      <div class="svc-ds">Access our verified creator network of 1200+. Nano to mega — we match the right voice to your brand.</div>
-                    </div>
-                  </div>
+              <div class="svc-anti-spin"><div class="svc-anti-arm" style="transform: rotateZ(-60deg);"><div class="svc-stand-up">
+                <div class="svc-c">
+                  <div class="svc-n">02</div><div class="svc-ic">🤝</div>
+                  <div class="svc-nm">Influencer Marketing</div>
+                  <div class="svc-ds">Access our verified creator network of 1200+. Nano to mega — we match the right voice to your brand.</div>
                 </div>
-              </div>
+              </div></div></div>
             </div>
 
             <div class="svc-arm" style="transform: rotateZ(120deg) translateY(-425px);">
-              <div class="svc-anti-spin">
-                <div class="svc-anti-arm" style="transform: rotateZ(-120deg);">
-                  <div class="svc-stand-up">
-                    <div class="svc-c">
-                      <div class="svc-n">03</div>
-                      <div class="svc-ic">😄</div>
-                      <div class="svc-nm">Meme Marketing</div>
-                      <div class="svc-ds">We speak internet fluently. Viral-first content that inserts your brand into culture without feeling forced.</div>
-                    </div>
-                  </div>
+              <div class="svc-anti-spin"><div class="svc-anti-arm" style="transform: rotateZ(-120deg);"><div class="svc-stand-up">
+                <div class="svc-c">
+                  <div class="svc-n">03</div><div class="svc-ic">😄</div>
+                  <div class="svc-nm">Meme Marketing</div>
+                  <div class="svc-ds">We speak internet fluently. Viral-first content that inserts your brand into culture without feeling forced.</div>
                 </div>
-              </div>
+              </div></div></div>
             </div>
 
             <div class="svc-arm" style="transform: rotateZ(180deg) translateY(-425px);">
-              <div class="svc-anti-spin">
-                <div class="svc-anti-arm" style="transform: rotateZ(-180deg);">
-                  <div class="svc-stand-up">
-                    <div class="svc-c">
-                      <div class="svc-n">04</div>
-                      <div class="svc-ic">🎬</div>
-                      <div class="svc-nm">Content Production</div>
-                      <div class="svc-ds">End-to-end production: scripting, shooting, editing and delivery of brand-quality video and photo content.</div>
-                    </div>
-                  </div>
+              <div class="svc-anti-spin"><div class="svc-anti-arm" style="transform: rotateZ(-180deg);"><div class="svc-stand-up">
+                <div class="svc-c">
+                  <div class="svc-n">04</div><div class="svc-ic">🎬</div>
+                  <div class="svc-nm">Content Production</div>
+                  <div class="svc-ds">End-to-end production: scripting, shooting, editing and delivery of brand-quality video and photo content.</div>
                 </div>
-              </div>
+              </div></div></div>
             </div>
 
             <div class="svc-arm" style="transform: rotateZ(240deg) translateY(-425px);">
-              <div class="svc-anti-spin">
-                <div class="svc-anti-arm" style="transform: rotateZ(-240deg);">
-                  <div class="svc-stand-up">
-                    <div class="svc-c">
-                      <div class="svc-n">05</div>
-                      <div class="svc-ic">🔗</div>
-                      <div class="svc-nm">Brand Collabs</div>
-                      <div class="svc-ds">Powerful brand-to-brand deals that expand reach, credibility and audience without the heavy ad spend.</div>
-                    </div>
-                  </div>
+              <div class="svc-anti-spin"><div class="svc-anti-arm" style="transform: rotateZ(-240deg);"><div class="svc-stand-up">
+                <div class="svc-c">
+                  <div class="svc-n">05</div><div class="svc-ic">🔗</div>
+                  <div class="svc-nm">Brand Collabs</div>
+                  <div class="svc-ds">Powerful brand-to-brand deals that expand reach, credibility and audience without the heavy ad spend.</div>
                 </div>
-              </div>
+              </div></div></div>
             </div>
 
             <div class="svc-arm" style="transform: rotateZ(300deg) translateY(-425px);">
-              <div class="svc-anti-spin">
-                <div class="svc-anti-arm" style="transform: rotateZ(-300deg);">
-                  <div class="svc-stand-up">
-                    <div class="svc-c">
-                      <div class="svc-n">06</div>
-                      <div class="svc-ic">📱</div>
-                      <div class="svc-nm">UGC Content</div>
-                      <div class="svc-ds">Authentic, scalable user-generated content that converts. Real people, real voices, real results.</div>
-                    </div>
-                  </div>
+              <div class="svc-anti-spin"><div class="svc-anti-arm" style="transform: rotateZ(-300deg);"><div class="svc-stand-up">
+                <div class="svc-c">
+                  <div class="svc-n">06</div><div class="svc-ic">📱</div>
+                  <div class="svc-nm">UGC Content</div>
+                  <div class="svc-ds">Authentic, scalable user-generated content that converts. Real people, real voices, real results.</div>
                 </div>
-              </div>
+              </div></div></div>
             </div>
-
           </div>
         </div>
       </div>
@@ -621,39 +575,38 @@ footer{background:#020202;padding:80px 5% 30px;border-top:1px solid rgba(255,255
     <div class="sec-inner">
       <div class="sec-ey">Our Clients</div>
       <h2 class="sec-ttl">Brands We've Worked With</h2>
-      
       <div class="cl-wrap" id="clWrap">
         <div class="cl-g">
           <div class="cl-c">
-            <div class="cl-logo-wrap"><img src="kapiva logo.png" alt="Kapiva"></div>
+            <div class="cl-logo-wrap"><img src="assets/kapiva-logo.png" alt="Kapiva"></div>
             <div class="cl-nm">Kapiva</div><div class="cl-sub">Wellness</div>
           </div>
           <div class="cl-c">
-            <div class="cl-logo-wrap"><img src="Zouk-Logo.webp" alt="Zouk"></div>
+            <div class="cl-logo-wrap"><img src="assets/zouk-logo.webp" alt="Zouk"></div>
             <div class="cl-nm">Zouk</div><div class="cl-sub">Accessories</div>
           </div>
           <div class="cl-c">
-            <div class="cl-logo-wrap"><img src="louis stich logi.jpg" alt="Louis"></div>
+            <div class="cl-logo-wrap"><img src="assets/louis-stitch-logo.jpg" alt="Louis Stitch"></div>
             <div class="cl-nm">Louis Stitch</div><div class="cl-sub">Menswear</div>
           </div>
           <div class="cl-c">
-            <div class="cl-logo-wrap"><img src="Mama earth.png" alt="Mamaearth"></div>
+            <div class="cl-logo-wrap"><img src="assets/mama-earth-logo.png" alt="Mamaearth"></div>
             <div class="cl-nm">Mamaearth</div><div class="cl-sub">Beauty</div>
           </div>
           <div class="cl-c">
-            <div class="cl-logo-wrap"><img src="wow skin logo.jpg" alt="WOW"></div>
+            <div class="cl-logo-wrap"><img src="assets/wow-skin-logo.jpg" alt="WOW Skin"></div>
             <div class="cl-nm">WOW Skin</div><div class="cl-sub">Skincare</div>
           </div>
           <div class="cl-c">
-            <div class="cl-logo-wrap"><img src="m caffeine logo.png" alt="mCaffeine"></div>
+            <div class="cl-logo-wrap"><img src="assets/mcaffeine-logo.png" alt="mCaffeine"></div>
             <div class="cl-nm">mCaffeine</div><div class="cl-sub">D2C</div>
           </div>
           <div class="cl-c">
-            <div class="cl-logo-wrap"><img src="Boat_Logo.webp" alt="boAt"></div>
+            <div class="cl-logo-wrap"><img src="assets/boat-logo.webp" alt="boAt"></div>
             <div class="cl-nm">boAt</div><div class="cl-sub">Electronics</div>
           </div>
           <div class="cl-c">
-            <div class="cl-logo-wrap"><img src="SUGAR-Cosmetics-Logo.jpg" alt="Sugar"></div>
+            <div class="cl-logo-wrap"><img src="assets/sugar-logo.jpg" alt="Sugar"></div>
             <div class="cl-nm">Sugar</div><div class="cl-sub">Cosmetics</div>
           </div>
         </div>
@@ -661,7 +614,9 @@ footer{background:#020202;padding:80px 5% 30px;border-top:1px solid rgba(255,255
     </div>
   </section>
 
-</section> <section id="footer-stack" class="stack-section" style="background: var(--k);">
+</section>
+
+<section id="footer-stack" class="stack-section" style="background: var(--k);">
   
   <section id="contact">
     <div class="sec-inner">
@@ -779,7 +734,7 @@ window.addEventListener('scroll',function(){
 var hbg=document.getElementById('hbg'),nl=document.getElementById('nl');
 hbg.addEventListener('click',function(){nl.classList.toggle('open');});
 
-// ── THE "MIND BENDING 3D DIVE" PAGE TRANSITIONS ──
+// ── 3D DIVE PAGE TRANSITIONS ──
 const stacks = document.querySelectorAll('.stack-section');
 window.addEventListener('scroll', () => {
   const scrollY = window.scrollY;
@@ -797,10 +752,9 @@ window.addEventListener('scroll', () => {
         let progress = 1 - (nextTop / wh);
         progress = Math.max(0, Math.min(1, progress));
 
-        // The Magic Math: Folds backward dynamically based on scroll velocity
         const scale = 1 - (progress * 0.12); 
-        const zPush = progress * 400; // Pushes it 400px deep into the background
-        const xTilt = progress * 15; // Tilts it back 15 degrees
+        const zPush = progress * 400;
+        const xTilt = progress * 15;
         const brightness = 1 - (progress * 0.6); 
 
         stack.style.transform = `perspective(1500px) translate3d(0, ${progress * 150}px, -${zPush}px) rotateX(${xTilt}deg)`;
@@ -818,18 +772,14 @@ const clientsSection = document.getElementById('clients');
 const clWrap = document.getElementById('clWrap');
 
 clientsSection.addEventListener('mousemove', (e) => {
-  // Only calculate if not on mobile
   if (window.innerWidth > 900) {
     const rect = clientsSection.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    
-    const rotateX = ((y - centerY) / centerY) * -15; // Max 15 degree global tilt
+    const rotateX = ((y - centerY) / centerY) * -15;
     const rotateY = ((x - centerX) / centerX) * 15;
-
     clWrap.style.transform = `perspective(2000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   }
 });
