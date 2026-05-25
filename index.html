@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Claim Fame — The Real Fame Story Starts Here</title>
@@ -711,38 +710,14 @@ const revealObserver = new IntersectionObserver((entries, observer) => {
 document.querySelectorAll('.reveal-up').forEach(el => revealObserver.observe(el));
 
 // ── FORM SUBMISSION ──
-async function submitForm(btn) {
-  // Capture the form data
-  const formData = {
-    name: document.querySelector('input[placeholder="Your Name"]').value,
-    email: document.querySelector('input[placeholder="brand@email.com"]').value,
-    brand: document.querySelector('input[placeholder="Your Brand"]').value,
-    phone: document.querySelector('input[placeholder="+91 00000 00000"]').value,
-    service: document.querySelector('select').value,
-    message: document.querySelector('textarea').value,
-  };
-
-  // UI feedback
-  btn.textContent = 'Sending...';
-
-  // Send to Supabase
-  const { error } = await supabase
-    .from('inquiries')
-    .insert([formData]);
-
-  if (error) {
-    console.error('Database Error:', error);
-    alert('Something went wrong. Please try again.');
-    btn.textContent = 'Send Message →';
-  } else {
+function submitForm(btn){
+  btn.textContent = 'Sending…'; btn.style.opacity = '.7';
+  setTimeout(() => {
     btn.textContent = '✓ Message Sent!';
-    btn.style.background = '#16a34a';
-  }
+    btn.style.background = '#16a34a'; btn.style.opacity = '1';
+    btn.style.transform = 'none';
+  }, 1200);
 }
-//supabase credentials
-const supabaseUrl = 'https://eohokgccjyeajapzmrbr.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVvaG9rZ2NjanllYWphcHptcmJyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MDE0MDgsImV4cCI6MjA5NTE3NzQwOH0.AAQG6wYheZbLAYiJhJ3a-4x2UFIYHsmkCEfM2XBn0G4'; // This is safe to expose on the frontend because of RLS
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 </script>
 </body>
 </html>
