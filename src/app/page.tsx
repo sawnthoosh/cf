@@ -135,60 +135,63 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* ── HERO ── */}
-      <div className="page-section" id="hero">
-        <div className="hero-bg-accent"></div>
-        <div className="hero-content-wrapper">
-          <div className="hero-grid">
-            <div className="hero-text reveal-up">
-              <div className="h-tag">{content['hero_tagline'] || 'Claim Fame - The real fame story starts here!'}</div>
-              <h1 
-                className="h1" 
-                dangerouslySetInnerHTML={{ 
-                  __html: content['hero_headline'] || 'Building Brands<br />Through <em class="nlogo-claim">Influence.</em>' 
-                }} 
-              />
-              <p className="h-sub">
-                {content['hero_subheadline'] || 'Your one-stop creative powerhouse for influencer marketing, social media, PR, performance & production. No fluff — just razor-sharp strategy.'}
-              </p>
-              <div className="h-ctas">
-                <a href="#contact-wrap" className="btn-p hover-target">{content['hero_btn_primary'] || 'Get In Touch'}</a>
-                <a href="#services-wrap" className="btn-s hover-target">{content['hero_btn_secondary'] || 'View Our Work'}</a>
-              </div>
-            </div>
-            <div className="hero-visual reveal-up d-1">
-              <div className="video-preview-card">
-                <video
-                  autoPlay loop muted playsInline
-                  poster="https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=600&auto=format&fit=crop"
-                >
-                  <source src={content['hero_video_url'] || "https://www.w3schools.com/html/mov_bbb.mp4"} type="video/mp4" />
-                </video>
-                <div className="v-play-btn hover-target">▶</div>
-                <div className="v-badge"><span></span> {content['hero_video_badge'] || 'Trending Now'}</div>
-              </div>
+      {/* ── CLEAN, SINGLE FULLSCREEN VIDEO HERO ── */}
+      <div id="hero" style={{ position: 'relative', width: '100%', backgroundColor: 'var(--k)' }}>
+        <div className="hero-fullscreen">
+          <video
+            /* The key forces the video player to refresh when you upload a new video in Supabase */
+            key={content['hero_video_url'] || 'fallback'}
+            className="hero-video-bg"
+            autoPlay loop muted playsInline
+          >
+            {/* Reads directly from your Supabase CMS, falls back to a local file if CMS is empty */}
+            <source src={content['hero_video_url'] || "/bg.mp4"} type="video/mp4" />
+          </video>
+          
+          <div className="hero-fullscreen-content reveal-up">
+            <h1 className="agency-name-huge hover-target">
+              {content['hero_agency_name'] || 'CLAIM FAME'}
+            </h1>
+            <div className="agency-tagline-huge">
+              The real fame story starts here
             </div>
           </div>
         </div>
 
-        {/* ── DYNAMIC MARQUEE ── */}
-        <div className="mq-stack reveal-up d-2">
-          <div className="mq-label">{content['marquee_label'] || "Brands We've Collaborated With"}</div>
-          <div className="mq-belt">
-            {logos.length > 0 ? (
-              [...logos, ...logos].map((client, i) => (
-                <div key={`${client.id}-${i}`} className="mq-item hover-target">
-                  <img src={client.logo_url} alt={client.brand_name} />
-                </div>
-              ))
-            ) : (
-              <>
-                <div className="mq-item hover-target"><img src="/kapiva-logo.png" alt="Kapiva" /></div>
-                <div className="mq-item hover-target"><img src="/zouk-logo.webp" alt="Zouk" /></div>
-                <div className="mq-item hover-target"><img src="/louis-stitch-logo.jpg" alt="Louis Stitch" /></div>
-                <div className="mq-item hover-target"><img src="/mama-earth-logo.png" alt="Mamaearth" /></div>
-              </>
-            )}
+        {/* ── CLEAN WHITE STRIP MARQUEE ── */}
+        <div className="white-strip-marquee">
+          <div className="marquee-track">
+            {(() => {
+              const fallbackLogos = [
+                { id: 'f1', logo_url: '/kapiva-logo.png', brand_name: 'Kapiva' },
+                { id: 'f2', logo_url: '/zouk-logo.webp', brand_name: 'Zouk' },
+                { id: 'f3', logo_url: '/mama-earth-logo.png', brand_name: 'Mamaearth' },
+                { id: 'f4', logo_url: '/wow-skin-logo.jpg', brand_name: 'Wow Skin' },
+                { id: 'f5', logo_url: '/boat-logo.webp', brand_name: 'boAt' }
+              ];
+              
+              let baseLogos = logos.length > 0 ? logos : fallbackLogos;
+              let displayLogos = baseLogos.length < 5 ? [...baseLogos, ...baseLogos, ...baseLogos] : baseLogos;
+
+              return (
+                <>
+                  <div className="marquee-group">
+                    {displayLogos.map((client, i) => (
+                      <div key={`g1-${i}`} className="marquee-logo hover-target">
+                        <img src={client.logo_url} alt={client.brand_name} />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="marquee-group" aria-hidden="true">
+                    {displayLogos.map((client, i) => (
+                      <div key={`g2-${i}`} className="marquee-logo hover-target">
+                        <img src={client.logo_url} alt={client.brand_name} />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>
@@ -208,7 +211,7 @@ export default function Home() {
                 <div className="sec-ey">{content['about_eyebrow'] || 'Who We Are'}</div>
                 <h2 className="sec-ttl" dangerouslySetInnerHTML={{ __html: content['about_title'] || 'We Exist for Brands That Want to Trend.' }} />
                 <p dangerouslySetInnerHTML={{ 
-                  __html: content['about_paragraph'] || '<strong>Claim Fame</strong>—based in Delhi, stirring things up globally—is your one-stop shop for all your marketing needs. We handle the heavy lifting across influencer marketing, social media, PR, performance marketing, and production, turning your wild ideas into conversations people actually want to have.<br /><br />No fluff, no fake hype. Just razor-sharp strategy and execution that feels <strong>100% real.</strong> We don\'t just build campaigns. We build presence.' 
+                  __html: content['about_paragraph'] || '<strong>Claim Fame</strong> is your one-stop shop for all your marketing needs. We handle the heavy lifting across influencer marketing, social media, PR, performance marketing, and production, turning your wild ideas into conversations people actually want to have.<br /><br />No fluff, no fake hype. Just razor-sharp strategy and execution that feels <strong>100% real.</strong> We don\'t just build campaigns. We build presence.' 
                 }} />
                 <a href="#contact-wrap" className="btn-p hover-target" style={{ marginTop: '10px' }}>
                   {content['about_btn'] || 'Partner With Us'}
@@ -219,7 +222,7 @@ export default function Home() {
         </section>
       </div>
 
-      {/* ── SERVICES ── */}
+      {/* ── SERVICES (3D ORBIT) ── */}
       <div className="page-section bg-gray" id="services-wrap">
         <section className="inner-section" style={{ borderTop: '1px solid var(--gm)' }}>
           <div className="sec-inner">
@@ -235,53 +238,46 @@ export default function Home() {
                 <div className="svc-ring-line r2"></div>
 
                 <div className="svc-ring">
-                  {/* Service 1 */}
                   <div className="svc-arm" style={{ transform: 'rotateZ(0deg) translateY(-450px)' }}>
                     <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(0deg)' }}><div className="svc-stand-up"><div className="svc-c">
                       <div className="svc-ic-wrap"><div className="svc-ic">🎯</div><div className="svc-nm">{content['svc_1_title'] || 'Campaign Strategy'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_1_desc'] || "Data-driven blueprints built around your brand's unique goals and target audience — from concept to execution."}</div></div>
+                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_1_desc'] || "Data-driven blueprints built around your brand's unique goals and target audience."}</div></div>
                     </div></div></div></div>
                   </div>
-                  {/* Service 2 */}
                   <div className="svc-arm" style={{ transform: 'rotateZ(51.4deg) translateY(-450px)' }}>
                     <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-51.4deg)' }}><div className="svc-stand-up"><div className="svc-c">
                       <div className="svc-ic-wrap"><div className="svc-ic">🤝</div><div className="svc-nm">{content['svc_2_title'] || 'Influencer Marketing'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_2_desc'] || "Access our verified creator network of 1200+. Nano to mega — we match the right voice to your brand."}</div></div>
+                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_2_desc'] || "Access our verified creator network of 1200+. Nano to mega — we match the right voice."}</div></div>
                     </div></div></div></div>
                   </div>
-                  {/* Service 3 */}
                   <div className="svc-arm" style={{ transform: 'rotateZ(102.8deg) translateY(-450px)' }}>
                     <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-102.8deg)' }}><div className="svc-stand-up"><div className="svc-c">
                       <div className="svc-ic-wrap"><div className="svc-ic">😄</div><div className="svc-nm">{content['svc_3_title'] || 'Meme Marketing'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_3_desc'] || "We speak internet fluently. Viral-first content that inserts your brand into culture without feeling forced."}</div></div>
+                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_3_desc'] || "We speak internet fluently. Viral-first content that inserts your brand into culture."}</div></div>
                     </div></div></div></div>
                   </div>
-                  {/* Service 4 */}
                   <div className="svc-arm" style={{ transform: 'rotateZ(154.2deg) translateY(-450px)' }}>
                     <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-154.2deg)' }}><div className="svc-stand-up"><div className="svc-c">
                       <div className="svc-ic-wrap"><div className="svc-ic">🎬</div><div className="svc-nm">{content['svc_4_title'] || 'Content Production'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_4_desc'] || "End-to-end production: scripting, shooting, editing and delivery of brand-quality video and photo content."}</div></div>
+                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_4_desc'] || "End-to-end production: scripting, shooting, editing and delivery."}</div></div>
                     </div></div></div></div>
                   </div>
-                  {/* Service 5 */}
                   <div className="svc-arm" style={{ transform: 'rotateZ(205.7deg) translateY(-450px)' }}>
                     <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-205.7deg)' }}><div className="svc-stand-up"><div className="svc-c">
                       <div className="svc-ic-wrap"><div className="svc-ic">🔗</div><div className="svc-nm">{content['svc_5_title'] || 'Brand Collabs'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_5_desc'] || "Powerful brand-to-brand deals that expand reach, credibility and audience without the heavy ad spend."}</div></div>
+                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_5_desc'] || "Powerful brand-to-brand deals that expand reach and credibility."}</div></div>
                     </div></div></div></div>
                   </div>
-                  {/* Service 6 */}
                   <div className="svc-arm" style={{ transform: 'rotateZ(257.1deg) translateY(-450px)' }}>
                     <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-257.1deg)' }}><div className="svc-stand-up"><div className="svc-c">
                       <div className="svc-ic-wrap"><div className="svc-ic">📈</div><div className="svc-nm">{content['svc_6_title'] || 'Performance'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_6_desc'] || "High-ROI performance campaigns engineered to drive measurable conversions and scalable growth."}</div></div>
+                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_6_desc'] || "High-ROI performance campaigns engineered to drive conversions."}</div></div>
                     </div></div></div></div>
                   </div>
-                  {/* Service 7 */}
                   <div className="svc-arm" style={{ transform: 'rotateZ(308.5deg) translateY(-450px)' }}>
                     <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-308.5deg)' }}><div className="svc-stand-up"><div className="svc-c">
                       <div className="svc-ic-wrap"><div className="svc-ic">📱</div><div className="svc-nm">{content['svc_7_title'] || 'UGC Content'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_7_desc'] || "Authentic, scalable user-generated content that converts. Real people, real voices, real results."}</div></div>
+                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_7_desc'] || "Authentic, scalable user-generated content that converts."}</div></div>
                     </div></div></div></div>
                   </div>
                 </div>
@@ -337,7 +333,7 @@ export default function Home() {
                   </div>
                   <div className="ct-item">
                     <div className="ct-item-ic">📍</div>
-                    <div className="ct-item-tx">{content['contact_location'] || 'New Delhi, India · Working Globally'}</div>
+                    <div className="ct-item-tx">{content['contact_location'] || 'New Delhi, India'}</div>
                   </div>
                 </div>
                 <a href={content['contact_wa_link'] || 'https://wa.me/911234567890'} className="wa-btn hover-target" target="_blank" rel="noreferrer">
@@ -397,7 +393,7 @@ export default function Home() {
               <a href="#hero" className="ft-logo">
                 <span className="nlogo-claim">Claim</span><span className="nlogo-fame">Fame</span>
               </a>
-              <p className="ft-tag">{content['footer_tagline'] || 'Delhi-based influencer marketing & creative media agency. The real fame story starts here.'}</p>
+              <p className="ft-tag">{content['footer_tagline'] || 'Delhi-based influencer marketing agency.'}</p>
             </div>
             <div className="reveal-up d-1">
               <div className="ft-col-ttl">Quick Links</div>
@@ -413,7 +409,6 @@ export default function Home() {
                 <li><a href="#services-wrap" className="hover-target">Influencer Marketing</a></li>
                 <li><a href="#services-wrap" className="hover-target">Campaign Strategy</a></li>
                 <li><a href="#services-wrap" className="hover-target">Content Production</a></li>
-                <li><a href="#services-wrap" className="hover-target">UGC Content</a></li>
               </ul>
             </div>
             <div className="reveal-up d-3">
@@ -421,7 +416,6 @@ export default function Home() {
               <ul className="ft-lks">
                 <li><a href={`mailto:${content['contact_email'] || 'hello@letsclaimfame.com'}`} className="hover-target">{content['contact_email'] || 'hello@letsclaimfame.com'}</a></li>
                 <li><a href={`tel:${content['contact_phone'] || '+911234567890'}`} className="hover-target">{content['contact_phone'] || '+91 12345 67890'}</a></li>
-                <li><a href="#" className="hover-target">{content['contact_location'] || 'New Delhi, India'}</a></li>
               </ul>
             </div>
           </div>
