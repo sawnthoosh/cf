@@ -16,9 +16,11 @@ export default function AdminDashboard() {
   const [newProject, setNewProject] = useState({ project_name: '', description: '', file: null as File | null });
   const [newClient, setNewClient] = useState({ brand_name: '', file: null as File | null });
   
-  // NEW: State for the Hero Video Upload
+  // Hero Video & About Image Upload State Handlers
   const [heroVideo, setHeroVideo] = useState<File | null>(null);
   const [isVideoUploading, setIsVideoUploading] = useState(false);
+  const [aboutImage, setAboutImage] = useState<File | null>(null);
+  const [isImageUploading, setIsImageUploading] = useState(false);
 
   useEffect(() => {
     checkSessionAndFetchData();
@@ -68,40 +70,62 @@ export default function AdminDashboard() {
     setIsUploading(false);
   };
 
-  // NEW: Handle dedicated Hero Video Upload
   const handleHeroVideoUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!heroVideo) return;
     setIsVideoUploading(true);
 
-    // 1. Upload video to storage
     const fileName = `hero-video/${Date.now()}-${heroVideo.name}`;
     const { error: uploadError } = await supabase.storage.from('agency-media').upload(fileName, heroVideo);
     
     if (uploadError) {
-      alert('Error uploading video. Make sure your file is an MP4/WebM and within size limits.');
-      console.error(uploadError);
+      alert('Error uploading video. Make sure file is under limits.');
       setIsVideoUploading(false);
       return;
     }
 
-    // 2. Get Public URL
     const { data } = supabase.storage.from('agency-media').getPublicUrl(fileName);
-
-    // 3. Update the site_content table securely
     const { data: existing } = await supabase.from('site_content').select('*').eq('section_key', 'hero_video_url');
     
     if (existing && existing.length > 0) {
       await supabase.from('site_content').update({ content_value: data.publicUrl }).eq('section_key', 'hero_video_url');
     } else {
-      // If the row doesn't exist yet, create it automatically
       await supabase.from('site_content').insert([{ section_key: 'hero_video_url', content_value: data.publicUrl }]);
     }
 
     setHeroVideo(null);
     checkSessionAndFetchData();
     setIsVideoUploading(false);
-    alert('Landing Page Video updated successfully!');
+    alert('Hero video updated successfully!');
+  };
+
+  const handleAboutImageUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aboutImage) return;
+    setIsImageUploading(true);
+
+    const fileName = `about-image/${Date.now()}-${aboutImage.name}`;
+    const { error: uploadError } = await supabase.storage.from('agency-media').upload(fileName, aboutImage);
+
+    if (uploadError) {
+      alert('Error uploading image asset to bucket storage.');
+      setIsImageUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from('agency-media').getPublicUrl(fileName);
+    const { data: existing } = await supabase.from('site_content').select('*').eq('section_key', 'about_image_url');
+
+    if (existing && existing.length > 0) {
+      await supabase.from('site_content').update({ content_value: data.publicUrl }).eq('section_key', 'about_image_url');
+    } else {
+      await supabase.from('site_content').insert([{ section_key: 'about_image_url', content_value: data.publicUrl }]);
+    }
+
+    setAboutImage(null);
+    checkSessionAndFetchData();
+    setIsImageUploading(false);
+    alert('About Section image asset replaced successfully!');
   };
 
   const handleUpdateContent = async (key: string, newValue: string) => {
@@ -109,7 +133,7 @@ export default function AdminDashboard() {
     const { error } = await supabase.from('site_content').update({ content_value: newValue }).eq('section_key', key);
     
     if (error) {
-      alert('Error updating content.');
+      alert('Error updating text parameters.');
       console.error(error);
     } else {
       checkSessionAndFetchData();
@@ -139,7 +163,7 @@ export default function AdminDashboard() {
                 cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--fb)',
                 boxShadow: activeTab === tab ? '0 10px 25px rgba(143,30,174,0.25)' : '0 4px 10px rgba(0,0,0,0.03)'
               }}>
-              {tab === 'settings' ? '⚙️ SITE SETTINGS' : tab.toUpperCase()}
+              {tab === 'portfolio' ? '🎬 CAMPAIGN REELS' : tab.toUpperCase()}
             </button>
           ))}
         </div>
@@ -173,27 +197,24 @@ export default function AdminDashboard() {
 
         {activeTab === 'portfolio' && (
           <div className="admin-card" style={{padding: '30px'}}>
-            <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '20px'}}>Add Portfolio Project</h2>
+            <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '5px'}}>Add Client Vertical Video</h2>
+            <p style={{color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '20px'}}>Upload short 9:16 portrait MP4 files for the "Things We Brought To Life" section.</p>
             <form onSubmit={handleAddProject} style={{display: 'flex', gap: '10px', marginBottom: '40px', flexWrap: 'wrap'}}>
-              <input type="text" placeholder="Project Name" className="fi" required onChange={e => setNewProject({...newProject, project_name: e.target.value})} style={{flex: 1, minWidth: '200px'}} />
-              <input type="file" className="fi" required onChange={e => setNewProject({...newProject, file: e.target.files?.[0] || null})} style={{flex: 1, minWidth: '200px'}} />
-              <button type="submit" className="fsub" disabled={isUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>{isUploading ? 'Uploading...' : 'Upload Project'}</button>
+              <input type="text" placeholder="Campaign Name / Brand" value={newProject.project_name} className="fi" required onChange={e => setNewProject({...newProject, project_name: e.target.value})} style={{flex: 1, minWidth: '200px'}} />
+              <input type="file" accept="video/mp4,video/webm" className="fi" required onChange={e => setNewProject({...newProject, file: e.target.files?.[0] || null})} style={{flex: 1, minWidth: '200px'}} />
+              <button type="submit" className="fsub" disabled={isUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>{isUploading ? 'Uploading...' : 'Upload Video'}</button>
             </form>
             
-            <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.2rem', fontWeight: 700, marginBottom: '15px'}}>Current Portfolio</h3>
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px'}}>
+            <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.2rem', fontWeight: 700, marginBottom: '15px'}}>Live Vertical Clips</h3>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px'}}>
               {portfolio.map(p => (
                 <div key={p.id} style={{background: 'var(--g)', padding: '15px', borderRadius: '16px', border: '1px solid var(--gm)'}}>
-                  {p.media_url.match(/\.(mp4|webm)$/i) ? (
-                    <video src={p.media_url} style={{width:'100%', height:'150px', objectFit:'cover', borderRadius: '8px'}} muted loop playsInline />
-                  ) : (
-                    <img src={p.media_url} style={{width:'100%', height:'150px', objectFit:'cover', borderRadius: '8px'}} />
-                  )}
-                  <p style={{fontFamily: 'var(--fh)', fontWeight: 700, marginTop: '15px', color: 'var(--k)'}}>{p.project_name}</p>
-                  <button onClick={() => supabase.from('portfolio').delete().eq('id', p.id).then(checkSessionAndFetchData)} style={{marginTop: '10px', background: '#fee2e2', color: '#b91c1c', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, width: '100%'}}>Delete Project</button>
+                  <video src={p.media_url} style={{width:'100%', height:'280px', objectFit:'cover', borderRadius: '12px'}} muted loop playsInline />
+                  <p style={{fontFamily: 'var(--fh)', fontWeight: 700, marginTop: '15px', color: 'var(--k)', fontSize: '0.95rem'}}>{p.project_name}</p>
+                  <button onClick={() => supabase.from('portfolio').delete().eq('id', p.id).then(checkSessionAndFetchData)} style={{marginTop: '10px', background: '#fee2e2', color: '#b91c1c', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, width: '100%'}}>Delete Video</button>
                 </div>
               ))}
-              {portfolio.length === 0 && <div style={{color: 'var(--muted)', gridColumn: '1/-1'}}>No portfolio items uploaded yet.</div>}
+              {portfolio.length === 0 && <div style={{color: 'var(--muted)', gridColumn: '1/-1'}}>No campaign reels uploaded yet.</div>}
             </div>
           </div>
         )}
@@ -202,7 +223,7 @@ export default function AdminDashboard() {
           <div className="admin-card" style={{padding: '30px'}}>
             <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '20px'}}>Add Client Logo</h2>
             <form onSubmit={handleAddClient} style={{display: 'flex', gap: '10px', marginBottom: '40px', flexWrap: 'wrap'}}>
-              <input type="text" placeholder="Brand Name" className="fi" required onChange={e => setNewClient({...newClient, brand_name: e.target.value})} style={{flex: 1, minWidth: '200px'}} />
+              <input type="text" placeholder="Brand Name" value={newClient.brand_name} className="fi" required onChange={e => setNewClient({...newClient, brand_name: e.target.value})} style={{flex: 1, minWidth: '200px'}} />
               <input type="file" className="fi" required onChange={e => setNewClient({...newClient, file: e.target.files?.[0] || null})} style={{flex: 1, minWidth: '200px'}} />
               <button type="submit" className="fsub" disabled={isUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>{isUploading ? 'Uploading...' : 'Upload Logo'}</button>
             </form>
@@ -226,34 +247,33 @@ export default function AdminDashboard() {
         {activeTab === 'settings' && (
           <div className="admin-card" style={{padding: '30px'}}>
             
-            {/* NEW: Dedicated Video Upload Section */}
-            <div style={{ marginBottom: '50px', padding: '25px', background: 'var(--g)', borderRadius: '16px', border: '1px solid var(--gm)' }}>
-              <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px', color: 'var(--k)'}}>Update Landing Page Video</h3>
-              <p style={{color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '20px'}}>Upload a high-quality .mp4 video to play behind your landing page text.</p>
-              
+            {/* HERO VIDEO FORM */}
+            <div style={{ marginBottom: '30px', padding: '25px', background: 'var(--g)', border: '1px solid var(--gm)', borderRadius: '16px' }}>
+              <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.15rem', fontWeight: 700, marginBottom: '5px'}}>Update Hero Video Loop</h3>
+              <p style={{color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '15px'}}>Upload a premium background video file for your landing screen display.</p>
               <form onSubmit={handleHeroVideoUpload} style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                <input 
-                  type="file" 
-                  accept="video/mp4,video/webm" 
-                  className="fi" 
-                  required 
-                  onChange={e => setHeroVideo(e.target.files?.[0] || null)} 
-                  style={{flex: 1, minWidth: '250px', background: 'var(--w)'}}
-                />
-                <button 
-                  type="submit" 
-                  className="fsub" 
-                  disabled={isVideoUploading} 
-                  style={{width: 'auto', padding: '0 30px', margin: 0}}
-                >
+                <input type="file" accept="video/mp4,video/webm" className="fi" required onChange={e => setHeroVideo(e.target.files?.[0] || null)} style={{flex: 1, minWidth: '250px', background: 'var(--w)'}} />
+                <button type="submit" className="fsub" disabled={isVideoUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>
                   {isVideoUploading ? 'Uploading Video...' : 'Upload Video'}
                 </button>
               </form>
             </div>
 
-            <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '20px'}}>Edit Website Text</h2>
+            {/* NEW SECTION IMAGE FORM (Screenshot 2026-06-13 at 8.45.44 PM.jpg) */}
+            <div style={{ marginBottom: '50px', padding: '25px', background: 'var(--g)', border: '1px solid var(--gm)', borderRadius: '16px' }}>
+              <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.15rem', fontWeight: 700, marginBottom: '5px'}}>Update "Who We Are" Image</h3>
+              <p style={{color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '15px'}}>Upload a high-end photo to replace the current office graphic asset image display.</p>
+              <form onSubmit={handleAboutImageUpload} style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                <input type="file" accept="image/*" className="fi" required onChange={e => setAboutImage(e.target.files?.[0] || null)} style={{flex: 1, minWidth: '250px', background: 'var(--w)'}} />
+                <button type="submit" className="fsub" disabled={isImageUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>
+                  {isImageUploading ? 'Uploading Image...' : 'Upload Image'}
+                </button>
+              </form>
+            </div>
+
+            <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '20px'}}>Edit Website Texts</h2>
             {siteContent.length === 0 ? (
-              <p style={{color: 'var(--muted)'}}>No text content keys found in the database. Add rows to your site_content table!</p>
+              <p style={{color: 'var(--muted)'}}>No configuration mappings synchronized inside your content dataset fields.</p>
             ) : (
               <div style={{display: 'flex', flexDirection: 'column', gap: '25px'}}>
                 {siteContent.map((item) => (
@@ -262,12 +282,7 @@ export default function AdminDashboard() {
                       {item.section_key.replace(/_/g, ' ')}
                     </label>
                     <div style={{display: 'flex', gap: '15px', flexWrap: 'wrap'}}>
-                      <textarea 
-                        className="fi" 
-                        defaultValue={item.content_value}
-                        id={`input-${item.section_key}`}
-                        style={{minHeight: '60px', flex: 1, minWidth: '250px'}}
-                      />
+                      <textarea className="fi" defaultValue={item.content_value} id={`input-${item.section_key}`} style={{minHeight: '60px', flex: 1, minWidth: '250px'}} />
                       <button 
                         className="fsub" 
                         disabled={isUploading}

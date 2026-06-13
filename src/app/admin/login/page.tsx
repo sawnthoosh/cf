@@ -1,53 +1,95 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, checkSupabaseConfig } from '@/lib/supabase';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    
+    // Safety guard clause: blocks requests immediately if .env.local is missing/misplaced
+    if (typeof checkSupabaseConfig === 'function' && !checkSupabaseConfig()) {
+      return;
+    }
+
     setError(null);
+    setLoading(false);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      setError(error.message);
+      if (authError) {
+        setError(authError.message);
+      } else {
+        // Redirect directly to your functional control admin center
+        window.location.href = '/admin';
+      }
+    } catch (err: any) {
+      setError(err.message || 'An unexpected authentication error occurred.');
+    } finally {
       setLoading(false);
-    } else {
-      window.location.href = '/admin';
     }
   };
 
   return (
     <div className="admin-login-wrap">
       <div className="admin-login-box">
-        <div className="nlogo" style={{justifyContent: 'center', marginBottom: '10px'}}>
-          <span className="nlogo-claim">Claim</span><span className="nlogo-fame">Fame</span>
+        
+        {/* Header Branding */}
+        <div style={{ textAlign: 'center', marginBottom: '35px' }}>
+          <h2 style={{ fontFamily: 'var(--fh)', fontSize: '2rem', fontWeight: 900, color: 'var(--k)', textTransform: 'uppercase', letterSpacing: '-0.03em' }}>
+            <span style={{ color: 'var(--p)' }}>Claim</span>Fame
+          </h2>
+          <p style={{ color: 'var(--muted)', fontSize: '0.9rem', marginTop: '5px', fontWeight: 600 }}>
+            Control Center Authentication
+          </p>
         </div>
-        <p style={{textAlign: 'center', color: 'var(--muted)', marginBottom: '30px', fontSize: '0.9rem'}}>Secure Agency Access</p>
 
-        <form onSubmit={handleLogin} style={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
-          <div className="fg">
-            <label className="flb">Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="fi" required />
+        {/* Credentials Form Handling Block */}
+        <form onSubmit={handleLogin}>
+          {error && (
+            <div style={{ background: '#fee2e2', color: '#b91c1c', padding: '12px 16px', borderRadius: '12px', fontSize: '0.88rem', fontWeight: 600, marginBottom: '20px', border: '1px solid #fca5a5' }}>
+              ⚠️ {error}
+            </div>
+          )}
+
+          <div className="fg" style={{ marginBottom: '20px' }}>
+            <label className="flb" style={{ marginBottom: '8px' }}>Email Address</label>
+            <input
+              type="email"
+              className="fi"
+              placeholder="admin@letsclaimfame.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
-          <div className="fg">
-            <label className="flb">Password</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="fi" required />
+
+          <div className="fg" style={{ marginBottom: '30px' }}>
+            <label className="flb" style={{ marginBottom: '8px' }}>Password</label>
+            <input
+              type="password"
+              className="fi"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
-          
-          {error && <p style={{color: 'red', fontSize: '0.85rem', textAlign: 'center'}}>{error}</p>}
-          
-          <button type="submit" disabled={loading} className="fsub" style={{marginTop: '10px'}}>
-            {loading ? 'Authenticating...' : 'Sign In →'}
+
+          <button type="submit" className="fsub" disabled={loading} style={{ margin: 0 }}>
+            {loading ? 'Authenticating...' : 'Sign In To Dashboard →'}
           </button>
         </form>
+
       </div>
     </div>
   );
