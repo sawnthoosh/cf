@@ -6,7 +6,11 @@ import { supabase } from '@/lib/supabase';
 export default function Home() {
   const [buttonText, setButtonText] = useState('Send Message →');
   const [logos, setLogos] = useState<any[]>([]);
+  const [portfolio, setPortfolio] = useState<any[]>([]);
   const [content, setContent] = useState<Record<string, string>>({});
+  
+  // Interactive Active Service State Tracker
+  const [activeService, setActiveService] = useState(0);
 
   useEffect(() => {
     const fetchLogos = async () => {
@@ -15,6 +19,14 @@ export default function Home() {
         .select('*')
         .order('created_at', { ascending: true });
       if (data) setLogos(data);
+    };
+
+    const fetchPortfolio = async () => {
+      const { data } = await supabase
+        .from('portfolio')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (data) setPortfolio(data);
     };
 
     const fetchContent = async () => {
@@ -29,6 +41,7 @@ export default function Home() {
     };
 
     fetchLogos();
+    fetchPortfolio();
     fetchContent();
 
     const cursor = document.getElementById('cursor');
@@ -115,6 +128,82 @@ export default function Home() {
     }
   };
 
+  // Static Data mapping matching WhatsApp Image 2026-06-10 at 21.16.28_2.jpeg
+  const agencyServices = [
+    {
+      title: 'Social Media Planning',
+      icon: '📱',
+      bullets: [
+        'Craft tailored media plans.',
+        'Develop customized content calendars.',
+        'Boost your online visibility.',
+        'Ensure an impactful brand presence across platforms.'
+      ]
+    },
+    {
+      title: 'Product Shoot',
+      icon: '📷',
+      bullets: [
+        'We create clean, high-quality product shots.',
+        'Develop dynamic, influencer-led visuals.',
+        'Craft scroll-stopping content that brings your brand to life.',
+        'Your product is the "Main Character".'
+      ]
+    },
+    {
+      title: 'Meme Marketing',
+      icon: '😊',
+      bullets: [
+        'We collaborate with popular meme pages.',
+        'We also collaborate with AI pages.',
+        'Craft witty and relatable content.',
+        'Boost your brand\'s online visibility.',
+        'Drive high engagement organically.'
+      ]
+    },
+    {
+      title: 'Performance Marketing',
+      icon: '🎯',
+      bullets: [
+        'Google Ads – Capture active buyers via search, display & video.',
+        'Meta Ads – Targeted ads on Facebook & Instagram.',
+        'E-commerce Ads – Boost online store & marketplace sales.',
+        'Amazon/Flipkart Ads – Promote products and increase visibility on Amazon and Flipkart shoppers.',
+        'Quick Commerce Ads – Advertise on Blinkit, Zepto & Instamart.'
+      ]
+    },
+    {
+      title: 'Influencer Marketing',
+      icon: '🎬',
+      bullets: [
+        'Teaming up with Influencers from across India.',
+        'Covering every language and every niche.',
+        'Curating authentic voices that truly connect with the audience.',
+        'Helping your brand to speak louder and connect deeper.',
+        'Getting the best prices and transparency of price with brands and creators.'
+      ]
+    },
+    {
+      title: 'Video Editing',
+      icon: '📹',
+      bullets: [
+        'We partner with editors who master high-retention techniques to stop the scroll and keep eyes on your brand.',
+        'Elevate your visuals with dynamic motion design and professional typography that makes your message pop.',
+        'Leverage cutting-edge AI video technology to create futuristic, shareable content that stands out from the crowd.',
+        'Our team ensures every video is strategically cut for maximum impact on specific social algorithms.'
+      ]
+    }
+  ];
+
+  const defaultReels = [
+    { id: 'df1', project_name: 'Beardo Global Campaign', media_url: 'https://cdn.pixabay.com/video/2021/04/12/70881-537449557_large.mp4' },
+    { id: 'df2', project_name: 'Mamaearth UGC Concept', media_url: 'https://cdn.pixabay.com/video/2020/03/17/33718-392520300_large.mp4' },
+    { id: 'df3', project_name: 'Zouk Lookbook Reels', media_url: 'https://cdn.pixabay.com/video/2020/09/11/49622-458145244_large.mp4' },
+    { id: 'df4', project_name: 'Kapiva Nutrition Campaign', media_url: 'https://cdn.pixabay.com/video/2021/11/04/94595-645851174_large.mp4' }
+  ];
+
+  const renderedReels = portfolio.length > 0 ? portfolio : defaultReels;
+
   return (
     <>
       <div id="cursor"></div>
@@ -127,6 +216,7 @@ export default function Home() {
         <ul className="nlinks" id="nl">
           <li><a href="#about-wrap" className="hover-target">About</a></li>
           <li><a href="#services-wrap" className="hover-target">Services</a></li>
+          <li><a href="#portfolio-wrap" className="hover-target">Campaigns</a></li>
           <li><a href="#clients-wrap" className="hover-target">Clients</a></li>
           <li><a href="#contact-wrap" className="ncta hover-target">{content['nav_cta'] || 'Get In Touch'}</a></li>
         </ul>
@@ -135,30 +225,25 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* ── CLEAN, SINGLE FULLSCREEN VIDEO HERO ── */}
+      {/* ── FULLSCREEN HERO WITH KINETIC LOGO ── */}
       <div id="hero" style={{ position: 'relative', width: '100%', backgroundColor: 'var(--k)' }}>
         <div className="hero-fullscreen">
           <video
-            /* The key forces the video player to refresh when you upload a new video in Supabase */
             key={content['hero_video_url'] || 'fallback'}
             className="hero-video-bg"
             autoPlay loop muted playsInline
           >
-            {/* Reads directly from your Supabase CMS, falls back to a local file if CMS is empty */}
             <source src={content['hero_video_url'] || "/bg.mp4"} type="video/mp4" />
           </video>
           
           <div className="hero-fullscreen-content reveal-up">
             <h1 className="agency-name-huge hover-target">
-              {content['hero_agency_name'] || 'CLAIM FAME'}
+              <span className="nlogo-claim">Claim</span><span className="nlogo-fame">Fame</span>
             </h1>
-            <div className="agency-tagline-huge">
-              The real fame story starts here
-            </div>
           </div>
         </div>
 
-        {/* ── CLEAN WHITE STRIP MARQUEE ── */}
+        {/* ── LOGO MARQUEE REEL ── */}
         <div className="white-strip-marquee">
           <div className="marquee-track">
             {(() => {
@@ -222,70 +307,90 @@ export default function Home() {
         </section>
       </div>
 
-      {/* ── SERVICES (3D ORBIT) ── */}
-      <div className="page-section bg-gray" id="services-wrap">
-        <section className="inner-section" style={{ borderTop: '1px solid var(--gm)' }}>
-          <div className="sec-inner">
-            <div className="svc-hd reveal-up">
-              <div className="sec-ey" style={{ justifyContent: 'center' }}>{content['services_eyebrow'] || 'Our Expertise'}</div>
-              <h2 className="sec-ttl">{content['services_title'] || 'What We Do'}</h2>
+      {/* ── INTERACTIVE INLINE SERVICES TAB LAYER (TEXT NOT VISIBLE DIRECTLY) ── */}
+      <div className="page-section bg-gray" id="services-wrap" style={{ borderTop: '1px solid var(--gm)', paddingBottom: '120px', paddingTop: '100px' }}>
+        <section className="inner-section" style={{ display: 'block', padding: '0 5%' }}>
+          <div style={{ maxWidth: '1250px', margin: '0 auto' }}>
+            
+            <div className="sec-ey">{content['services_eyebrow'] || 'Our Expertise'}</div>
+            <h2 className="sec-ttl" style={{ marginBottom: '50px', color: 'var(--p)' }}>
+              Our Services
+            </h2>
+            
+            {/* Horizontal Line Tab Arrangement Row */}
+            <div className="services-inline-row reveal-up">
+              {agencyServices.map((svc, index) => (
+                <div 
+                  key={index} 
+                  className={`service-line-tab hover-target ${activeService === index ? 'active-tab' : ''}`}
+                  onClick={() => setActiveService(index)}
+                >
+                  <div className="tab-icon-frame">{svc.icon}</div>
+                  <h4 className="tab-title-txt">{svc.title}</h4>
+                  <div className="tab-active-indicator"></div>
+                </div>
+              ))}
             </div>
 
-            <div className="svc-orbit-wrap reveal-up d-1">
-              <div className="svc-universe">
-                <div className="svc-center-star">CLAIM<br />FAME<br /><span>Services</span></div>
-                <div className="svc-ring-line r1"></div>
-                <div className="svc-ring-line r2"></div>
-
-                <div className="svc-ring">
-                  <div className="svc-arm" style={{ transform: 'rotateZ(0deg) translateY(-450px)' }}>
-                    <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(0deg)' }}><div className="svc-stand-up"><div className="svc-c">
-                      <div className="svc-ic-wrap"><div className="svc-ic">🎯</div><div className="svc-nm">{content['svc_1_title'] || 'Campaign Strategy'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_1_desc'] || "Data-driven blueprints built around your brand's unique goals and target audience."}</div></div>
-                    </div></div></div></div>
-                  </div>
-                  <div className="svc-arm" style={{ transform: 'rotateZ(51.4deg) translateY(-450px)' }}>
-                    <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-51.4deg)' }}><div className="svc-stand-up"><div className="svc-c">
-                      <div className="svc-ic-wrap"><div className="svc-ic">🤝</div><div className="svc-nm">{content['svc_2_title'] || 'Influencer Marketing'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_2_desc'] || "Access our verified creator network of 1200+. Nano to mega — we match the right voice."}</div></div>
-                    </div></div></div></div>
-                  </div>
-                  <div className="svc-arm" style={{ transform: 'rotateZ(102.8deg) translateY(-450px)' }}>
-                    <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-102.8deg)' }}><div className="svc-stand-up"><div className="svc-c">
-                      <div className="svc-ic-wrap"><div className="svc-ic">😄</div><div className="svc-nm">{content['svc_3_title'] || 'Meme Marketing'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_3_desc'] || "We speak internet fluently. Viral-first content that inserts your brand into culture."}</div></div>
-                    </div></div></div></div>
-                  </div>
-                  <div className="svc-arm" style={{ transform: 'rotateZ(154.2deg) translateY(-450px)' }}>
-                    <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-154.2deg)' }}><div className="svc-stand-up"><div className="svc-c">
-                      <div className="svc-ic-wrap"><div className="svc-ic">🎬</div><div className="svc-nm">{content['svc_4_title'] || 'Content Production'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_4_desc'] || "End-to-end production: scripting, shooting, editing and delivery."}</div></div>
-                    </div></div></div></div>
-                  </div>
-                  <div className="svc-arm" style={{ transform: 'rotateZ(205.7deg) translateY(-450px)' }}>
-                    <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-205.7deg)' }}><div className="svc-stand-up"><div className="svc-c">
-                      <div className="svc-ic-wrap"><div className="svc-ic">🔗</div><div className="svc-nm">{content['svc_5_title'] || 'Brand Collabs'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_5_desc'] || "Powerful brand-to-brand deals that expand reach and credibility."}</div></div>
-                    </div></div></div></div>
-                  </div>
-                  <div className="svc-arm" style={{ transform: 'rotateZ(257.1deg) translateY(-450px)' }}>
-                    <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-257.1deg)' }}><div className="svc-stand-up"><div className="svc-c">
-                      <div className="svc-ic-wrap"><div className="svc-ic">📈</div><div className="svc-nm">{content['svc_6_title'] || 'Performance'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_6_desc'] || "High-ROI performance campaigns engineered to drive conversions."}</div></div>
-                    </div></div></div></div>
-                  </div>
-                  <div className="svc-arm" style={{ transform: 'rotateZ(308.5deg) translateY(-450px)' }}>
-                    <div className="svc-anti-spin"><div className="svc-anti-arm" style={{ transform: 'rotateZ(-308.5deg)' }}><div className="svc-stand-up"><div className="svc-c">
-                      <div className="svc-ic-wrap"><div className="svc-ic">📱</div><div className="svc-nm">{content['svc_7_title'] || 'UGC Content'}</div></div>
-                      <div className="svc-ds-wrap"><div className="svc-ds">{content['svc_7_desc'] || "Authentic, scalable user-generated content that converts."}</div></div>
-                    </div></div></div></div>
-                  </div>
+            {/* Dynamic Details Box Display Matrix - Revealing Text only on click selection */}
+            <div className="services-details-matrix-display reveal-up d-1">
+              <div className="details-display-card">
+                <div className="details-header-row">
+                  <span className="details-brand-icon">{agencyServices[activeService].icon}</span>
+                  <h3>{agencyServices[activeService].title}</h3>
                 </div>
+                <ul className="details-bullets-list">
+                  {agencyServices[activeService].bullets.map((bullet, bIndex) => (
+                    <li key={bIndex} className="details-bullet-item">
+                      <span className="bullet-checkmark">✦</span>
+                      <p>{bullet}</p>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
+
           </div>
         </section>
       </div>
+
+     {/* ── VERTICAL REELS SHOWCASE ── */}
+<div className="page-section" id="portfolio-wrap" style={{ background: 'var(--w)', paddingBottom: '120px', paddingTop: '60px' }}>
+  <section className="inner-section" style={{ display: 'block' }}>
+    <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+      <div className="sec-ey reveal-up" style={{ justifyContent: 'center' }}>
+        {content['portfolio_eyebrow'] || 'Case Studies'}
+      </div>
+      <h2 className="sec-ttl reveal-up d-1">
+        {content['portfolio_title'] || 'A Few Things We Brought To Life'}
+      </h2>
+      <p className="reveal-up d-2" style={{ color: 'var(--muted)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', fontWeight: 500 }}>
+        {content['portfolio_subtitle'] || 'Creator-led campaigns. Real impact. Internet culture at the core.'}
+      </p>
+    </div>
+
+    {/* Dynamic Auto-Filling Video Container Layer */}
+    <div className="reels-grid-container reveal-up d-3">
+      {renderedReels.map((reel) => (
+        <div key={reel.id} className="reel-card-wrapper hover-target">
+          <div className="reel-video-container">
+            <video
+              className="reel-video-asset"
+              src={reel.media_url}
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          </div>
+          <div className="reel-card-meta">
+            <h4 className="reel-title-txt">{reel.project_name}</h4>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</div>
 
       {/* ── CLIENTS ── */}
       <div className="page-section" id="clients-wrap">
@@ -400,6 +505,7 @@ export default function Home() {
               <ul className="ft-lks">
                 <li><a href="#hero" className="hover-target">Home</a></li>
                 <li><a href="#about-wrap" className="hover-target">About Us</a></li>
+                <li><a href="#portfolio-wrap" className="hover-target">Campaigns</a></li>
                 <li><a href="#clients-wrap" className="hover-target">Clients</a></li>
               </ul>
             </div>
