@@ -9,13 +9,13 @@
 
 :root {
   /* CLAIM FAME PURPLE PALETTE */
-  --p: #8f1eae;    
-  --y: #ffd815;    
-  --w: #f8f4fc;    
+  --p: #9c27b0;    
+  --y: #d68ef2;    
+  --w: #FAF6FD;    
   --g: #ffffff;    
-  --gm: #e9d5ff;   
-  --muted: #6e5d68;
-  --k: #110214;    
+  --gm: #F1E5FA;   
+  --muted: #755E78;
+  --k: #2B0E35;    
   --fb: var(--font-inter), sans-serif;   
   --fh: var(--font-poppins), sans-serif; 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -88,7 +88,7 @@ nav {
 }
 
 nav.scrolled {
-  background: rgba(248, 244, 252, 0.98); 
+  background: rgba(250, 246, 253, 0.98); 
   backdrop-filter: blur(20px);
   box-shadow: 0 10px 30px rgba(143, 30, 174, 0.04); 
   height: 75px; 
