@@ -154,7 +154,11 @@ export default function Home() {
           </video>
           <div className="hero-fullscreen-content reveal-up">
             <div className="hero-custom-logo-container hover-target">
-              <img src="/ClaimFameDP-removebg-preview.png" alt="Claim Fame" className="hero-graphic-logo" />
+              <h1 className="hero-title-text">
+                claim
+                <br />
+                fame
+              </h1>
             </div>
           </div>
         </div>

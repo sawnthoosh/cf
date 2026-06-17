@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Shrikhand&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Shrikhand&family=Young+Serif&display=swap');
 
 /* ── BASE & VARIABLES ── */
 *,*::before,*::after { 
@@ -225,6 +225,19 @@ nav.scrolled {
   will-change: transform; 
   width: 100%; 
   padding: 0 5%; 
+}
+
+.hero-title-text {
+  font-family: 'Young Serif', serif;
+  font-size: clamp(3.5rem, 12vw, 7.5rem);
+  font-weight: 400;
+  color: var(--y);
+  text-transform: lowercase;
+  letter-spacing: -0.05em;
+  line-height: 0.85;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  margin: 0;
+  display: block;
 }
 
 .hero-graphic-logo { 
