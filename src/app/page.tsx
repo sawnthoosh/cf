@@ -8,6 +8,9 @@ export default function Home() {
   const [logos, setLogos] = useState<any[]>([]);
   const [portfolio, setPortfolio] = useState<any[]>([]);
   const [content, setContent] = useState<Record<string, string>>({});
+  
+  // Interactive Active Service State Tracker
+  const [activeService, setActiveService] = useState(0);
 
   useEffect(() => {
     const fetchLogos = async () => {
@@ -16,7 +19,10 @@ export default function Home() {
     };
 
     const fetchPortfolio = async () => {
-      const { data } = await supabase.from('portfolio').select('*').order('created_at', { ascending: false });
+      const { data } = await supabase
+        .from('portfolio')
+        .select('*')
+        .order('created_at', { ascending: false });
       if (data) setPortfolio(data);
     };
 
@@ -104,6 +110,73 @@ export default function Home() {
     }
   };
 
+  // Static Data mapping matching WhatsApp Image 2026-06-10 at 21.16.28_2.jpeg
+  const agencyServices = [
+    {
+      title: 'Social Media Planning',
+      icon: '📱',
+      bullets: [
+        'Craft tailored media plans.',
+        'Develop customized content calendars.',
+        'Boost your online visibility.',
+        'Ensure an impactful brand presence across platforms.'
+      ]
+    },
+    {
+      title: 'Product Shoot',
+      icon: '📷',
+      bullets: [
+        'We create clean, high-quality product shots.',
+        'Develop dynamic, influencer-led visuals.',
+        'Craft scroll-stopping content that brings your brand to life.',
+        'Your product is the "Main Character".'
+      ]
+    },
+    {
+      title: 'Meme Marketing',
+      icon: '😊',
+      bullets: [
+        'We collaborate with popular meme pages.',
+        'We also collaborate with AI pages.',
+        'Craft witty and relatable content.',
+        'Boost your brand\'s online visibility.',
+        'Drive high engagement organically.'
+      ]
+    },
+    {
+      title: 'Performance Marketing',
+      icon: '🎯',
+      bullets: [
+        'Google Ads – Capture active buyers via search, display & video.',
+        'Meta Ads – Targeted ads on Facebook & Instagram.',
+        'E-commerce Ads – Boost online store & marketplace sales.',
+        'Amazon/Flipkart Ads – Promote products and increase visibility on Amazon and Flipkart shoppers.',
+        'Quick Commerce Ads – Advertise on Blinkit, Zepto & Instamart.'
+      ]
+    },
+    {
+      title: 'Influencer Marketing',
+      icon: '🎬',
+      bullets: [
+        'Teaming up with Influencers from across India.',
+        'Covering every language and every niche.',
+        'Curating authentic voices that truly connect with the audience.',
+        'Helping your brand to speak louder and connect deeper.',
+        'Getting the best prices and transparency of price with brands and creators.'
+      ]
+    },
+    {
+      title: 'Video Editing',
+      icon: '📹',
+      bullets: [
+        'We partner with editors who master high-retention techniques to stop the scroll and keep eyes on your brand.',
+        'Elevate your visuals with dynamic motion design and professional typography that makes your message pop.',
+        'Leverage cutting-edge AI video technology to create futuristic, shareable content that stands out from the crowd.',
+        'Our team ensures every video is strategically cut for maximum impact on specific social algorithms.'
+      ]
+    }
+  ];
+
   const defaultReels = [
     { id: 'df1', project_name: 'Beardo Global Campaign', media_url: 'https://cdn.pixabay.com/video/2021/04/12/70881-537449557_large.mp4' },
     { id: 'df2', project_name: 'Mamaearth UGC Concept', media_url: 'https://cdn.pixabay.com/video/2020/03/17/33718-392520300_large.mp4' },
@@ -111,11 +184,7 @@ export default function Home() {
     { id: 'df4', project_name: 'Kapiva Nutrition Campaign', media_url: 'https://cdn.pixabay.com/video/2021/11/04/94595-645851174_large.mp4' }
   ];
 
-  const fetchedReels = portfolio.length > 0 ? portfolio : defaultReels;
-  
-  // We duplicate the reels to create exactly 8 items for a perfectly enclosed 3D cylinder
-  const cylinderReels = [...fetchedReels, ...fetchedReels].slice(0, 8);
-  const totalCards = cylinderReels.length;
+  const renderedReels = portfolio.length > 0 ? portfolio : defaultReels;
 
   return (
     <>
@@ -128,29 +197,33 @@ export default function Home() {
           <img src="/ClaimFameDP-removebg-preview.png" alt="Claim Fame" className="nav-brand-logo" />
         </a>
         <ul className="nlinks" id="nl">
-          <li><a href="/#about-wrap" className="hover-target">About</a></li>
-          <li><a href="/services" className="hover-target">Services</a></li>
-          <li><a href="/clients" className="hover-target">Clients</a></li>
-          <li><a href="/campaigns" className="hover-target">Campaigns</a></li>
+          <li><a href="#about-wrap" className="hover-target">About</a></li>
+          <li><a href="#services-wrap" className="hover-target">Services</a></li>
+          <li><a href="#portfolio-wrap" className="hover-target">Campaigns</a></li>
+          <li><a href="#clients-wrap" className="hover-target">Clients</a></li>
           <li><a href="#contact-wrap" className="ncta hover-target">{content['nav_cta'] || 'Get In Touch'}</a></li>
         </ul>
         <div className="hbg hover-target" id="hbg"><span></span><span></span><span></span></div>
       </nav>
 
-      {/* ── FULLSCREEN HERO WITH PNG IMAGE LOGO ── */}
+      {/* ── FULLSCREEN HERO WITH KINETIC LOGO ── */}
       <div id="hero" style={{ position: 'relative', width: '100%', backgroundColor: 'var(--k)' }}>
         <div className="hero-fullscreen">
-          <video key={content['hero_video_url'] || 'fallback'} className="hero-video-bg" autoPlay loop muted playsInline>
+          <video
+            key={content['hero_video_url'] || 'fallback'}
+            className="hero-video-bg"
+            autoPlay loop muted playsInline
+          >
             <source src={content['hero_video_url'] || "/bg.mp4"} type="video/mp4" />
           </video>
           <div className="hero-fullscreen-content reveal-up">
-            <div className="hero-custom-logo-container hover-target">
-              <img src="/ClaimFameDP-removebg-preview.png" alt="Claim Fame" className="hero-graphic-logo" />
-            </div>
+            <h1 className="agency-name-huge hover-target">
+              <span className="nlogo-claim">Claim</span><span className="nlogo-fame">Fame</span>
+            </h1>
           </div>
         </div>
 
-        {/* ── TYPOGRAPHY OUTLINE MARQUEE ── */}
+        {/* ── LOGO MARQUEE REEL ── */}
         <div className="white-strip-marquee">
           <div className="marquee-track hover-target">
             <div className="marquee-text-group">
@@ -189,19 +262,99 @@ export default function Home() {
         </section>
       </div>
 
-      {/* ── INFINITE 3D CYLINDER CAROUSEL ── */}
-      <div className="page-section" id="portfolio-wrap" style={{ background: 'var(--w)', paddingBottom: '120px', paddingTop: '60px', overflow: 'hidden' }}>
-        <div style={{ textAlign: 'center', marginBottom: '80px', padding: '0 5%' }}>
-          <div className="sec-ey reveal-up" style={{ justifyContent: 'center' }}>
-            {content['portfolio_eyebrow'] || 'Case Studies'}
+      {/* ── INTERACTIVE INLINE SERVICES TAB LAYER (TEXT NOT VISIBLE DIRECTLY) ── */}
+      <div className="page-section bg-gray" id="services-wrap" style={{ borderTop: '1px solid var(--gm)', paddingBottom: '120px', paddingTop: '100px' }}>
+        <section className="inner-section" style={{ display: 'block', padding: '0 5%' }}>
+          <div style={{ maxWidth: '1250px', margin: '0 auto' }}>
+            
+            <div className="sec-ey">{content['services_eyebrow'] || 'Our Expertise'}</div>
+            <h2 className="sec-ttl" style={{ marginBottom: '50px', color: 'var(--p)' }}>
+              Our Services
+            </h2>
+            
+            {/* Horizontal Line Tab Arrangement Row */}
+            <div className="services-inline-row reveal-up">
+              {agencyServices.map((svc, index) => (
+                <div 
+                  key={index} 
+                  className={`service-line-tab hover-target ${activeService === index ? 'active-tab' : ''}`}
+                  onClick={() => setActiveService(index)}
+                >
+                  <div className="tab-icon-frame">{svc.icon}</div>
+                  <h4 className="tab-title-txt">{svc.title}</h4>
+                  <div className="tab-active-indicator"></div>
+                </div>
+              ))}
+            </div>
+
+            {/* Dynamic Details Box Display Matrix - Revealing Text only on click selection */}
+            <div className="services-details-matrix-display reveal-up d-1">
+              <div className="details-display-card">
+                <div className="details-header-row">
+                  <span className="details-brand-icon">{agencyServices[activeService].icon}</span>
+                  <h3>{agencyServices[activeService].title}</h3>
+                </div>
+                <ul className="details-bullets-list">
+                  {agencyServices[activeService].bullets.map((bullet, bIndex) => (
+                    <li key={bIndex} className="details-bullet-item">
+                      <span className="bullet-checkmark">✦</span>
+                      <p>{bullet}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
           </div>
-          <h2 className="sec-ttl reveal-up d-1">
-            {content['portfolio_title'] || 'A Few Things We Brought To Life'}
-          </h2>
-          <p className="reveal-up d-2" style={{ color: 'var(--muted)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', fontWeight: 500 }}>
-            {content['portfolio_subtitle'] || 'Creator-led campaigns. Real impact. Internet culture at the core.'}
-          </p>
+        </section>
+      </div>
+
+     {/* ── VERTICAL REELS SHOWCASE ── */}
+<div className="page-section" id="portfolio-wrap" style={{ background: 'var(--w)', paddingBottom: '120px', paddingTop: '60px' }}>
+  <section className="inner-section" style={{ display: 'block' }}>
+    <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+      <div className="sec-ey reveal-up" style={{ justifyContent: 'center' }}>
+        {content['portfolio_eyebrow'] || 'Case Studies'}
+      </div>
+      <h2 className="sec-ttl reveal-up d-1">
+        {content['portfolio_title'] || 'A Few Things We Brought To Life'}
+      </h2>
+      <p className="reveal-up d-2" style={{ color: 'var(--muted)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', fontWeight: 500 }}>
+        {content['portfolio_subtitle'] || 'Creator-led campaigns. Real impact. Internet culture at the core.'}
+      </p>
+    </div>
+
+    {/* Dynamic Auto-Filling Video Container Layer */}
+    <div className="reels-grid-container reveal-up d-3">
+      {renderedReels.map((reel) => (
+        <div key={reel.id} className="reel-card-wrapper hover-target">
+          <div className="reel-video-container">
+            <video
+              className="reel-video-asset"
+              src={reel.media_url}
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          </div>
+          <div className="reel-card-meta">
+            <h4 className="reel-title-txt">{reel.project_name}</h4>
+          </div>
         </div>
+      ))}
+    </div>
+  </section>
+</div>
+
+      {/* ── CLIENTS ── */}
+      <div className="page-section" id="clients-wrap">
+        <section className="inner-section" style={{ borderTop: '1px solid var(--gm)' }}>
+          <div className="sec-inner">
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <div className="sec-ey reveal-up">{content['clients_eyebrow'] || 'Our Clients'}</div>
+              <h2 className="sec-ttl reveal-up d-1">{content['clients_title'] || 'The Brands We Scale'}</h2>
+            </div>
 
         {/* 3D Scene Wrapper */}
         <div className="carousel-scene reveal-up d-3">
@@ -274,14 +427,38 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Column 2: Quick Links */}
-          <div>
-            <h4 className="ft-col-ttl">Company</h4>
-            <ul className="ft-lks">
-              <li><a href="/#about-wrap" className="hover-target">About Us</a></li>
-              <li><a href="/services" className="hover-target">Our Services</a></li>
-              <li><a href="/#contact-wrap" className="hover-target">Contact Us</a></li>
-            </ul>
+        <footer>
+          <div className="ft-g">
+            <div className="reveal-up">
+              <a href="#hero" className="ft-logo">
+                <span className="nlogo-claim">Claim</span><span className="nlogo-fame">Fame</span>
+              </a>
+              <p className="ft-tag">{content['footer_tagline'] || 'Delhi-based influencer marketing agency.'}</p>
+            </div>
+            <div className="reveal-up d-1">
+              <div className="ft-col-ttl">Quick Links</div>
+              <ul className="ft-lks">
+                <li><a href="#hero" className="hover-target">Home</a></li>
+                <li><a href="#about-wrap" className="hover-target">About Us</a></li>
+                <li><a href="#portfolio-wrap" className="hover-target">Campaigns</a></li>
+                <li><a href="#clients-wrap" className="hover-target">Clients</a></li>
+              </ul>
+            </div>
+            <div className="reveal-up d-2">
+              <div className="ft-col-ttl">Services</div>
+              <ul className="ft-lks">
+                <li><a href="#services-wrap" className="hover-target">Influencer Marketing</a></li>
+                <li><a href="#services-wrap" className="hover-target">Campaign Strategy</a></li>
+                <li><a href="#services-wrap" className="hover-target">Content Production</a></li>
+              </ul>
+            </div>
+            <div className="reveal-up d-3">
+              <div className="ft-col-ttl">Contact</div>
+              <ul className="ft-lks">
+                <li><a href={`mailto:${content['contact_email'] || 'hello@letsclaimfame.com'}`} className="hover-target">{content['contact_email'] || 'hello@letsclaimfame.com'}</a></li>
+                <li><a href={`tel:${content['contact_phone'] || '+911234567890'}`} className="hover-target">{content['contact_phone'] || '+91 12345 67890'}</a></li>
+              </ul>
+            </div>
           </div>
 
           {/* Column 3: Showcase */}

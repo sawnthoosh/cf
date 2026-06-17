@@ -7,7 +7,18 @@ export default function Home() {
   const [buttonText, setButtonText] = useState('Send Message →');
   const [logos, setLogos] = useState<any[]>([]);
   const [portfolio, setPortfolio] = useState<any[]>([]);
-  const [content, setContent] = useState<Record<string, string>>({});
+  const [clients, setClients] = useState<any[]>([]);
+  const [siteContent, setSiteContent] = useState<any[]>([]);
+  
+  const [isUploading, setIsUploading] = useState(false);
+  const [newProject, setNewProject] = useState({ project_name: '', description: '', file: null as File | null });
+  const [newClient, setNewClient] = useState({ brand_name: '', file: null as File | null });
+  
+  // Hero Video & About Image Upload State Handlers
+  const [heroVideo, setHeroVideo] = useState<File | null>(null);
+  const [isVideoUploading, setIsVideoUploading] = useState(false);
+  const [aboutImage, setAboutImage] = useState<File | null>(null);
+  const [isImageUploading, setIsImageUploading] = useState(false);
 
   useEffect(() => {
     const fetchLogos = async () => {
@@ -54,70 +65,67 @@ export default function Home() {
       };
       window.addEventListener('mousemove', onMouseMove);
 
-      const animateCursor = () => {
-        fX += (mouseX - fX) * 0.15;
-        fY += (mouseY - fY) * 0.15;
-        follower.style.transform = `translate3d(${fX}px, ${fY}px, 0)`;
-        animationFrameId = requestAnimationFrame(animateCursor);
-      };
-      animateCursor();
-
-      document.querySelectorAll('a, button, input, textarea, select, .hover-target').forEach(el => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('link-hover'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('link-hover'));
-      });
-    }
-
-    const nav = document.getElementById('nav');
-    const handleScroll = () => {
-      if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
-    };
-    window.addEventListener('scroll', handleScroll);
-
-    const hbg = document.getElementById('hbg');
-    const nl = document.getElementById('nl');
-    if (hbg && nl) {
-      hbg.addEventListener('click', () => nl.classList.toggle('open'));
-    }
-
-    const revealOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
-    const revealObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, revealOptions);
-    document.querySelectorAll('.reveal-up').forEach(el => revealObserver.observe(el));
-
-    return () => {
-      window.removeEventListener('mousemove', () => {});
-      window.removeEventListener('scroll', handleScroll);
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleHeroVideoUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    setButtonText('Sending...');
+    if (!heroVideo) return;
+    setIsVideoUploading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const submissionData = {
-      name: formData.get('name') as string,
-      email: formData.get('email') as string,
-      brand: formData.get('brand') as string,
-      phone: formData.get('phone') as string,
-      service: formData.get('service') as string,
-      message: formData.get('message') as string,
-    };
+    const fileName = `hero-video/${Date.now()}-${heroVideo.name}`;
+    const { error: uploadError } = await supabase.storage.from('agency-media').upload(fileName, heroVideo);
+    
+    if (uploadError) {
+      alert('Error uploading video. Make sure file is under limits.');
+      setIsVideoUploading(false);
+      return;
+    }
 
-    const { error } = await supabase.from('form_submissions').insert([submissionData]);
+    const { data } = supabase.storage.from('agency-media').getPublicUrl(fileName);
+    const { data: existing } = await supabase.from('site_content').select('*').eq('section_key', 'hero_video_url');
+    
+    if (existing && existing.length > 0) {
+      await supabase.from('site_content').update({ content_value: data.publicUrl }).eq('section_key', 'hero_video_url');
+    } else {
+      await supabase.from('site_content').insert([{ section_key: 'hero_video_url', content_value: data.publicUrl }]);
+    }
+
+    setHeroVideo(null);
+    checkSessionAndFetchData();
+    setIsVideoUploading(false);
+    alert('Hero video updated successfully!');
+  };
+
+  const handleAboutImageUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aboutImage) return;
+    setIsImageUploading(true);
+
+    const fileName = `about-image/${Date.now()}-${aboutImage.name}`;
+    const { error: uploadError } = await supabase.storage.from('agency-media').upload(fileName, aboutImage);
+
+    if (uploadError) {
+      alert('Error uploading image asset to bucket storage.');
+      setIsImageUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from('agency-media').getPublicUrl(fileName);
+    const { data: existing } = await supabase.from('site_content').select('*').eq('section_key', 'about_image_url');
+
+    if (existing && existing.length > 0) {
+      await supabase.from('site_content').update({ content_value: data.publicUrl }).eq('section_key', 'about_image_url');
+    } else {
+      await supabase.from('site_content').insert([{ section_key: 'about_image_url', content_value: data.publicUrl }]);
+    }
+
+    setAboutImage(null);
+    checkSessionAndFetchData();
+    setIsImageUploading(false);
+    alert('About Section image asset replaced successfully!');
+  };
 
     if (error) {
-      console.error('Error submitting form:', error);
-      setButtonText('Error! Try again.');
-      setTimeout(() => setButtonText('Send Message →'), 3000);
+      alert('Error updating text parameters.');
+      console.error(error);
     } else {
       setButtonText('✓ Message Sent!');
       (e.target as HTMLFormElement).reset();
@@ -155,22 +163,22 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* ── FULLSCREEN HERO WITH KINETIC LOGO ── */}
-      <div id="hero" style={{ position: 'relative', width: '100%', backgroundColor: 'var(--k)' }}>
-        <div className="hero-fullscreen">
-          <video
-            key={content['hero_video_url'] || 'fallback'}
-            className="hero-video-bg"
-            autoPlay loop muted playsInline
-          >
-            <source src={content['hero_video_url'] || "/bg.mp4"} type="video/mp4" />
-          </video>
-          
-          <div className="hero-fullscreen-content">
-            <h1 className="agency-name-huge hover-target">
-              <span className="nlogo-claim">Claim</span><span className="nlogo-fame">Fame</span>
-            </h1>
-          </div>
+      <main className="admin-main">
+        <div style={{display: 'flex', gap: '15px', marginBottom: '40px', flexWrap: 'wrap'}}>
+          {['inbox', 'portfolio', 'clients', 'settings'].map((tab) => (
+            <button 
+              key={tab} 
+              onClick={() => setActiveTab(tab)} 
+              style={{
+                padding: '12px 24px', borderRadius: '100px', border: 'none', 
+                background: activeTab === tab ? 'var(--p)' : 'var(--w)', 
+                color: activeTab === tab ? '#fff' : 'var(--k)', 
+                cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--fb)',
+                boxShadow: activeTab === tab ? '0 10px 25px rgba(143,30,174,0.25)' : '0 4px 10px rgba(0,0,0,0.03)'
+              }}>
+              {tab === 'portfolio' ? '🎬 CAMPAIGN REELS' : tab.toUpperCase()}
+            </button>
+          ))}
         </div>
 
         {/* ── CLEAN LOGO STRIP MARQUEE ── */}
@@ -211,46 +219,39 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── ABOUT ── */}
-      <div className="page-section" id="about-wrap">
-        <section className="inner-section">
-          <div className="sec-inner">
-            <div className="about-g">
-              <div className="about-vis reveal-up">
-                <img
-                  src={content['about_image_url'] || "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop"}
-                  alt="Claim Fame Team"
-                />
-              </div>
-              <div className="about-txt reveal-up d-1">
-                <div className="sec-ey">{content['about_eyebrow'] || 'Who We Are'}</div>
-                <h2 className="sec-ttl" dangerouslySetInnerHTML={{ __html: content['about_title'] || 'We Exist for Brands That Want to Trend.' }} />
-                <p dangerouslySetInnerHTML={{ 
-                  __html: content['about_paragraph'] || '<strong>Claim Fame</strong> is your one-stop shop for all your marketing needs. We handle the heavy lifting across influencer marketing, social media, PR, performance marketing, and production, turning your wild ideas into conversations people actually want to have.<br /><br />No fluff, no fake hype. Just razor-sharp strategy and execution that feels <strong>100% real.</strong> We don\'t just build campaigns. We build presence.' 
-                }} />
-                <a href="#contact-wrap" className="btn-p hover-target" style={{ marginTop: '10px' }}>
-                  {content['about_btn'] || 'Partner With Us'}
-                </a>
-              </div>
+        {activeTab === 'portfolio' && (
+          <div className="admin-card" style={{padding: '30px'}}>
+            <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '5px'}}>Add Client Vertical Video</h2>
+            <p style={{color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '20px'}}>Upload short 9:16 portrait MP4 files for the "Things We Brought To Life" section.</p>
+            <form onSubmit={handleAddProject} style={{display: 'flex', gap: '10px', marginBottom: '40px', flexWrap: 'wrap'}}>
+              <input type="text" placeholder="Campaign Name / Brand" value={newProject.project_name} className="fi" required onChange={e => setNewProject({...newProject, project_name: e.target.value})} style={{flex: 1, minWidth: '200px'}} />
+              <input type="file" accept="video/mp4,video/webm" className="fi" required onChange={e => setNewProject({...newProject, file: e.target.files?.[0] || null})} style={{flex: 1, minWidth: '200px'}} />
+              <button type="submit" className="fsub" disabled={isUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>{isUploading ? 'Uploading...' : 'Upload Video'}</button>
+            </form>
+            
+            <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.2rem', fontWeight: 700, marginBottom: '15px'}}>Live Vertical Clips</h3>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px'}}>
+              {portfolio.map(p => (
+                <div key={p.id} style={{background: 'var(--g)', padding: '15px', borderRadius: '16px', border: '1px solid var(--gm)'}}>
+                  <video src={p.media_url} style={{width:'100%', height:'280px', objectFit:'cover', borderRadius: '12px'}} muted loop playsInline />
+                  <p style={{fontFamily: 'var(--fh)', fontWeight: 700, marginTop: '15px', color: 'var(--k)', fontSize: '0.95rem'}}>{p.project_name}</p>
+                  <button onClick={() => supabase.from('portfolio').delete().eq('id', p.id).then(checkSessionAndFetchData)} style={{marginTop: '10px', background: '#fee2e2', color: '#b91c1c', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, width: '100%'}}>Delete Video</button>
+                </div>
+              ))}
+              {portfolio.length === 0 && <div style={{color: 'var(--muted)', gridColumn: '1/-1'}}>No campaign reels uploaded yet.</div>}
             </div>
           </div>
         </section>
       </div>
 
-      {/* ── CASE STUDIES REELS SHOWCASE ── */}
-      <div className="page-section" id="portfolio-wrap" style={{ background: 'var(--w)', paddingBottom: '120px', paddingTop: '60px' }}>
-        <section className="inner-section" style={{ display: 'block' }}>
-          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <div className="sec-ey reveal-up" style={{ justifyContent: 'center' }}>
-              {content['portfolio_eyebrow'] || 'Case Studies'}
-            </div>
-            <h2 className="sec-ttl reveal-up d-1">
-              {content['portfolio_title'] || 'A Few Things We Brought To Life'}
-            </h2>
-            <p className="reveal-up d-2" style={{ color: 'var(--muted)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', fontWeight: 500 }}>
-              {content['portfolio_subtitle'] || 'Creator-led campaigns. Real impact. Internet culture at the core.'}
-            </p>
-          </div>
+        {activeTab === 'clients' && (
+          <div className="admin-card" style={{padding: '30px'}}>
+            <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '20px'}}>Add Client Logo</h2>
+            <form onSubmit={handleAddClient} style={{display: 'flex', gap: '10px', marginBottom: '40px', flexWrap: 'wrap'}}>
+              <input type="text" placeholder="Brand Name" value={newClient.brand_name} className="fi" required onChange={e => setNewClient({...newClient, brand_name: e.target.value})} style={{flex: 1, minWidth: '200px'}} />
+              <input type="file" className="fi" required onChange={e => setNewClient({...newClient, file: e.target.files?.[0] || null})} style={{flex: 1, minWidth: '200px'}} />
+              <button type="submit" className="fsub" disabled={isUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>{isUploading ? 'Uploading...' : 'Upload Logo'}</button>
+            </form>
 
           <div className="reels-grid-container reveal-up d-3">
             {renderedReels.map((reel) => (
@@ -274,53 +275,56 @@ export default function Home() {
         </section>
       </div>
 
-      {/* ── CONTACT ── */}
-      <div className="page-section bg-gray" id="contact-wrap">
-        <section className="inner-section" style={{ borderTop: '1px solid var(--gm)' }}>
-          <div className="sec-inner">
-            <div className="sec-ey reveal-up">{content['contact_eyebrow'] || 'Get In Touch'}</div>
-            <div className="ct-g">
-              <div className="reveal-up d-1">
-                <div className="ct-tagline" dangerouslySetInnerHTML={{ __html: content['contact_tagline'] || 'Let\'s Build Something<br /><em class="nlogo-claim">Great Together.</em>' }} />
-                <div className="ct-items">
-                  <div className="ct-item hover-target">
-                    <div className="ct-item-ic">📧</div>
-                    <div className="ct-item-tx"><a href={`mailto:${content['contact_email'] || 'hello@letsclaimfame.com'}`}>{content['contact_email'] || 'hello@letsclaimfame.com'}</a></div>
-                  </div>
-                  <div className="ct-item hover-target">
-                    <div className="ct-item-ic">📞</div>
-                    <div className="ct-item-tx"><a href={`tel:${content['contact_phone'] || '+911234567890'}`}>{content['contact_phone'] || '+91 12345 67890'}</a></div>
-                  </div>
-                  <div className="ct-item">
-                    <div className="ct-item-ic">📍</div>
-                    <div className="ct-item-tx">{content['contact_location'] || 'New Delhi, India'}</div>
-                  </div>
-                </div>
-                <a href={content['contact_wa_link'] || 'https://wa.me/911234567890'} className="wa-btn hover-target" target="_blank" rel="noreferrer">
-                  {content['contact_wa_text'] || 'Chat on WhatsApp'}
-                </a>
-              </div>
+        {activeTab === 'settings' && (
+          <div className="admin-card" style={{padding: '30px'}}>
+            
+            {/* HERO VIDEO FORM */}
+            <div style={{ marginBottom: '30px', padding: '25px', background: 'var(--g)', border: '1px solid var(--gm)', borderRadius: '16px' }}>
+              <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.15rem', fontWeight: 700, marginBottom: '5px'}}>Update Hero Video Loop</h3>
+              <p style={{color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '15px'}}>Upload a premium background video file for your landing screen display.</p>
+              <form onSubmit={handleHeroVideoUpload} style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                <input type="file" accept="video/mp4,video/webm" className="fi" required onChange={e => setHeroVideo(e.target.files?.[0] || null)} style={{flex: 1, minWidth: '250px', background: 'var(--w)'}} />
+                <button type="submit" className="fsub" disabled={isVideoUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>
+                  {isVideoUploading ? 'Uploading Video...' : 'Upload Video'}
+                </button>
+              </form>
+            </div>
 
-              <div className="ct-form reveal-up d-2">
-                <form onSubmit={handleSubmit}>
-                  <div className="f-row">
-                    <div className="fg">
-                      <label className="flb">Name</label>
-                      <input type="text" name="name" className="fi hover-target" placeholder="Your Name" required />
-                    </div>
-                    <div className="fg">
-                      <label className="flb">Email</label>
-                      <input type="email" name="email" className="fi hover-target" placeholder="brand@email.com" required />
-                    </div>
-                  </div>
-                  <div className="f-row">
-                    <div className="fg">
-                      <label className="flb">Brand</label>
-                      <input type="text" name="brand" className="fi hover-target" placeholder="Your Brand" required />
-                    </div>
-                    <div className="fg">
-                      <label className="flb">Phone</label>
-                      <input type="tel" name="phone" className="fi hover-target" placeholder="+91 00000 00000" required />
+            {/* NEW SECTION IMAGE FORM (Screenshot 2026-06-13 at 8.45.44 PM.jpg) */}
+            <div style={{ marginBottom: '50px', padding: '25px', background: 'var(--g)', border: '1px solid var(--gm)', borderRadius: '16px' }}>
+              <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.15rem', fontWeight: 700, marginBottom: '5px'}}>Update "Who We Are" Image</h3>
+              <p style={{color: 'var(--muted)', fontSize: '0.85rem', marginBottom: '15px'}}>Upload a high-end photo to replace the current office graphic asset image display.</p>
+              <form onSubmit={handleAboutImageUpload} style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+                <input type="file" accept="image/*" className="fi" required onChange={e => setAboutImage(e.target.files?.[0] || null)} style={{flex: 1, minWidth: '250px', background: 'var(--w)'}} />
+                <button type="submit" className="fsub" disabled={isImageUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>
+                  {isImageUploading ? 'Uploading Image...' : 'Upload Image'}
+                </button>
+              </form>
+            </div>
+
+            <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '20px'}}>Edit Website Texts</h2>
+            {siteContent.length === 0 ? (
+              <p style={{color: 'var(--muted)'}}>No configuration mappings synchronized inside your content dataset fields.</p>
+            ) : (
+              <div style={{display: 'flex', flexDirection: 'column', gap: '25px'}}>
+                {siteContent.map((item) => (
+                  <div key={item.id} className="fg" style={{marginBottom: 0}}>
+                    <label className="flb" style={{textTransform: 'uppercase', color: 'var(--p)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em'}}>
+                      {item.section_key.replace(/_/g, ' ')}
+                    </label>
+                    <div style={{display: 'flex', gap: '15px', flexWrap: 'wrap'}}>
+                      <textarea className="fi" defaultValue={item.content_value} id={`input-${item.section_key}`} style={{minHeight: '60px', flex: 1, minWidth: '250px'}} />
+                      <button 
+                        className="fsub" 
+                        disabled={isUploading}
+                        onClick={() => {
+                          const el = document.getElementById(`input-${item.section_key}`) as HTMLTextAreaElement;
+                          handleUpdateContent(item.section_key, el.value);
+                        }}
+                        style={{width: 'auto', padding: '0 30px', margin: 0, height: 'auto'}}
+                      >
+                        {isUploading ? 'Saving...' : 'Save'}
+                      </button>
                     </div>
                   </div>
                   <div className="fg full">
