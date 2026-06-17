@@ -3,290 +3,387 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 
-export default function AdminDashboard() {
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('inbox');
-  
-  const [submissions, setSubmissions] = useState<any[]>([]);
+export default function Home() {
+  const [buttonText, setButtonText] = useState('Send Message →');
+  const [logos, setLogos] = useState<any[]>([]);
   const [portfolio, setPortfolio] = useState<any[]>([]);
-  const [clients, setClients] = useState<any[]>([]);
-  const [siteContent, setSiteContent] = useState<any[]>([]);
-  
-  const [isUploading, setIsUploading] = useState(false);
-  const [newProject, setNewProject] = useState({ project_name: '', description: '', file: null as File | null });
-  const [newClient, setNewClient] = useState({ brand_name: '', file: null as File | null });
-  
-  // NEW: State for the Hero Video Upload
-  const [heroVideo, setHeroVideo] = useState<File | null>(null);
-  const [isVideoUploading, setIsVideoUploading] = useState(false);
+  const [content, setContent] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    checkSessionAndFetchData();
+    const fetchLogos = async () => {
+      const { data } = await supabase
+        .from('client_logos')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (data) setLogos(data);
+    };
+
+    const fetchPortfolio = async () => {
+      const { data } = await supabase
+        .from('portfolio')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (data) setPortfolio(data);
+    };
+
+    const fetchContent = async () => {
+      const { data } = await supabase.from('site_content').select('*');
+      if (data) {
+        const contentMap: Record<string, string> = {};
+        data.forEach((item: any) => {
+          contentMap[item.section_key] = item.content_value;
+        });
+        setContent(contentMap);
+      }
+    };
+
+    fetchLogos();
+    fetchPortfolio();
+    fetchContent();
+
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    let mouseX = 0, mouseY = 0, fX = 0, fY = 0;
+    let animationFrameId: number;
+
+    if (window.innerWidth > 768 && cursor && follower) {
+      const onMouseMove = (e: MouseEvent) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      };
+      window.addEventListener('mousemove', onMouseMove);
+
+      const animateCursor = () => {
+        fX += (mouseX - fX) * 0.15;
+        fY += (mouseY - fY) * 0.15;
+        follower.style.transform = `translate3d(${fX}px, ${fY}px, 0)`;
+        animationFrameId = requestAnimationFrame(animateCursor);
+      };
+      animateCursor();
+
+      document.querySelectorAll('a, button, input, textarea, select, .hover-target').forEach(el => {
+        el.addEventListener('mouseenter', () => document.body.classList.add('link-hover'));
+        el.addEventListener('mouseleave', () => document.body.classList.remove('link-hover'));
+      });
+    }
+
+    const nav = document.getElementById('nav');
+    const handleScroll = () => {
+      if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
+    };
+    window.addEventListener('scroll', handleScroll);
+
+    const hbg = document.getElementById('hbg');
+    const nl = document.getElementById('nl');
+    if (hbg && nl) {
+      hbg.addEventListener('click', () => nl.classList.toggle('open'));
+    }
+
+    const revealOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, revealOptions);
+    document.querySelectorAll('.reveal-up').forEach(el => revealObserver.observe(el));
+
+    return () => {
+      window.removeEventListener('mousemove', () => {});
+      window.removeEventListener('scroll', handleScroll);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
   }, []);
 
-  const checkSessionAndFetchData = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { window.location.href = '/admin/login'; return; }
-
-    const { data: inbox } = await supabase.from('form_submissions').select('*').order('created_at', { ascending: false });
-    const { data: port } = await supabase.from('portfolio').select('*').order('created_at', { ascending: false });
-    const { data: cli } = await supabase.from('client_logos').select('*');
-    const { data: content } = await supabase.from('site_content').select('*').order('id', { ascending: true });
-    
-    if (inbox) setSubmissions(inbox);
-    if (port) setPortfolio(port);
-    if (cli) setClients(cli);
-    if (content) setSiteContent(content);
-    setLoading(false);
-  };
-
-  const handleLogout = async () => { await supabase.auth.signOut(); window.location.href = '/admin/login'; };
-
-  const handleAddProject = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!newProject.file || !newProject.project_name) return;
-    setIsUploading(true);
-    const fileName = `projects/${Math.random()}`;
-    await supabase.storage.from('agency-media').upload(fileName, newProject.file);
-    const { data } = supabase.storage.from('agency-media').getPublicUrl(fileName);
-    await supabase.from('portfolio').insert([{ project_name: newProject.project_name, description: newProject.description, media_url: data.publicUrl, is_active: true }]);
-    setNewProject({ project_name: '', description: '', file: null });
-    checkSessionAndFetchData();
-    setIsUploading(false);
-  };
+    setButtonText('Sending...');
 
-  const handleAddClient = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newClient.file || !newClient.brand_name) return;
-    setIsUploading(true);
-    const fileName = `logos/${Math.random()}`;
-    await supabase.storage.from('agency-media').upload(fileName, newClient.file);
-    const { data } = supabase.storage.from('agency-media').getPublicUrl(fileName);
-    await supabase.from('client_logos').insert([{ brand_name: newClient.brand_name, logo_url: data.publicUrl }]);
-    setNewClient({ brand_name: '', file: null });
-    checkSessionAndFetchData();
-    setIsUploading(false);
-  };
+    const formData = new FormData(e.currentTarget);
+    const submissionData = {
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      brand: formData.get('brand') as string,
+      phone: formData.get('phone') as string,
+      service: formData.get('service') as string,
+      message: formData.get('message') as string,
+    };
 
-  // NEW: Handle dedicated Hero Video Upload
-  const handleHeroVideoUpload = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!heroVideo) return;
-    setIsVideoUploading(true);
+    const { error } = await supabase.from('form_submissions').insert([submissionData]);
 
-    // 1. Upload video to storage
-    const fileName = `hero-video/${Date.now()}-${heroVideo.name}`;
-    const { error: uploadError } = await supabase.storage.from('agency-media').upload(fileName, heroVideo);
-    
-    if (uploadError) {
-      alert('Error uploading video. Make sure your file is an MP4/WebM and within size limits.');
-      console.error(uploadError);
-      setIsVideoUploading(false);
-      return;
-    }
-
-    // 2. Get Public URL
-    const { data } = supabase.storage.from('agency-media').getPublicUrl(fileName);
-
-    // 3. Update the site_content table securely
-    const { data: existing } = await supabase.from('site_content').select('*').eq('section_key', 'hero_video_url');
-    
-    if (existing && existing.length > 0) {
-      await supabase.from('site_content').update({ content_value: data.publicUrl }).eq('section_key', 'hero_video_url');
-    } else {
-      // If the row doesn't exist yet, create it automatically
-      await supabase.from('site_content').insert([{ section_key: 'hero_video_url', content_value: data.publicUrl }]);
-    }
-
-    setHeroVideo(null);
-    checkSessionAndFetchData();
-    setIsVideoUploading(false);
-    alert('Landing Page Video updated successfully!');
-  };
-
-  const handleUpdateContent = async (key: string, newValue: string) => {
-    setIsUploading(true);
-    const { error } = await supabase.from('site_content').update({ content_value: newValue }).eq('section_key', key);
-    
     if (error) {
-      alert('Error updating content.');
-      console.error(error);
+      console.error('Error submitting form:', error);
+      setButtonText('Error! Try again.');
+      setTimeout(() => setButtonText('Send Message →'), 3000);
     } else {
-      checkSessionAndFetchData();
+      setButtonText('✓ Message Sent!');
+      (e.target as HTMLFormElement).reset();
+      setTimeout(() => setButtonText('Send Message →'), 3000);
     }
-    setIsUploading(false);
   };
 
-  if (loading) return <div className="admin-bg" style={{padding: '100px', textAlign: 'center'}}>Loading control center...</div>;
+  const defaultReels = [
+    { id: 'df1', project_name: 'Beardo Global Campaign', media_url: 'https://cdn.pixabay.com/video/2021/04/12/70881-537449557_large.mp4' },
+    { id: 'df2', project_name: 'Mamaearth UGC Concept', media_url: 'https://cdn.pixabay.com/video/2020/03/17/33718-392520300_large.mp4' },
+    { id: 'df3', project_name: 'Zouk Lookbook Reels', media_url: 'https://cdn.pixabay.com/video/2020/09/11/49622-458145244_large.mp4' },
+    { id: 'df4', project_name: 'Kapiva Nutrition Campaign', media_url: 'https://cdn.pixabay.com/video/2021/11/04/94595-645851174_large.mp4' }
+  ];
+
+  const renderedReels = portfolio.length > 0 ? portfolio : defaultReels;
 
   return (
-    <div className="admin-bg">
-      <nav className="admin-nav">
-        <a href="/" className="nlogo" style={{fontFamily: 'var(--fh)'}}><span className="nlogo-claim" style={{color: 'var(--p)'}}>Claim</span><span className="nlogo-fame" style={{color: 'var(--y)'}}>Fame</span> Admin</a>
-        <button onClick={handleLogout} className="admin-logout">Sign Out</button>
+    <>
+      <div id="cursor"></div>
+      <div id="cursor-follower"></div>
+
+      <nav id="nav">
+        <a href="/" className="nlogo hover-target">
+          <span className="nlogo-claim">Claim</span><span className="nlogo-fame">Fame</span>
+        </a>
+        <ul className="nlinks" id="nl">
+          <li><a href="/#about-wrap" className="hover-target">About</a></li>
+          {/* Linked explicitly to standalone sub-routes */}
+          <li><a href="/services" className="hover-target">Services</a></li>
+          <li><a href="/clients" className="hover-target">Clients</a></li>
+          <li><a href="#contact-wrap" className="ncta hover-target">{content['nav_cta'] || 'Get In Touch'}</a></li>
+        </ul>
+        <div className="hbg hover-target" id="hbg">
+          <span></span><span></span><span></span>
+        </div>
       </nav>
 
-      <main className="admin-main">
-        <div style={{display: 'flex', gap: '15px', marginBottom: '40px', flexWrap: 'wrap'}}>
-          {['inbox', 'portfolio', 'clients', 'settings'].map((tab) => (
-            <button 
-              key={tab} 
-              onClick={() => setActiveTab(tab)} 
-              style={{
-                padding: '12px 24px', borderRadius: '100px', border: 'none', 
-                background: activeTab === tab ? 'var(--p)' : 'var(--w)', 
-                color: activeTab === tab ? '#fff' : 'var(--k)', 
-                cursor: 'pointer', fontWeight: 600, fontFamily: 'var(--fb)',
-                boxShadow: activeTab === tab ? '0 10px 25px rgba(143,30,174,0.25)' : '0 4px 10px rgba(0,0,0,0.03)'
-              }}>
-              {tab === 'settings' ? '⚙️ SITE SETTINGS' : tab.toUpperCase()}
-            </button>
-          ))}
+      {/* ── FULLSCREEN HERO WITH KINETIC LOGO ── */}
+      <div id="hero" style={{ position: 'relative', width: '100%', backgroundColor: 'var(--k)' }}>
+        <div className="hero-fullscreen">
+          <video
+            key={content['hero_video_url'] || 'fallback'}
+            className="hero-video-bg"
+            autoPlay loop muted playsInline
+          >
+            <source src={content['hero_video_url'] || "/bg.mp4"} type="video/mp4" />
+          </video>
+          
+          <div className="hero-fullscreen-content">
+            <h1 className="agency-name-huge hover-target">
+              <span className="nlogo-claim">Claim</span><span className="nlogo-fame">Fame</span>
+            </h1>
+          </div>
         </div>
-        
-        {activeTab === 'inbox' && (
-          <div className="admin-card">
-            {submissions.length === 0 ? <div className="admin-empty">No messages yet.</div> : (
-              <table className="admin-table">
-                <thead><tr><th>Date</th><th>Contact</th><th>Request</th></tr></thead>
-                <tbody>
-                  {submissions.map(sub => (
-                    <tr key={sub.id}>
-                      <td className="td-date">{new Date(sub.created_at).toLocaleDateString()}</td>
-                      <td>
-                        <div className="td-name">{sub.name}</div>
-                        <div className="td-email">{sub.email}</div>
-                        <div className="td-phone">{sub.phone}</div>
-                        <div className="td-brand" style={{marginTop: '4px'}}>Brand: {sub.brand}</div>
-                      </td>
-                      <td>
-                        <span className="td-svc-badge">{sub.service}</span>
-                        <p className="td-msg">{sub.message}</p>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
 
-        {activeTab === 'portfolio' && (
-          <div className="admin-card" style={{padding: '30px'}}>
-            <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '20px'}}>Add Portfolio Project</h2>
-            <form onSubmit={handleAddProject} style={{display: 'flex', gap: '10px', marginBottom: '40px', flexWrap: 'wrap'}}>
-              <input type="text" placeholder="Project Name" className="fi" required onChange={e => setNewProject({...newProject, project_name: e.target.value})} style={{flex: 1, minWidth: '200px'}} />
-              <input type="file" className="fi" required onChange={e => setNewProject({...newProject, file: e.target.files?.[0] || null})} style={{flex: 1, minWidth: '200px'}} />
-              <button type="submit" className="fsub" disabled={isUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>{isUploading ? 'Uploading...' : 'Upload Project'}</button>
-            </form>
-            
-            <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.2rem', fontWeight: 700, marginBottom: '15px'}}>Current Portfolio</h3>
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px'}}>
-              {portfolio.map(p => (
-                <div key={p.id} style={{background: 'var(--g)', padding: '15px', borderRadius: '16px', border: '1px solid var(--gm)'}}>
-                  {p.media_url.match(/\.(mp4|webm)$/i) ? (
-                    <video src={p.media_url} style={{width:'100%', height:'150px', objectFit:'cover', borderRadius: '8px'}} muted loop playsInline />
-                  ) : (
-                    <img src={p.media_url} style={{width:'100%', height:'150px', objectFit:'cover', borderRadius: '8px'}} />
-                  )}
-                  <p style={{fontFamily: 'var(--fh)', fontWeight: 700, marginTop: '15px', color: 'var(--k)'}}>{p.project_name}</p>
-                  <button onClick={() => supabase.from('portfolio').delete().eq('id', p.id).then(checkSessionAndFetchData)} style={{marginTop: '10px', background: '#fee2e2', color: '#b91c1c', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, width: '100%'}}>Delete Project</button>
-                </div>
-              ))}
-              {portfolio.length === 0 && <div style={{color: 'var(--muted)', gridColumn: '1/-1'}}>No portfolio items uploaded yet.</div>}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'clients' && (
-          <div className="admin-card" style={{padding: '30px'}}>
-            <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '20px'}}>Add Client Logo</h2>
-            <form onSubmit={handleAddClient} style={{display: 'flex', gap: '10px', marginBottom: '40px', flexWrap: 'wrap'}}>
-              <input type="text" placeholder="Brand Name" className="fi" required onChange={e => setNewClient({...newClient, brand_name: e.target.value})} style={{flex: 1, minWidth: '200px'}} />
-              <input type="file" className="fi" required onChange={e => setNewClient({...newClient, file: e.target.files?.[0] || null})} style={{flex: 1, minWidth: '200px'}} />
-              <button type="submit" className="fsub" disabled={isUploading} style={{width: 'auto', padding: '0 30px', margin: 0}}>{isUploading ? 'Uploading...' : 'Upload Logo'}</button>
-            </form>
-
-            <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.2rem', fontWeight: 700, marginBottom: '15px'}}>Current Clients</h3>
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '20px'}}>
-              {clients.map(c => (
-                <div key={c.id} style={{textAlign: 'center', background: 'var(--w)', padding: '20px', borderRadius: '16px', border: '1px solid var(--gm)'}}>
-                  <div style={{height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '15px'}}>
-                    <img src={c.logo_url} style={{maxWidth: '100%', maxHeight: '100%', objectFit: 'contain'}} />
-                  </div>
-                  <p style={{fontSize: '0.85rem', fontWeight: 600, color: 'var(--k)', marginBottom: '10px'}}>{c.brand_name}</p>
-                  <button onClick={() => supabase.from('client_logos').delete().eq('id', c.id).then(checkSessionAndFetchData)} style={{background: '#fee2e2', color: '#b91c1c', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, width: '100%'}}>Remove</button>
-                </div>
-              ))}
-              {clients.length === 0 && <div style={{color: 'var(--muted)', gridColumn: '1/-1'}}>No client logos uploaded yet.</div>}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'settings' && (
-          <div className="admin-card" style={{padding: '30px'}}>
-            
-            {/* NEW: Dedicated Video Upload Section */}
-            <div style={{ marginBottom: '50px', padding: '25px', background: 'var(--g)', borderRadius: '16px', border: '1px solid var(--gm)' }}>
-              <h3 style={{fontFamily: 'var(--fh)', fontSize: '1.2rem', fontWeight: 700, marginBottom: '5px', color: 'var(--k)'}}>Update Landing Page Video</h3>
-              <p style={{color: 'var(--muted)', fontSize: '0.9rem', marginBottom: '20px'}}>Upload a high-quality .mp4 video to play behind your landing page text.</p>
+        {/* ── CLEAN LOGO STRIP MARQUEE ── */}
+        <div className="white-strip-marquee">
+          <div className="marquee-track">
+            {(() => {
+              const fallbackLogos = [
+                { id: 'f1', logo_url: '/kapiva-logo.png', brand_name: 'Kapiva' },
+                { id: 'f2', logo_url: '/zouk-logo.webp', brand_name: 'Zouk' },
+                { id: 'f3', logo_url: '/mama-earth-logo.png', brand_name: 'Mamaearth' },
+                { id: 'f4', logo_url: '/wow-skin-logo.jpg', brand_name: 'Wow Skin' },
+                { id: 'f5', logo_url: '/boat-logo.webp', brand_name: 'boAt' }
+              ];
               
-              <form onSubmit={handleHeroVideoUpload} style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                <input 
-                  type="file" 
-                  accept="video/mp4,video/webm" 
-                  className="fi" 
-                  required 
-                  onChange={e => setHeroVideo(e.target.files?.[0] || null)} 
-                  style={{flex: 1, minWidth: '250px', background: 'var(--w)'}}
-                />
-                <button 
-                  type="submit" 
-                  className="fsub" 
-                  disabled={isVideoUploading} 
-                  style={{width: 'auto', padding: '0 30px', margin: 0}}
-                >
-                  {isVideoUploading ? 'Uploading Video...' : 'Upload Video'}
-                </button>
-              </form>
-            </div>
+              let baseLogos = logos.length > 0 ? logos : fallbackLogos;
+              let displayLogos = baseLogos.length < 5 ? [...baseLogos, ...baseLogos, ...baseLogos] : baseLogos;
 
-            <h2 style={{fontFamily: 'var(--fh)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '20px'}}>Edit Website Text</h2>
-            {siteContent.length === 0 ? (
-              <p style={{color: 'var(--muted)'}}>No text content keys found in the database. Add rows to your site_content table!</p>
-            ) : (
-              <div style={{display: 'flex', flexDirection: 'column', gap: '25px'}}>
-                {siteContent.map((item) => (
-                  <div key={item.id} className="fg" style={{marginBottom: 0}}>
-                    <label className="flb" style={{textTransform: 'uppercase', color: 'var(--p)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em'}}>
-                      {item.section_key.replace(/_/g, ' ')}
-                    </label>
-                    <div style={{display: 'flex', gap: '15px', flexWrap: 'wrap'}}>
-                      <textarea 
-                        className="fi" 
-                        defaultValue={item.content_value}
-                        id={`input-${item.section_key}`}
-                        style={{minHeight: '60px', flex: 1, minWidth: '250px'}}
-                      />
-                      <button 
-                        className="fsub" 
-                        disabled={isUploading}
-                        onClick={() => {
-                          const el = document.getElementById(`input-${item.section_key}`) as HTMLTextAreaElement;
-                          handleUpdateContent(item.section_key, el.value);
-                        }}
-                        style={{width: 'auto', padding: '0 30px', margin: 0, height: 'auto'}}
-                      >
-                        {isUploading ? 'Saving...' : 'Save'}
-                      </button>
+              return (
+                <>
+                  <div className="marquee-group">
+                    {displayLogos.map((client, i) => (
+                      <div key={`g1-${i}`} className="marquee-logo hover-target">
+                        <img src={client.logo_url} alt={client.brand_name} />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="marquee-group" aria-hidden="true">
+                    {displayLogos.map((client, i) => (
+                      <div key={`g2-${i}`} className="marquee-logo hover-target">
+                        <img src={client.logo_url} alt={client.brand_name} />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      </div>
+
+      {/* ── ABOUT ── */}
+      <div className="page-section" id="about-wrap">
+        <section className="inner-section">
+          <div className="sec-inner">
+            <div className="about-g">
+              <div className="about-vis reveal-up">
+                <img
+                  src={content['about_image_url'] || "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop"}
+                  alt="Claim Fame Team"
+                />
+              </div>
+              <div className="about-txt reveal-up d-1">
+                <div className="sec-ey">{content['about_eyebrow'] || 'Who We Are'}</div>
+                <h2 className="sec-ttl" dangerouslySetInnerHTML={{ __html: content['about_title'] || 'We Exist for Brands That Want to Trend.' }} />
+                <p dangerouslySetInnerHTML={{ 
+                  __html: content['about_paragraph'] || '<strong>Claim Fame</strong> is your one-stop shop for all your marketing needs. We handle the heavy lifting across influencer marketing, social media, PR, performance marketing, and production, turning your wild ideas into conversations people actually want to have.<br /><br />No fluff, no fake hype. Just razor-sharp strategy and execution that feels <strong>100% real.</strong> We don\'t just build campaigns. We build presence.' 
+                }} />
+                <a href="#contact-wrap" className="btn-p hover-target" style={{ marginTop: '10px' }}>
+                  {content['about_btn'] || 'Partner With Us'}
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* ── CASE STUDIES REELS SHOWCASE ── */}
+      <div className="page-section" id="portfolio-wrap" style={{ background: 'var(--w)', paddingBottom: '120px', paddingTop: '60px' }}>
+        <section className="inner-section" style={{ display: 'block' }}>
+          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <div className="sec-ey reveal-up" style={{ justifyContent: 'center' }}>
+              {content['portfolio_eyebrow'] || 'Case Studies'}
+            </div>
+            <h2 className="sec-ttl reveal-up d-1">
+              {content['portfolio_title'] || 'A Few Things We Brought To Life'}
+            </h2>
+            <p className="reveal-up d-2" style={{ color: 'var(--muted)', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', fontWeight: 500 }}>
+              {content['portfolio_subtitle'] || 'Creator-led campaigns. Real impact. Internet culture at the core.'}
+            </p>
+          </div>
+
+          <div className="reels-grid-container reveal-up d-3">
+            {renderedReels.map((reel) => (
+              <div key={reel.id} className="reel-card-wrapper hover-target">
+                <div className="reel-video-container">
+                  <video
+                    className="reel-video-asset"
+                    src={reel.media_url}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                </div>
+                <div className="reel-card-meta">
+                  <h4 className="reel-title-txt">{reel.project_name}</h4>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* ── CONTACT ── */}
+      <div className="page-section bg-gray" id="contact-wrap">
+        <section className="inner-section" style={{ borderTop: '1px solid var(--gm)' }}>
+          <div className="sec-inner">
+            <div className="sec-ey reveal-up">{content['contact_eyebrow'] || 'Get In Touch'}</div>
+            <div className="ct-g">
+              <div className="reveal-up d-1">
+                <div className="ct-tagline" dangerouslySetInnerHTML={{ __html: content['contact_tagline'] || 'Let\'s Build Something<br /><em class="nlogo-claim">Great Together.</em>' }} />
+                <div className="ct-items">
+                  <div className="ct-item hover-target">
+                    <div className="ct-item-ic">📧</div>
+                    <div className="ct-item-tx"><a href={`mailto:${content['contact_email'] || 'hello@letsclaimfame.com'}`}>{content['contact_email'] || 'hello@letsclaimfame.com'}</a></div>
+                  </div>
+                  <div className="ct-item hover-target">
+                    <div className="ct-item-ic">📞</div>
+                    <div className="ct-item-tx"><a href={`tel:${content['contact_phone'] || '+911234567890'}`}>{content['contact_phone'] || '+91 12345 67890'}</a></div>
+                  </div>
+                  <div className="ct-item">
+                    <div className="ct-item-ic">📍</div>
+                    <div className="ct-item-tx">{content['contact_location'] || 'New Delhi, India'}</div>
+                  </div>
+                </div>
+                <a href={content['contact_wa_link'] || 'https://wa.me/911234567890'} className="wa-btn hover-target" target="_blank" rel="noreferrer">
+                  {content['contact_wa_text'] || 'Chat on WhatsApp'}
+                </a>
+              </div>
+
+              <div className="ct-form reveal-up d-2">
+                <form onSubmit={handleSubmit}>
+                  <div className="f-row">
+                    <div className="fg">
+                      <label className="flb">Name</label>
+                      <input type="text" name="name" className="fi hover-target" placeholder="Your Name" required />
+                    </div>
+                    <div className="fg">
+                      <label className="flb">Email</label>
+                      <input type="email" name="email" className="fi hover-target" placeholder="brand@email.com" required />
                     </div>
                   </div>
-                ))}
+                  <div className="f-row">
+                    <div className="fg">
+                      <label className="flb">Brand</label>
+                      <input type="text" name="brand" className="fi hover-target" placeholder="Your Brand" required />
+                    </div>
+                    <div className="fg">
+                      <label className="flb">Phone</label>
+                      <input type="tel" name="phone" className="fi hover-target" placeholder="+91 00000 00000" required />
+                    </div>
+                  </div>
+                  <div className="fg full">
+                    <label className="flb">Service</label>
+                    <select className="fs fi hover-target" name="service" defaultValue="" required>
+                      <option value="" disabled>Select a service</option>
+                      <option value="Campaign Strategy">Campaign Strategy</option>
+                      <option value="Influencer Marketing">Influencer Marketing</option>
+                      <option value="Meme Marketing">Meme Marketing</option>
+                      <option value="Content Production">Content Production</option>
+                      <option value="Brand Collabs">Brand Collabs</option>
+                      <option value="Performance">Performance</option>
+                      <option value="UGC Content">UGC Content</option>
+                    </select>
+                  </div>
+                  <div className="fg full">
+                    <label className="flb">Message</label>
+                    <textarea className="ft hover-target" name="message" placeholder="Tell us about your brand goals..." required></textarea>
+                  </div>
+                  <button type="submit" className="fsub hover-target">{buttonText}</button>
+                </form>
               </div>
-            )}
+            </div>
           </div>
-        )}
-      </main>
-    </div>
+        </section>
+
+        <footer>
+          <div className="ft-g">
+            <div className="reveal-up">
+              <a href="#hero" className="ft-logo">
+                <span className="nlogo-claim">Claim</span><span className="nlogo-fame">Fame</span>
+              </a>
+              <p className="ft-tag">{content['footer_tagline'] || 'Delhi-based influencer marketing agency.'}</p>
+            </div>
+            <div className="reveal-up d-1">
+              <div className="ft-col-ttl">Quick Links</div>
+              <ul className="ft-lks">
+                <li><a href="#hero" className="hover-target">Home</a></li>
+                <li><a href="/services" className="hover-target">Our Services</a></li>
+                <li><a href="/clients" className="hover-target">Our Clients</a></li>
+              </ul>
+            </div>
+            <div className="reveal-up d-2">
+              <div className="ft-col-ttl">Services</div>
+              <ul className="ft-lks">
+                <li><a href="/services" className="hover-target">Influencer Marketing</a></li>
+                <li><a href="/services" className="hover-target">Campaign Strategy</a></li>
+                <li><a href="/services" className="hover-target">Content Production</a></li>
+              </ul>
+            </div>
+            <div className="reveal-up d-3">
+              <div className="ft-col-ttl">Contact</div>
+              <ul className="ft-lks">
+                <li><a href={`mailto:${content['contact_email'] || 'hello@letsclaimfame.com'}`} className="hover-target">{content['contact_email'] || 'hello@letsclaimfame.com'}</a></li>
+                <li><a href={`tel:${content['contact_phone'] || '+911234567890'}`} className="hover-target">{content['contact_phone'] || '+91 12345 67890'}</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="ft-bot reveal-up">
+            <span>{content['footer_copyright'] || '© 2026 Claim Fame. All rights reserved.'}</span>
+          </div>
+        </footer>
+      </div>
+    </>
   );
 }
