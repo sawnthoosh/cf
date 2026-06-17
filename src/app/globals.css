@@ -231,13 +231,39 @@ nav.scrolled {
   font-family: 'Young Serif', serif;
   font-size: clamp(3.5rem, 12vw, 7.5rem);
   font-weight: 400;
-  color: #ffd815;
+  color: #fedb41;
   text-transform: lowercase;
-  letter-spacing: -0.05em;
-  line-height: 0.85;
-  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  letter-spacing: -0.07em;
+  line-height: 0.8;
+  -webkit-text-stroke: 1.5px #ffffff;
+  text-shadow: 5px 5px 0px var(--p);
   margin: 0;
   display: block;
+}
+
+.hero-title-text span.line-1 {
+  display: inline-block;
+}
+
+.hero-title-text span.line-2 {
+  display: inline-block;
+  padding-left: 0.8em;
+}
+
+.logo-sparkles {
+  position: absolute;
+  top: 10%;
+  right: -30px;
+  width: 50px;
+  height: 50px;
+  filter: drop-shadow(3px 3px 0px var(--p));
+  animation: sparklesFloat 5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes sparklesFloat {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-6px) rotate(8deg); }
 }
 
 .hero-graphic-logo { 
