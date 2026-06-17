@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Claim Fame — The Real Fame Story Starts Here</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── BASE & VARIABLES ── */
+*,*::before,*::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --p: #8f1eae;     /* Brand Purple */
+  --y: #ffd815;     /* Brand Yellow */
+  --w: #ffffff;     /* White */
+  --k: #111111;     /* Soft Black */
+  --g: #f9f9fa;     /* Light Gray */
+  --gm: #eaeaea;    /* Borders */
+  --muted: #666666; /* Muted text */
+  --fh: 'Poppins', sans-serif;
+  --fb: 'Inter', sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+html, body {
+  background: var(--w); /* Clean white base to prevent any black flashes */
+  color: var(--k);
+  font-family: var(--fb);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  cursor: none;
+}
+
+/* ── MAGNETIC CURSOR ── */
+#cursor {
+  position: fixed; top: 0; left: 0; width: 8px; height: 8px;
+  background: var(--y); border-radius: 50%;
+  pointer-events: none; z-index: 999999;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+}
+#cursor-follower {
+  position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+  border: 1.5px solid var(--p); border-radius: 50%;
+  pointer-events: none; z-index: 999998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+  will-change: transform;
+}
+body.link-hover #cursor { opacity: 0; }
+body.link-hover #cursor-follower {
+  width: 60px; height: 60px; background: rgba(143, 30, 174, 0.08);
+  border-color: var(--p); backdrop-filter: blur(2px);
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; width: 100%; z-index: 10000;
+  padding: 0 5%; height: 90px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: all 0.4s var(--ease);
+}
+nav.scrolled {
+  background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04); height: 75px; border-bottom: 1px solid var(--gm);
+}
+.nlogo { 
+  font-family: var(--fh); font-size: 1.6rem; font-weight: 800; letter-spacing: -0.04em; 
+  text-decoration: none; display: flex; align-items: center;
+}
+.nlogo-claim { color: var(--p); }
+.nlogo-fame { color: var(--y); }
+.nlinks { display: flex; align-items: center; gap: 40px; list-style: none; }
+.nlinks a { font-size: .9rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color .3s; }
+.nlinks a:hover { color: var(--p); }
+.ncta { background: var(--p)!important; color: #fff!important; padding: 12px 28px; border-radius: 100px; font-weight: 600!important; transition: all .3s!important; }
+.ncta:hover { background: var(--k)!important; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(143, 30, 174, 0.2)!important; }
+.hbg { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+.hbg span { display: block; width: 24px; height: 2px; background: var(--k); border-radius: 2px; transition: all .3s; }
+
+/* ── SIMPLE SMOOTH SCROLL REVEALS ── */
+.page-section { position: relative; width: 100%; overflow: hidden; background: var(--w); }
+.bg-gray { background: var(--g); }
+
+.reveal-up {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+  will-change: transform, opacity;
+}
+.reveal-up.in-view { opacity: 1; transform: translateY(0); }
+.d-1 { transition-delay: 0.1s; } .d-2 { transition-delay: 0.2s; } .d-3 { transition-delay: 0.3s; }
+
+/* ── HERO SECTION ── */
+#hero {
+  position: relative; width: 100%; min-height: 100vh;
+  display: flex; flex-direction: column;
+  background: var(--g); overflow: hidden;
+}
+.hero-bg-accent {
+  position: absolute; top: -20%; right: -10%; width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(143,30,174,0.05) 0%, rgba(255,255,255,0) 70%);
+  border-radius: 50%; pointer-events: none; z-index: 1;
+}
+.hero-content-wrapper {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 100px 5% 0; position: relative; z-index: 5;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1.1fr 1fr; gap: 60px; align-items: center;
+  max-width: 1300px; width: 100%;
+}
+.h-tag {
+  display: inline-flex; align-items: center; gap: 12px;
+  font-size: .8rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 24px;
+}
+.h-tag::before { content: ''; display: block; width: 30px; height: 2px; background: var(--y); }
+.h1 {
+  font-family: var(--fh); font-size: clamp(2.8rem, 5vw, 5.5rem); font-weight: 800;
+  line-height: 1.05; letter-spacing: -0.03em; color: var(--k); margin-bottom: 24px;
+}
+.h1 em { color: var(--p); font-style: normal; }
+.h-sub {
+  font-size: 1.1rem; font-weight: 400; line-height: 1.7; color: var(--muted);
+  max-width: 550px; margin-bottom: 40px;
+}
+.h-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-p {
+  display: inline-flex; align-items: center; gap: 10px; background: var(--p); color: #fff; font-family: var(--fb); font-size: 1rem; font-weight: 600;
+  padding: 16px 36px; border-radius: 100px; text-decoration: none; transition: all .4s var(--ease);
+}
+.btn-p:hover { background: var(--k); color: var(--w); transform: translateY(-4px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1); }
+.btn-s {
+  display: inline-flex; align-items: center; gap: 10px; background: transparent; color: var(--k); font-family: var(--fb); font-size: 1rem; font-weight: 600;
+  padding: 16px 36px; border-radius: 100px; text-decoration: none; border: 1px solid var(--gm); transition: all .4s var(--ease);
+}
+.btn-s:hover { border-color: var(--p); color: var(--p); transform: translateY(-4px); }
+
+/* Floating Video Preview */
+@keyframes floatUp { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-15px) rotate(1deg); } }
+.hero-visual { position: relative; display: flex; justify-content: center; align-items: center; perspective: 1000px;}
+.video-preview-card {
+  position: relative; width: 320px; height: 500px; background: var(--k); border-radius: 30px; 
+  box-shadow: 0 30px 60px rgba(0,0,0,0.08); overflow: hidden;
+  animation: floatUp 8s ease-in-out infinite; border: 6px solid var(--w);
+}
+.video-preview-card video { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+.v-play-btn {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 70px; height: 70px; background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: var(--w); font-size: 1.5rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.4);
+  transition: all 0.4s var(--ease); padding-left: 4px;
+}
+.video-preview-card:hover .v-play-btn { background: var(--y); border-color: var(--y); color: var(--k); transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 15px 30px rgba(255,216,21,0.4); }
+.v-badge {
+  position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(255,255,255,0.9);
+  padding: 12px 16px; border-radius: 12px; font-size: 0.85rem; font-weight: 600; color: var(--k);
+  display: flex; align-items: center; gap: 10px; backdrop-filter: blur(10px);
+}
+.v-badge span { width: 8px; height: 8px; background: #25D366; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(37,211,102,0.7); } 70% { box-shadow: 0 0 0 10px rgba(37,211,102,0); } 100% { box-shadow: 0 0 0 0 rgba(37,211,102,0); } }
+
+/* ── MARQUEE (BOTTOM OF HERO) ── */
+.mq-stack { background: var(--w); padding: 30px 0; border-top: 1px solid var(--gm); z-index: 10; position: relative; flex-shrink: 0;}
+.mq-label { text-align: center; font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin-bottom: 20px; }
+.mq-belt { display: flex; width: max-content; gap: 60px; padding: 0 40px; animation: mqScroll 40s linear infinite; }
+.mq-item { display: flex; align-items: center; justify-content: center; width: 130px; height: 50px; transition: all 0.4s ease; }
+.mq-item img { width: 100%; height: 100%; object-fit: contain; filter: grayscale(100%) opacity(0.5); transition: all 0.4s var(--ease); }
+.mq-item:hover img { filter: grayscale(0%) opacity(1); transform: scale(1.1); }
+@keyframes mqScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* ── COMMON SECTION STYLES ── */
+.inner-section { padding: 120px 5%; display: flex; align-items: center; }
+.sec-inner { max-width: 1300px; margin: 0 auto; width: 100%; }
+.sec-ey { display: inline-flex; align-items: center; gap: 10px; font-size: .75rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--p); margin-bottom: 20px; }
+.sec-ey::before { content: ''; display: block; width: 24px; height: 2px; background: var(--y); }
+.sec-ttl { font-family: var(--fh); font-size: clamp(2.5rem, 4vw, 3.5rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; color: var(--k); margin-bottom: 24px; }
+
+/* ── WHO WE ARE ── */
+.about-g { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.about-vis { position: relative; border-radius: 30px; overflow: hidden; height: 550px; box-shadow: 0 20px 50px rgba(0,0,0,0.06); }
+.about-vis img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s var(--ease); }
+.about-vis:hover img { transform: scale(1.05); }
+.about-txt p { font-size: 1.1rem; line-height: 1.8; color: var(--muted); margin-bottom: 40px; font-weight: 400; }
+.about-txt strong { color: var(--k); font-weight: 600; }
+
+/* ── SERVICES (3D ORBIT) ── */
+.svc-hd { text-align: center; margin-bottom: 60px; position: relative; z-index: 10;}
+.svc-orbit-wrap { position: relative; width: 100%; height: 900px; perspective: 2000px; margin-top: 20px;}
+.svc-universe { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; transform-style: preserve-3d; }
+
+.svc-center-star {
+  position: absolute; top: 50%; left: 50%; width: 180px; height: 180px; margin: -90px 0 0 -90px;
+  background: var(--w); border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  font-family: var(--fh); font-weight: 800; font-size: 1.4rem; line-height: 1.1; color: var(--k);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.05), inset 0 0 0 1px var(--gm);
+  z-index: 5; pointer-events: none;
+}
+.svc-center-star span { font-size: 0.7rem; color: var(--p); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 5px; }
+
+.svc-ring { position: relative; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(60deg); animation: spinRing 60s linear infinite; }
+@keyframes spinRing { 0% { transform: rotateX(60deg) rotateZ(0deg); } 100% { transform: rotateX(60deg) rotateZ(360deg); } }
+.svc-ring-line { position: absolute; top: 50%; left: 50%; border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+.svc-ring-line.r1 { width: 850px; height: 850px; border: 1px dashed rgba(0,0,0,0.08); }
+.svc-ring-line.r2 { width: 500px; height: 500px; border: 1px solid rgba(143,30,174,0.1); }
+
+.svc-arm { position: absolute; top: 50%; left: 50%; width: 0; height: 0; transform-style: preserve-3d; }
+.svc-anti-spin { position: absolute; top: 0; left: 0; transform-style: preserve-3d; animation: counterRing 60s linear infinite; }
+@keyframes counterRing { 0% { transform: rotateZ(0deg); } 100% { transform: rotateZ(-360deg); } }
+.svc-anti-arm { position: absolute; top: 0; left: 0; transform-style: preserve-3d; }
+.svc-stand-up { position: absolute; top: 0; left: 0; transform-style: preserve-3d; transform: rotateX(-60deg); }
+
+.svc-c {
+  position: absolute; top: 50%; left: 50%; width: 260px; height: 110px; margin: -55px 0 0 -130px; 
+  background: var(--w); border: 1px solid var(--gm); border-radius: 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: 25px 20px; overflow: hidden; transition: all 0.5s var(--ease);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.03); cursor: pointer; pointer-events: auto;
+}
+.svc-universe:hover .svc-c { opacity: 0.6; }
+.svc-c:hover {
+  opacity: 1 !important; height: 320px; margin-top: -160px; 
+  border-color: rgba(143,30,174,0.3); box-shadow: 0 25px 50px rgba(143, 30, 174, 0.08);
+  transform: scale(1.05) translateZ(30px); z-index: 100;
+}
+.svc-ic-wrap { display: flex; align-items: center; gap: 15px; width: 100%; transition: transform 0.4s var(--ease);}
+.svc-c:hover .svc-ic-wrap { transform: translateY(10px); justify-content: center; flex-direction: column; }
+.svc-ic { width: 50px; height: 50px; border-radius: 12px; background: var(--g); border: 1px solid var(--gm); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; transition: all 0.4s var(--ease); flex-shrink: 0; }
+.svc-c:hover .svc-ic { background: var(--p); color: var(--w); border-color: var(--p); transform: scale(1.1); box-shadow: 0 10px 20px rgba(143, 30, 174, 0.2); }
+.svc-nm { font-family: var(--fh); font-size: 1rem; font-weight: 700; color: var(--k); text-align: left; transition: all 0.4s var(--ease); }
+.svc-c:hover .svc-nm { text-align: center; font-size: 1.15rem; margin-top: 5px;}
+.svc-ds-wrap { opacity: 0; transform: translateY(15px); transition: all 0.4s var(--ease); margin-top: 20px; text-align: center; }
+.svc-c:hover .svc-ds-wrap { opacity: 1; transform: translateY(0); transition-delay: 0.1s;}
+.svc-ds { font-size: .85rem; line-height: 1.6; color: var(--muted); font-weight: 400;}
+
+/* ── CLIENTS ── */
+.cl-g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 50px; }
+.cl-c { background: var(--w); border: 1px solid var(--gm); border-radius: 20px; padding: 40px 24px; display: flex; flex-direction: column; align-items: center; gap: 16px; transition: all 0.4s var(--ease); cursor: pointer; }
+.cl-c:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); border-color: rgba(143,30,174,0.2); }
+.cl-logo-wrap { width: 90px; height: 90px; background: var(--w); display: flex; align-items: center; justify-content: center; transition: all 0.4s ease; margin-bottom: 10px; }
+.cl-logo-wrap img { width: 70%; height: 70%; object-fit: contain; transition: all 0.4s var(--ease); filter: grayscale(100%); opacity: 0.5; }
+.cl-c:hover .cl-logo-wrap img { filter: grayscale(0%); opacity: 1; transform: scale(1.1); }
+.cl-nm { font-family: var(--fh); font-size: 1.1rem; font-weight: 700; color: var(--k); letter-spacing: -.02em; }
+.cl-sub { font-size: .75rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .08em; }
+
+/* ── CONTACT ── */
+.ct-g { display: grid; grid-template-columns: 1fr 1.2fr; gap: 100px; align-items: start; margin-top: 50px; }
+.ct-tagline { font-family: var(--fh); font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.1; margin-bottom: 40px; color: var(--k); }
+.ct-tagline em { color: var(--p); font-style: normal; }
+.ct-items { display: flex; flex-direction: column; gap: 24px; margin-bottom: 40px; }
+.ct-item { display: flex; align-items: center; gap: 18px; }
+.ct-item-ic { width: 54px; height: 54px; border-radius: 14px; background: var(--w); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; border: 1px solid var(--gm); color: var(--p); box-shadow: 0 10px 20px rgba(0,0,0,0.02); }
+.ct-item-tx { font-size: 1rem; color: var(--muted); font-weight: 500; }
+.wa-btn { display: inline-flex; align-items: center; gap: 12px; background: #25D366; color: #fff; padding: 18px 36px; border-radius: 100px; font-weight: 600; font-size: 1rem; text-decoration: none; transition: all .4s var(--ease); margin-top: 20px; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.2); }
+.wa-btn:hover { background: #20ba59; transform: translateY(-4px); box-shadow: 0 15px 30px rgba(37, 211, 102, 0.3); }
+
+.ct-form { background: var(--w); border: 1px solid var(--gm); border-radius: 24px; padding: 50px; box-shadow: 0 25px 60px rgba(0,0,0,0.04); }
+.f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.fg { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.fg.full { grid-column: span 2; }
+.flb { font-size: .75rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.fi, .ft, .fs { background: var(--g); border: 1px solid var(--gm); border-radius: 12px; padding: 18px 20px; font-family: var(--fb); font-size: 1rem; color: var(--k); outline: none; transition: all .3s; width: 100%; }
+.fi:focus, .ft:focus, .fs:focus { border-color: var(--p); background: var(--w); box-shadow: 0 0 0 4px rgba(143,30,174,0.1); }
+.ft { min-height: 140px; resize: vertical; }
+.fsub { width: 100%; background: var(--p); color: #fff; border: none; padding: 20px; border-radius: 12px; font-family: var(--fb); font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 10px; transition: all .4s var(--ease); }
+.fsub:hover { background: var(--k); transform: translateY(-4px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+
+/* ── FOOTER ── */
+footer { background: var(--w); padding: 80px 5% 30px; border-top: 1px solid var(--gm); }
+.ft-g { display: grid; grid-template-columns: 2.5fr 1fr 1fr 1.5fr; gap: 60px; max-width: 1300px; margin: 0 auto 60px; }
+.ft-logo { font-family: var(--fh); font-size: 1.8rem; font-weight: 800; letter-spacing: -.04em; display: block; margin-bottom: 16px; text-decoration: none; }
+.ft-tag { font-size: .95rem; line-height: 1.8; color: var(--muted); max-width: 300px; margin-bottom: 24px; }
+.ft-col-ttl { font-family: var(--fh); font-size: .9rem; font-weight: 700; letter-spacing: .05em; color: var(--k); margin-bottom: 24px; }
+.ft-lks { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.ft-lks a { font-size: .95rem; color: var(--muted); text-decoration: none; transition: color .3s; }
+.ft-lks a:hover { color: var(--p); }
+.ft-bot { max-width: 1300px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding-top: 30px; border-top: 1px solid var(--gm); font-size: .85rem; color: var(--muted); }
+
+.ft-soc { display: flex; gap: 16px; }
+.ft-soc a { 
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 50%; background: var(--g);
+  border: 1px solid var(--gm); color: var(--muted);
+  transition: all 0.3s var(--ease);
+}
+.ft-soc a svg { width: 18px; height: 18px; fill: currentColor; }
+.ft-soc a:hover { background: var(--p); color: var(--w); border-color: var(--p); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(143, 30, 174, 0.2); }
+
+/* ── MOBILE RESPONSIVENESS (100% Native feel) ── */
+@media(max-width: 1024px) {
+  /* Flatten Orbit for Tablet/Mobile */
+  .svc-orbit-wrap { height: auto; perspective: none; margin-top: 20px; }
+  .svc-universe { position: relative; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; transform: none; inset: auto; }
+  .svc-center-star, .svc-ring-line { display: none; }
+  .svc-ring { animation: none !important; transform: none !important; width: 100%; height: auto; display: contents; }
+  .svc-arm, .svc-anti-spin, .svc-anti-arm, .svc-stand-up { position: relative; transform: none !important; animation: none !important; width: 100%; height: auto; left: auto; top: auto; margin: 0; }
+  .svc-c { position: relative; width: 100%; height: auto !important; margin: 0; left: auto; top: auto; padding: 30px; transform: none !important; transition: transform 0.4s ease; }
+  .svc-c:hover { transform: translateY(-5px) !important; margin-top: 0; }
+  .svc-ic-wrap { flex-direction: column; justify-content: center; }
+  .svc-nm { text-align: center; font-size: 1.1rem; margin-top: 10px; }
+  .svc-ds-wrap { opacity: 1; transform: none; display: block; margin-top: 15px; }
+  
+  .about-g { grid-template-columns: 1fr; gap: 50px; }
+  .about-vis { height: 450px; order: -1; }
+  .ct-g { grid-template-columns: 1fr; gap: 60px; }
+}
+
+@media(max-width: 768px) {
+  body { cursor: auto; }
+  #cursor, #cursor-follower { display: none; }
+  
+  nav { padding: 0 5%; }
+  .nlinks { display: none; }
+  .nlinks.open { display: flex; flex-direction: column; position: fixed; top: 75px; left: 0; right: 0; background: rgba(255,255,255,0.98); padding: 30px 5%; gap: 25px; border-bottom: 1px solid var(--gm); z-index: 999; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+  .nlinks.open a { color: var(--k); font-size: 1.1rem; }
+  .hbg { display: flex; }
+  
+  #hero { height: auto; min-height: 100vh; }
+  .hero-content-wrapper { padding: 120px 5% 40px; }
+  .hero-grid { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+  .h-ctas { justify-content: center; }
+  .h-sub { margin-left: auto; margin-right: auto; }
+  .video-preview-card { width: 100%; max-width: 320px; height: 450px; margin: 0 auto; }
+  .mq-stack { padding: 20px 0; }
+  .mq-item { width: 100px; height: 40px; }
+  
+  .inner-section { padding: 80px 5%; }
+  .svc-universe { grid-template-columns: 1fr; } 
+  .cl-g { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .f-row { grid-template-columns: 1fr; }
+  .ct-form { padding: 30px 20px; }
+  .ft-g { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+  .ft-tag { margin: 0 auto 24px; }
+  .ft-bot { flex-direction: column; gap: 20px; text-align: center; }
+}
+
+@media(max-width: 480px) {
+  .h1 { font-size: 2.5rem; }
+  .h-ctas { flex-direction: column; width: 100%; }
+  .h-ctas a { width: 100%; text-align: center; justify-content: center; }
+  .cl-g { grid-template-columns: 1fr; }
+  .about-vis { height: 300px; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-follower"></div>
+
+<nav id="nav">
+  <a href="#hero" class="nlogo hover-target">
+    <span class="nlogo-claim">Claim</span><span class="nlogo-fame">Fame</span>
+  </a>
+  <ul class="nlinks" id="nl">
+    <li><a href="#about-wrap" class="hover-target">About</a></li>
+    <li><a href="#services-wrap" class="hover-target">Services</a></li>
+    <li><a href="#clients-wrap" class="hover-target">Clients</a></li>
+    <li><a href="#contact-wrap" class="ncta hover-target">Get In Touch</a></li>
+  </ul>
+  <div class="hbg hover-target" id="hbg"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="page-section" id="hero">
+  <div class="hero-bg-accent"></div>
+  
+  <div class="hero-content-wrapper">
+    <div class="hero-grid">
+      <div class="hero-text reveal-up">
+        <div class="h-tag">Claim Fame - The real fame story starts here!</div>
+        <h1 class="h1">Building Brands<br/>Through <em class="nlogo-claim">Influence.</em></h1>
+        <p class="h-sub">Your one-stop creative powerhouse for influencer marketing, social media, PR, performance & production. No fluff — just razor-sharp strategy.</p>
+        <div class="h-ctas">
+          <a href="#contact-wrap" class="btn-p hover-target">Get In Touch</a>
+          <a href="#services-wrap" class="btn-s hover-target">View Our Work</a>
+        </div>
+      </div>
+      
+      <div class="hero-visual reveal-up d-1">
+        <div class="video-preview-card">
+          <video autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=600&auto=format&fit=crop">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+          </video>
+          <div class="v-play-btn hover-target">▶</div>
+          <div class="v-badge"><span></span> Trending Now</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mq-stack reveal-up d-2">
+    <div class="mq-label">Brands We've Collaborated With</div>
+    <div class="mq-belt">
+      <div class="mq-item hover-target"><img src="assets/kapiva-logo.png" alt="Kapiva"></div>
+      <div class="mq-item hover-target"><img src="assets/zouk-logo.webp" alt="Zouk"></div>
+      <div class="mq-item hover-target"><img src="assets/louis-stitch-logo.jpg" alt="Louis Stitch"></div>
+      <div class="mq-item hover-target"><img src="assets/mama-earth-logo.png" alt="Mamaearth"></div>
+      <div class="mq-item hover-target"><img src="assets/wow-skin-logo.jpg" alt="WOW Skin"></div>
+      <div class="mq-item hover-target"><img src="assets/mcaffeine-logo.png" alt="mCaffeine"></div>
+      <div class="mq-item hover-target"><img src="assets/boat-logo.webp" alt="boAt"></div>
+      <div class="mq-item hover-target"><img src="assets/sugar-logo.jpg" alt="Sugar"></div>
+      <div class="mq-item hover-target"><img src="assets/kapiva-logo.png" alt="Kapiva"></div>
+      <div class="mq-item hover-target"><img src="assets/zouk-logo.webp" alt="Zouk"></div>
+      <div class="mq-item hover-target"><img src="assets/louis-stitch-logo.jpg" alt="Louis Stitch"></div>
+      <div class="mq-item hover-target"><img src="assets/mama-earth-logo.png" alt="Mamaearth"></div>
+      <div class="mq-item hover-target"><img src="assets/wow-skin-logo.jpg" alt="WOW Skin"></div>
+      <div class="mq-item hover-target"><img src="assets/mcaffeine-logo.png" alt="mCaffeine"></div>
+      <div class="mq-item hover-target"><img src="assets/boat-logo.webp" alt="boAt"></div>
+      <div class="mq-item hover-target"><img src="assets/sugar-logo.jpg" alt="Sugar"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-section" id="about-wrap">
+  <section class="inner-section">
+    <div class="sec-inner">
+      <div class="about-g">
+        <div class="about-vis reveal-up">
+           <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop" alt="Claim Fame Team">
+        </div>
+        <div class="about-txt reveal-up d-1">
+          <div class="sec-ey">Who We Are</div>
+          <h2 class="sec-ttl">We Exist for Brands That Want to Trend.</h2>
+          <p>
+            <strong>Claim Fame</strong>—based in Delhi, stirring things up globally—is your one-stop shop for all your marketing needs. We handle the heavy lifting across influencer marketing, social media, PR, performance marketing, and production, turning your wild ideas into conversations people actually want to have. 
+            <br/><br/>
+            No fluff, no fake hype. Just razor-sharp strategy and execution that feels <strong>100% real.</strong> We don’t just build campaigns. We build presence.
+          </p>
+          <a href="#contact-wrap" class="btn-p hover-target" style="margin-top: 10px;">Partner With Us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="page-section bg-gray" id="services-wrap">
+  <section class="inner-section" style="border-top: 1px solid var(--gm);">
+    <div class="sec-inner">
+      <div class="svc-hd reveal-up">
+        <div class="sec-ey" style="justify-content: center;">Our Expertise</div>
+        <h2 class="sec-ttl">What We Do</h2>
+      </div>
+
+      <div class="svc-orbit-wrap reveal-up d-1">
+        <div class="svc-universe">
+          <div class="svc-center-star">CLAIM<br/>FAME<br/><span>Services</span></div>
+          <div class="svc-ring-line r1"></div>
+          <div class="svc-ring-line r2"></div>
+
+          <div class="svc-ring">
+            <div class="svc-arm" style="transform: rotateZ(0deg) translateY(-450px);">
+              <div class="svc-anti-spin">
+                <div class="svc-anti-arm" style="transform: rotateZ(0deg);">
+                  <div class="svc-stand-up">
+                    <div class="svc-c">
+                      <div class="svc-ic-wrap"><div class="svc-ic">🎯</div><div class="svc-nm">Campaign Strategy</div></div>
+                      <div class="svc-ds-wrap"><div class="svc-ds">Data-driven blueprints built around your brand's unique goals and target audience — from concept to execution.</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="svc-arm" style="transform: rotateZ(51.4deg) translateY(-450px);">
+              <div class="svc-anti-spin">
+                <div class="svc-anti-arm" style="transform: rotateZ(-51.4deg);">
+                  <div class="svc-stand-up">
+                    <div class="svc-c">
+                      <div class="svc-ic-wrap"><div class="svc-ic">🤝</div><div class="svc-nm">Influencer Marketing</div></div>
+                      <div class="svc-ds-wrap"><div class="svc-ds">Access our verified creator network of 1200+. Nano to mega — we match the right voice to your brand.</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="svc-arm" style="transform: rotateZ(102.8deg) translateY(-450px);">
+              <div class="svc-anti-spin">
+                <div class="svc-anti-arm" style="transform: rotateZ(-102.8deg);">
+                  <div class="svc-stand-up">
+                    <div class="svc-c">
+                      <div class="svc-ic-wrap"><div class="svc-ic">😄</div><div class="svc-nm">Meme Marketing</div></div>
+                      <div class="svc-ds-wrap"><div class="svc-ds">We speak internet fluently. Viral-first content that inserts your brand into culture without feeling forced.</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="svc-arm" style="transform: rotateZ(154.2deg) translateY(-450px);">
+              <div class="svc-anti-spin">
+                <div class="svc-anti-arm" style="transform: rotateZ(-154.2deg);">
+                  <div class="svc-stand-up">
+                    <div class="svc-c">
+                      <div class="svc-ic-wrap"><div class="svc-ic">🎬</div><div class="svc-nm">Content Production</div></div>
+                      <div class="svc-ds-wrap"><div class="svc-ds">End-to-end production: scripting, shooting, editing and delivery of brand-quality video and photo content.</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="svc-arm" style="transform: rotateZ(205.7deg) translateY(-450px);">
+              <div class="svc-anti-spin">
+                <div class="svc-anti-arm" style="transform: rotateZ(-205.7deg);">
+                  <div class="svc-stand-up">
+                    <div class="svc-c">
+                      <div class="svc-ic-wrap"><div class="svc-ic">🔗</div><div class="svc-nm">Brand Collabs</div></div>
+                      <div class="svc-ds-wrap"><div class="svc-ds">Powerful brand-to-brand deals that expand reach, credibility and audience without the heavy ad spend.</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="svc-arm" style="transform: rotateZ(257.1deg) translateY(-450px);">
+              <div class="svc-anti-spin">
+                <div class="svc-anti-arm" style="transform: rotateZ(-257.1deg);">
+                  <div class="svc-stand-up">
+                    <div class="svc-c">
+                      <div class="svc-ic-wrap"><div class="svc-ic">📈</div><div class="svc-nm">Performance</div></div>
+                      <div class="svc-ds-wrap"><div class="svc-ds">High-ROI performance campaigns engineered to drive measurable conversions and scalable growth.</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="svc-arm" style="transform: rotateZ(308.5deg) translateY(-450px);">
+              <div class="svc-anti-spin">
+                <div class="svc-anti-arm" style="transform: rotateZ(-308.5deg);">
+                  <div class="svc-stand-up">
+                    <div class="svc-c">
+                      <div class="svc-ic-wrap"><div class="svc-ic">📱</div><div class="svc-nm">UGC Content</div></div>
+                      <div class="svc-ds-wrap"><div class="svc-ds">Authentic, scalable user-generated content that converts. Real people, real voices, real results.</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="page-section" id="clients-wrap">
+  <section class="inner-section" style="border-top: 1px solid var(--gm);">
+    <div class="sec-inner">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div class="sec-ey reveal-up">Our Clients</div>
+        <h2 class="sec-ttl reveal-up d-1">The Brands We Scale</h2>
+      </div>
+      
+      <div class="cl-g">
+        <div class="cl-c reveal-up hover-target"><div class="cl-logo-wrap"><img src="assets/kapiva-logo.png" alt="Kapiva"></div><div class="cl-nm">Kapiva</div><div class="cl-sub">Wellness</div></div>
+        <div class="cl-c reveal-up d-1 hover-target"><div class="cl-logo-wrap"><img src="assets/zouk-logo.webp" alt="Zouk"></div><div class="cl-nm">Zouk</div><div class="cl-sub">Accessories</div></div>
+        <div class="cl-c reveal-up d-2 hover-target"><div class="cl-logo-wrap"><img src="assets/louis-stitch-logo.jpg" alt="Louis Stitch"></div><div class="cl-nm">Louis Stitch</div><div class="cl-sub">Menswear</div></div>
+        <div class="cl-c reveal-up d-3 hover-target"><div class="cl-logo-wrap"><img src="assets/mama-earth-logo.png" alt="Mamaearth"></div><div class="cl-nm">Mamaearth</div><div class="cl-sub">Beauty</div></div>
+        <div class="cl-c reveal-up hover-target"><div class="cl-logo-wrap"><img src="assets/wow-skin-logo.jpg" alt="WOW Skin"></div><div class="cl-nm">WOW Skin</div><div class="cl-sub">Skincare</div></div>
+        <div class="cl-c reveal-up d-1 hover-target"><div class="cl-logo-wrap"><img src="assets/mcaffeine-logo.png" alt="mCaffeine"></div><div class="cl-nm">mCaffeine</div><div class="cl-sub">D2C</div></div>
+        <div class="cl-c reveal-up d-2 hover-target"><div class="cl-logo-wrap"><img src="assets/boat-logo.webp" alt="boAt"></div><div class="cl-nm">boAt</div><div class="cl-sub">Electronics</div></div>
+        <div class="cl-c reveal-up d-3 hover-target"><div class="cl-logo-wrap"><img src="assets/sugar-logo.jpg" alt="Sugar"></div><div class="cl-nm">Sugar</div><div class="cl-sub">Cosmetics</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="page-section bg-gray" id="contact-wrap">
+  <section class="inner-section" style="border-top: 1px solid var(--gm);">
+    <div class="sec-inner">
+      <div class="sec-ey reveal-up">Get In Touch</div>
+      <div class="ct-g">
+        <div class="reveal-up d-1">
+          <div class="ct-tagline">Let's Build Something<br/><em class="nlogo-claim">Great Together.</em></div>
+          <div class="ct-items">
+            <div class="ct-item hover-target"><div class="ct-item-ic">📧</div><div class="ct-item-tx"><a href="mailto:hello@letsclaimfame.com">hello@letsclaimfame.com</a></div></div>
+            <div class="ct-item hover-target"><div class="ct-item-ic">📞</div><div class="ct-item-tx"><a href="tel:+911234567890">+91 12345 67890</a></div></div>
+            <div class="ct-item"><div class="ct-item-ic">📍</div><div class="ct-item-tx">New Delhi, India · Working Globally</div></div>
+          </div>
+          <a href="https://wa.me/911234567890" class="wa-btn hover-target" target="_blank">Chat on WhatsApp</a>
+        </div>
+        <div class="ct-form reveal-up d-2">
+          <div class="f-row">
+            <div class="fg"><label class="flb">Name</label><input type="text" class="fi hover-target" placeholder="Your Name"/></div>
+            <div class="fg"><label class="flb">Email</label><input type="email" class="fi hover-target" placeholder="brand@email.com"/></div>
+          </div>
+          <div class="f-row">
+            <div class="fg"><label class="flb">Brand</label><input type="text" class="fi hover-target" placeholder="Your Brand"/></div>
+            <div class="fg"><label class="flb">Phone</label><input type="tel" class="fi hover-target" placeholder="+91 00000 00000"/></div>
+          </div>
+          <div class="fg full">
+            <label class="flb">Service</label>
+            <select class="fs fi hover-target">
+              <option value="" disabled selected>Select a service</option>
+              <option>Campaign Strategy</option>
+              <option>Influencer Marketing</option>
+              <option>Meme Marketing</option>
+              <option>Content Production</option>
+              <option>Brand Collabs</option>
+              <option>Performance</option>
+              <option>UGC Content</option>
+            </select>
+          </div>
+          <div class="fg full">
+            <label class="flb">Message</label>
+            <textarea class="ft hover-target" placeholder="Tell us about your brand goals..."></textarea>
+          </div>
+          <button class="fsub hover-target" onclick="submitForm(this)">Send Message →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="ft-g">
+      <div class="reveal-up">
+        <a href="#hero" class="ft-logo"><span class="nlogo-claim">Claim</span><span class="nlogo-fame">Fame</span></a>
+        <p class="ft-tag">Delhi-based influencer marketing & creative media agency. The real fame story starts here.</p>
+      </div>
+      <div class="reveal-up d-1">
+        <div class="ft-col-ttl">Quick Links</div>
+        <ul class="ft-lks">
+          <li><a href="#hero" class="hover-target">Home</a></li>
+          <li><a href="#about-wrap" class="hover-target">About Us</a></li>
+          <li><a href="#clients-wrap" class="hover-target">Clients</a></li>
+        </ul>
+      </div>
+      <div class="reveal-up d-2">
+        <div class="ft-col-ttl">Services</div>
+        <ul class="ft-lks">
+          <li><a href="#services-wrap" class="hover-target">Influencer Marketing</a></li>
+          <li><a href="#services-wrap" class="hover-target">Campaign Strategy</a></li>
+          <li><a href="#services-wrap" class="hover-target">Content Production</a></li>
+          <li><a href="#services-wrap" class="hover-target">UGC Content</a></li>
+        </ul>
+      </div>
+      <div class="reveal-up d-3">
+        <div class="ft-col-ttl">Contact</div>
+        <ul class="ft-lks">
+          <li><a href="mailto:hello@letsclaimfame.com" class="hover-target">hello@letsclaimfame.com</a></li>
+          <li><a href="#" class="hover-target">+91 12345 67890</a></li>
+          <li><a href="#" class="hover-target">New Delhi, India</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bot reveal-up">
+      <span>© 2025 Claim Fame. All rights reserved.</span>
+      
+      <div class="ft-soc">
+        <a href="#" class="hover-target" aria-label="Instagram">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </a>
+        <a href="#" class="hover-target" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+        </a>
+        <a href="#" class="hover-target" aria-label="X">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 4.076H5.036z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+// ── MAGNETIC CURSOR ──
+const cursor = document.getElementById('cursor');
+const follower = document.getElementById('cursor-follower');
+let mouseX = 0, mouseY = 0, fX = 0, fY = 0;
+
+if(window.innerWidth > 768) {
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+  });
+
+  function animateCursor() {
+    fX += (mouseX - fX) * 0.15; 
+    fY += (mouseY - fY) * 0.15;
+    follower.style.transform = `translate3d(${fX}px, ${fY}px, 0)`;
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  document.querySelectorAll('a, button, input, textarea, select, .hover-target').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('link-hover'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('link-hover'));
+  });
+}
+
+// ── NAV SCROLL & MOBILE MENU ──
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40));
+const hbg = document.getElementById('hbg'), nl = document.getElementById('nl');
+hbg.addEventListener('click', () => nl.classList.toggle('open'));
+
+// ── SUBTLE SCROLL REVEALS (CLEAN NATIVE FEEL) ──
+const revealOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+const revealObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) {
+      entry.target.classList.add('in-view');
+      observer.unobserve(entry.target); 
+    }
+  });
+}, revealOptions);
+document.querySelectorAll('.reveal-up').forEach(el => revealObserver.observe(el));
+
+// ── FORM SUBMISSION ──
+function submitForm(btn){
+  btn.textContent = 'Sending…'; btn.style.opacity = '.7';
+  setTimeout(() => {
+    btn.textContent = '✓ Message Sent!';
+    btn.style.background = '#16a34a'; btn.style.opacity = '1';
+    btn.style.transform = 'none';
+  }, 1200);
+}
+</script>
+</body>
+</html>
