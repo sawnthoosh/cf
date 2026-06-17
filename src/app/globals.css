@@ -898,8 +898,8 @@ footer {
 }
 /* ── BRAND LOGO LOGIC ── */
 .nav-brand-logo {
-  height: 45px;
-  width: auto;
+  width: 175px;
+  height: auto;
   object-fit: contain;
   opacity: 0; /* Hidden by default at the top of the page */
   transform: translateY(10px);
