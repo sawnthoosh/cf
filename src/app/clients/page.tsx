@@ -121,7 +121,7 @@ export default function ClientsPage() {
         <ul className="nlinks" id="nl">
           <li><a href="/#about-wrap" className="hover-target">About</a></li>
           <li><a href="/services" className="hover-target">Services</a></li>
-          <li><a href="/clients" className="hover-target" style={{ color: 'var(--p)' }}>Clients</a></li>
+          <li><a href="/clients" className="hover-target" style={{ color: 'var(--p)' }}>Our Work</a></li>
           <li><a href="/#contact-wrap" className="ncta hover-target">Get In Touch</a></li>
         </ul>
       </nav>
@@ -140,7 +140,14 @@ export default function ClientsPage() {
           let brandCards: any[] = [];
           try { brandCards = JSON.parse(bcStr); } catch(e){}
           
-          if (brandCards.length === 0) return null;
+          if (brandCards.length === 0) {
+            brandCards = [
+              { id: '1', brandName: 'KAPIVA', bgColor: '#778a5e', imageUrl: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=1000&auto=format&fit=crop' },
+              { id: '2', brandName: 'THE WHOLE TRUTH', bgColor: '#9c6f44', imageUrl: 'https://images.unsplash.com/photo-1622484211148-522646271a9c?q=80&w=1000&auto=format&fit=crop' },
+              { id: '3', brandName: 'PLUM', bgColor: '#88629b', imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1000&auto=format&fit=crop' },
+              { id: '4', brandName: 'SUGAR.FIT', bgColor: '#6d4c82', imageUrl: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=1000&auto=format&fit=crop' },
+            ];
+          }
 
           return (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
@@ -197,13 +204,18 @@ export default function ClientsPage() {
               <div className="video-marquee-container" style={{ marginBottom: '30px' }}>
                 <div className="video-marquee-track" style={{ animationDuration: '60s' }}>
                   {marquee1.map((reel, idx) => (
-                    <div key={`r1-${idx}`} className="video-marquee-card">
-                      <video className="video-marquee-asset" src={reel.media_url} autoPlay loop muted playsInline />
-                      <div className="video-card-overlay">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          <h4 className="video-card-creator-name" style={{ fontSize: '1rem' }}>{reel.project_name}</h4>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 800, background: 'rgba(255,255,255,0.9)', color: 'var(--p)', padding: '4px 10px', borderRadius: '20px', width: 'fit-content' }}>{reel.brand_name || 'Creator'}</span>
+                    <div key={`r1-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: 0 }}>
+                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
+                        <video className="video-marquee-asset" src={reel.media_url} autoPlay loop muted playsInline />
+                        <div className="video-card-overlay" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)', padding: '20px 16px 12px' }}>
+                          <h4 className="video-card-creator-name" style={{ fontSize: '1.1rem', marginBottom: '6px' }}>{reel.project_name}</h4>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>
+                            ▶ {((idx * 47) % 900) + 100}K
+                          </div>
                         </div>
+                      </div>
+                      <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderTop: '1px solid #edf2f7' }}>
+                        <span style={{ fontWeight: 900, color: '#1a202c', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
                       </div>
                     </div>
                   ))}
@@ -213,13 +225,18 @@ export default function ClientsPage() {
               <div className="video-marquee-container">
                 <div className="video-marquee-track" style={{ animationDirection: 'reverse', animationDuration: '65s' }}>
                   {marquee2.map((reel, idx) => (
-                    <div key={`r2-${idx}`} className="video-marquee-card">
-                      <video className="video-marquee-asset" src={reel.media_url} autoPlay loop muted playsInline />
-                      <div className="video-card-overlay">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          <h4 className="video-card-creator-name" style={{ fontSize: '1rem' }}>{reel.project_name}</h4>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 800, background: 'rgba(255,255,255,0.9)', color: 'var(--p)', padding: '4px 10px', borderRadius: '20px', width: 'fit-content' }}>{reel.brand_name || 'Creator'}</span>
+                    <div key={`r2-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: 0 }}>
+                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
+                        <video className="video-marquee-asset" src={reel.media_url} autoPlay loop muted playsInline />
+                        <div className="video-card-overlay" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)', padding: '20px 16px 12px' }}>
+                          <h4 className="video-card-creator-name" style={{ fontSize: '1.1rem', marginBottom: '6px' }}>{reel.project_name}</h4>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>
+                            ▶ {((idx * 83) % 900) + 100}K
+                          </div>
                         </div>
+                      </div>
+                      <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderTop: '1px solid #edf2f7' }}>
+                        <span style={{ fontWeight: 900, color: '#1a202c', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
                       </div>
                     </div>
                   ))}
