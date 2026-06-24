@@ -133,81 +133,101 @@ export default function ClientsPage() {
         </h2>
       </div>
 
-      {/* ── BRAND MARQUEES ── */}
+      {/* ── BRAND CARDS SECTION ── */}
+      <div className="page-section" style={{ padding: '0 5% 80px', maxWidth: '1400px', margin: '0 auto' }}>
+        {(() => {
+          const bcStr = content['brand_cards_data'] || '[]';
+          let brandCards: any[] = [];
+          try { brandCards = JSON.parse(bcStr); } catch(e){}
+          
+          if (brandCards.length === 0) return null;
+
+          return (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+              {brandCards.map(c => (
+                <div key={c.id} className="reveal-up" style={{ background: c.bgColor, borderRadius: '24px', overflow: 'hidden', position: 'relative', padding: '30px', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', aspectRatio: '1/1', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <img src={c.imageUrl} alt={c.brandName} style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'absolute', top: 0, left: 0, padding: '20px', zIndex: 1 }} />
+                  <div style={{ position: 'absolute', top: 20, left: 20, background: '#fff', color: c.bgColor, padding: '6px 12px', borderRadius: '30px', fontWeight: 800, fontSize: '0.8rem', zIndex: 2, fontFamily: 'var(--fh)' }}>
+                    {c.brandName}
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* ── 2 ROWS MIXED MARQUEES ── */}
       <div style={{ paddingBottom: '120px', overflow: 'hidden' }}>
-        {targetBrands.map((brandName, bIndex) => {
+        {(() => {
+          let allReels: any[] = [];
+          targetBrands.forEach(brand => {
+            const brandVideos = portfolio.filter(v => v.brand_name === brand);
+            if (brandVideos.length > 0) {
+              allReels.push(...brandVideos);
+            } else {
+              allReels.push(...getDefaultReelsForBrand(brand));
+            }
+          });
+
+          // Shuffle for a good mix
+          allReels = allReels.sort(() => 0.5 - Math.random());
           
-          // 1. Filter videos by this specific brand name
-          const brandVideos = portfolio.filter(v => v.brand_name === brandName);
-          
-          // 2. Use real videos if they exist, otherwise use the brand-specific default reels
-          const displayVideos = brandVideos.length > 0 ? brandVideos : getDefaultReelsForBrand(brandName);
-          
-          // Helper to generate infinite marquee reels
+          const midpoint = Math.ceil(allReels.length / 2);
+          const row1 = allReels.slice(0, midpoint);
+          const row2 = allReels.slice(midpoint);
+
           const getMarqueeItems = (items: any[]) => {
             if (items.length === 0) return [];
             let repeated = [...items];
-            while (repeated.length < 10) {
+            while (repeated.length < 15) {
               repeated = [...repeated, ...items];
             }
             return [...repeated, ...repeated];
           };
 
-          const marqueeReels = getMarqueeItems(displayVideos);
+          const marquee1 = getMarqueeItems(row1);
+          const marquee2 = getMarqueeItems(row2);
 
           return (
-            <div key={bIndex} style={{ marginBottom: '100px' }} className="reveal-up">
-              
-              {/* Brand Name Title */}
-              <h3 
-                style={{ 
-                  fontFamily: 'var(--fh)', 
-                  fontSize: 'clamp(2.5rem, 5vw, 4rem)', 
-                  fontWeight: 900, 
-                  textAlign: 'center', 
-                  color: 'var(--k)',
-                  marginBottom: '20px',
-                  letterSpacing: '-0.03em'
-                }}
-              >
-                {brandName}
-              </h3>
-
-              {/* The Horizontal Scrolling Marquee for this Brand */}
-              <div className="video-marquee-container">
-                <div 
-                  className="video-marquee-track"
-                  style={{ 
-                    animationDirection: bIndex % 2 === 0 ? 'normal' : 'reverse',
-                    animationDuration: '40s'
-                  }}
-                >
-                  {marqueeReels.map((reel, idx) => {
-                    return (
-                      <div
-                        key={`${brandName}-${idx}`}
-                        className="video-marquee-card"
-                        style={{ background: 'var(--gm)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px', border: '1px solid var(--p)' }}
-                      >
-                        <div style={{ color: 'var(--p)', fontSize: '1.4rem', fontWeight: 800, textAlign: 'center', marginBottom: '10px', fontFamily: 'var(--fh)' }}>
-                          {reel.project_name || 'Creator'}
-                        </div>
-                        <div style={{ color: 'var(--k)', fontSize: '1.1rem', fontWeight: 600, textAlign: 'center' }}>
-                          {brandName}
+            <div className="reveal-up">
+              <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                <h3 style={{ fontFamily: 'var(--fh)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: 'var(--k)' }}>Campaign Reels That Delivered</h3>
+              </div>
+              <div className="video-marquee-container" style={{ marginBottom: '30px' }}>
+                <div className="video-marquee-track" style={{ animationDuration: '60s' }}>
+                  {marquee1.map((reel, idx) => (
+                    <div key={`r1-${idx}`} className="video-marquee-card">
+                      <video className="video-marquee-asset" src={reel.media_url} autoPlay loop muted playsInline />
+                      <div className="video-card-overlay">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <h4 className="video-card-creator-name" style={{ fontSize: '1rem' }}>{reel.project_name}</h4>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 800, background: 'rgba(255,255,255,0.9)', color: 'var(--p)', padding: '4px 10px', borderRadius: '20px', width: 'fit-content' }}>{reel.brand_name || 'Creator'}</span>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </div>
               </div>
-              
-              {/* Soft divider line between brands */}
-              {bIndex !== targetBrands.length - 1 && (
-                <div style={{ width: '80%', height: '1px', background: 'var(--gm)', margin: '80px auto 0' }} />
-              )}
+
+              <div className="video-marquee-container">
+                <div className="video-marquee-track" style={{ animationDirection: 'reverse', animationDuration: '65s' }}>
+                  {marquee2.map((reel, idx) => (
+                    <div key={`r2-${idx}`} className="video-marquee-card">
+                      <video className="video-marquee-asset" src={reel.media_url} autoPlay loop muted playsInline />
+                      <div className="video-card-overlay">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <h4 className="video-card-creator-name" style={{ fontSize: '1rem' }}>{reel.project_name}</h4>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 800, background: 'rgba(255,255,255,0.9)', color: 'var(--p)', padding: '4px 10px', borderRadius: '20px', width: 'fit-content' }}>{reel.brand_name || 'Creator'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           );
-        })}
+        })()}
       </div>
 
       {/* ── FOOTER ── */}
