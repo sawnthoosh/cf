@@ -119,7 +119,7 @@ export default function ClientsPage() {
           <img src="/ClaimFameDP-removebg-preview.png" alt="Claim Fame" className="nav-brand-logo" />
         </a>
         <ul className="nlinks" id="nl">
-          <li><a href="/#about-wrap" className="hover-target">About</a></li>
+          <li><a href="/" className="hover-target">Home</a></li>
           <li><a href="/services" className="hover-target">Services</a></li>
           <li><a href="/clients" className="hover-target" style={{ color: 'var(--p)' }}>Our Work</a></li>
           <li><a href="/#contact-wrap" className="ncta hover-target">Get In Touch</a></li>
@@ -152,7 +152,7 @@ export default function ClientsPage() {
           return (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
               {brandCards.map((c: any) => (
-                <div key={c.id} className="reveal-up" style={{ borderRadius: '24px', overflow: 'hidden', position: 'relative', color: '#fff', display: 'flex', flexDirection: 'column', height: '400px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+                <div key={c.id} style={{ borderRadius: '24px', overflow: 'hidden', position: 'relative', color: '#fff', display: 'flex', flexDirection: 'column', height: '400px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
                   
                   {/* Background Image & Color Overlay */}
                   <img src={c.imageUrl} alt={c.brandName} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 1 }} />
@@ -236,18 +236,27 @@ export default function ClientsPage() {
                 <div className="video-marquee-track" style={{ animationDuration: '60s' }}>
                   {marquee1.map((reel, idx) => (
                     <div key={`r1-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: 0 }}>
-                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
-                        <video className="video-marquee-asset" src={reel.media_url} autoPlay loop muted playsInline />
-                        <div className="video-card-overlay" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)', padding: '20px 16px 12px' }}>
-                          <h4 className="video-card-creator-name" style={{ fontSize: '1.1rem', marginBottom: '6px' }}>{reel.project_name}</h4>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>
-                            ▶ {((idx * 47) % 900) + 100}K
-                          </div>
-                        </div>
-                      </div>
-                      <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderTop: '1px solid #edf2f7' }}>
-                        <span style={{ fontWeight: 900, color: '#1a202c', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
-                      </div>
+                      {(() => {
+                        const [videoSrc, externalUrl] = (reel.media_url || '').split('|||');
+                        const content = (
+                          <>
+                            <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
+                              <video className="video-marquee-asset" src={videoSrc} autoPlay loop muted playsInline />
+                              <div className="video-card-overlay" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)', padding: '20px 16px 12px' }}>
+                                <h4 className="video-card-creator-name" style={{ fontSize: '1.1rem', marginBottom: '6px' }}>{reel.project_name}</h4>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>
+                                  ▶ {((idx * 47) % 900) + 100}K
+                                </div>
+                                {externalUrl && <span style={{ fontSize: '0.8rem', background: 'var(--p)', padding: '4px 8px', borderRadius: '4px', marginTop: '6px', display: 'inline-block', color: '#fff' }}>View Original ↗</span>}
+                              </div>
+                            </div>
+                            <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderTop: '1px solid #edf2f7' }}>
+                              <span style={{ fontWeight: 900, color: '#1a202c', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
+                            </div>
+                          </>
+                        );
+                        return externalUrl ? <a href={externalUrl} target="_blank" rel="noreferrer" style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'inherit', textDecoration: 'none' }}>{content}</a> : content;
+                      })()}
                     </div>
                   ))}
                 </div>
@@ -257,18 +266,27 @@ export default function ClientsPage() {
                 <div className="video-marquee-track" style={{ animationDirection: 'reverse', animationDuration: '65s' }}>
                   {marquee2.map((reel, idx) => (
                     <div key={`r2-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: 0 }}>
-                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
-                        <video className="video-marquee-asset" src={reel.media_url} autoPlay loop muted playsInline />
-                        <div className="video-card-overlay" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)', padding: '20px 16px 12px' }}>
-                          <h4 className="video-card-creator-name" style={{ fontSize: '1.1rem', marginBottom: '6px' }}>{reel.project_name}</h4>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>
-                            ▶ {((idx * 83) % 900) + 100}K
-                          </div>
-                        </div>
-                      </div>
-                      <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderTop: '1px solid #edf2f7' }}>
-                        <span style={{ fontWeight: 900, color: '#1a202c', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
-                      </div>
+                      {(() => {
+                        const [videoSrc, externalUrl] = (reel.media_url || '').split('|||');
+                        const content = (
+                          <>
+                            <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
+                              <video className="video-marquee-asset" src={videoSrc} autoPlay loop muted playsInline />
+                              <div className="video-card-overlay" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)', padding: '20px 16px 12px' }}>
+                                <h4 className="video-card-creator-name" style={{ fontSize: '1.1rem', marginBottom: '6px' }}>{reel.project_name}</h4>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>
+                                  ▶ {((idx * 83) % 900) + 100}K
+                                </div>
+                                {externalUrl && <span style={{ fontSize: '0.8rem', background: 'var(--p)', padding: '4px 8px', borderRadius: '4px', marginTop: '6px', display: 'inline-block', color: '#fff' }}>View Original ↗</span>}
+                              </div>
+                            </div>
+                            <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderTop: '1px solid #edf2f7' }}>
+                              <span style={{ fontWeight: 900, color: '#1a202c', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
+                            </div>
+                          </>
+                        );
+                        return externalUrl ? <a href={externalUrl} target="_blank" rel="noreferrer" style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'inherit', textDecoration: 'none' }}>{content}</a> : content;
+                      })()}
                     </div>
                   ))}
                 </div>

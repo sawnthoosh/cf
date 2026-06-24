@@ -21,7 +21,7 @@ export default function ServicesPage() {
           <img src="/ClaimFameDP-removebg-preview.png" alt="Claim Fame" className="nav-brand-logo" />
         </a>
         <ul className="nlinks" id="nl">
-          <li><a href="/#about-wrap">About</a></li>
+          <li><a href="/">Home</a></li>
           <li><a href="/services" style={{ color: 'var(--p)' }}>Services</a></li>
           <li><a href="/clients">Clients</a></li>
           <li><a href="/#contact-wrap" className="ncta">Get In Touch</a></li>

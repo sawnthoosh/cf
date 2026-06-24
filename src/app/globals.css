@@ -27,7 +27,6 @@ html, body {
   font-family: var(--fb); 
   overflow-x: hidden;
   scroll-behavior: smooth;
-  cursor: none; /* Cursor handled globally */
 }
 
 /* ── MAGNETIC CURSOR ── */
@@ -61,13 +60,14 @@ html, body {
 }
 
 body.link-hover #cursor { 
-  opacity: 0; 
+  opacity: 0.2; 
 }
 
 body.link-hover #cursor-follower {
   width: 60px; 
   height: 60px; 
-  background: rgba(143, 30, 174, 0.08);
+  background: rgba(143, 30, 174, 0.2);
+  mix-blend-mode: difference;
   border-color: var(--p); 
   backdrop-filter: blur(2px);
 }

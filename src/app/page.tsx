@@ -138,7 +138,7 @@ export default function Home() {
           <img src="/ClaimFameDP-removebg-preview.png" alt="Claim Fame" className="nav-brand-logo" />
         </a>
         <ul className="nlinks" id="nl">
-          <li><a href="/#about-wrap" className="hover-target">About</a></li>
+          <li><a href="/" className="hover-target">Home</a></li>
           <li><a href="/services" className="hover-target">Services</a></li>
           <li><a href="/clients" className="hover-target">Clients</a></li>
           <li><a href="#contact-wrap" className="ncta hover-target">{content['nav_cta'] || 'Get In Touch'}</a></li>
@@ -254,10 +254,19 @@ export default function Home() {
                   key={`${reel.id}-${idx}`}
                   className="video-marquee-card"
                 >
-                  <video className="video-marquee-asset" src={reel.media_url} autoPlay loop muted playsInline />
-                  <div className="video-card-overlay">
-                    <h4 className="video-card-creator-name">{reel.project_name}</h4>
-                  </div>
+                  {(() => {
+                    const [videoSrc, externalUrl] = (reel.media_url || '').split('|||');
+                    const content = (
+                      <>
+                        <video className="video-marquee-asset" src={videoSrc} autoPlay loop muted playsInline />
+                        <div className="video-card-overlay">
+                          <h4 className="video-card-creator-name">{reel.project_name}</h4>
+                          {externalUrl && <span style={{ fontSize: '0.8rem', background: 'var(--p)', padding: '4px 8px', borderRadius: '4px', marginTop: '4px', display: 'inline-block' }}>View Original ↗</span>}
+                        </div>
+                      </>
+                    );
+                    return externalUrl ? <a href={externalUrl} target="_blank" rel="noreferrer" style={{ display: 'block', height: '100%', color: 'inherit' }}>{content}</a> : content;
+                  })()}
                 </div>
               );
             })}

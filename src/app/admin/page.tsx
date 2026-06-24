@@ -14,15 +14,22 @@ export default function SuperAdminDashboard() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [alert, setAlert] = useState<{ text: string; isError: boolean } | null>(null);
 
-  // Form States for Brand Page uploads
+  // Form States for Case Study uploads
+  const [caseStudyFile, setCaseStudyFile] = useState<File | null>(null);
+  const [caseStudyName, setCaseStudyName] = useState('');
+  const [caseStudyLink, setCaseStudyLink] = useState('');
+
+  // Form States for Client Page Reels uploads
   const [clientReelFile, setClientReelFile] = useState<File | null>(null);
   const [clientProjectName, setClientProjectName] = useState('');
+  const [clientReelLink, setClientReelLink] = useState('');
   const [selectedBrand, setSelectedBrand] = useState('Kapiva');
 
   // Form States for Niche Campaigns uploads
   const [campaignReelFile, setCampaignReelFile] = useState<File | null>(null);
   const [campaignProjectName, setCampaignProjectName] = useState('');
-  const [selectedNiche, setSelectedNiche] = useState('Lifestyle');
+  const [campaignReelLink, setCampaignReelLink] = useState('');
+  const [selectedNiche, setSelectedNiche] = useState('Health & Fitness');
 
   // Form States for Brand Cards uploads
   const [brandCardFile, setBrandCardFile] = useState<File | null>(null);
@@ -30,13 +37,6 @@ export default function SuperAdminDashboard() {
   const [bcName, setBcName] = useState('');
   const [bcTagline, setBcTagline] = useState('');
   const [bcColor, setBcColor] = useState('rgba(119, 138, 94, 0.9)');
-
-  // Form States for Landing Page Case Studies uploads
-  const [caseStudyFile, setCaseStudyFile] = useState<File | null>(null);
-  const [caseStudyName, setCaseStudyName] = useState('');
-
-  const targetBrands = ["Kapiva", "Multani", "Louis Stitch", "Salon Tym", "Zouk", "Kalki", "Concious Chemist", "Above Humen"];
-  const targetNiches = ["Doctors", "Chef", "Nutritionist/ Health and Wellness", "Lifestyle", "Fashion"];
 
   useEffect(() => {
     fetchDashboardData();
@@ -64,7 +64,6 @@ export default function SuperAdminDashboard() {
     }
   };
 
-  // Direct File Uploader to Supabase Storage Bucket
   const uploadFileToBucket = async (file: File, bucketName: string): Promise<string | null> => {
     try {
       const fileExt = file.name.split('.').pop();
@@ -84,7 +83,6 @@ export default function SuperAdminDashboard() {
     }
   };
 
-  // 1. HERO VIDEO & ABOUT PHOTO ASSET HOT-SWAPPERS
   const handleStaticMediaOverride = async (keyName: string, file: File) => {
     setActionLoading(keyName);
     try {
@@ -93,7 +91,6 @@ export default function SuperAdminDashboard() {
       
       if (!uploadedUrl) throw new Error('Storage uploaded route generation error');
 
-      // Check if row schema exists to prevent multi-row insert glitches
       const existingRecord = contentItems.find(item => item.section_key === keyName);
 
       if (existingRecord) {
@@ -117,7 +114,6 @@ export default function SuperAdminDashboard() {
     else triggerAlert('Text copy changes saved live!');
   };
 
-  // 2. DISPATCH CAROUSEL CASE STUDY FILE UPLOAD
   const handleAddCaseStudy = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!caseStudyFile || !caseStudyName) return triggerAlert('Provide project name and attach file', true);
@@ -127,9 +123,12 @@ export default function SuperAdminDashboard() {
       const url = await uploadFileToBucket(caseStudyFile, 'portfolio');
       if (!url) throw new Error();
 
-      await supabase.from('portfolio').insert([{ project_name: caseStudyName, media_url: url, is_case_study: true }]);
-      triggerAlert('New case study reel successfully added to the home page carousel!');
+      const finalUrl = caseStudyLink ? `${url}|||${caseStudyLink}` : url;
+      await supabase.from('portfolio').insert([{ project_name: caseStudyName, media_url: finalUrl, is_case_study: true }]);
+      
+      triggerAlert('Case study deployed successfully!');
       setCaseStudyName('');
+      setCaseStudyLink('');
       setCaseStudyFile(null);
       fetchDashboardData();
     } catch {
@@ -139,7 +138,6 @@ export default function SuperAdminDashboard() {
     }
   };
 
-  // 2b. DISPATCH BRAND CARD UPLOAD
   const handleAddBrandCard = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!brandCardFile || !bcName) return triggerAlert('Fill out all fields', true);
@@ -199,7 +197,6 @@ export default function SuperAdminDashboard() {
     }
   };
 
-  // 3. DISPATCH BRAND PARTNER OCTAGON VIDEO UPLOAD
   const handleAddClientPageReel = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!clientReelFile || !clientProjectName) return triggerAlert('Fill out all fields and attach video file', true);
@@ -209,9 +206,12 @@ export default function SuperAdminDashboard() {
       const url = await uploadFileToBucket(clientReelFile, 'portfolio');
       if (!url) throw new Error();
 
-      await supabase.from('portfolio').insert([{ project_name: clientProjectName, media_url: url, brand_name: selectedBrand }]);
+      const finalUrl = clientReelLink ? `${url}|||${clientReelLink}` : url;
+      await supabase.from('portfolio').insert([{ project_name: clientProjectName, media_url: finalUrl, brand_name: selectedBrand }]);
+      
       triggerAlert(`Reel linked and deployed successfully under ${selectedBrand}!`);
       setClientProjectName('');
+      setClientReelLink('');
       setClientReelFile(null);
       fetchDashboardData();
     } catch {
@@ -221,7 +221,6 @@ export default function SuperAdminDashboard() {
     }
   };
 
-  // 4. DISPATCH NICHE CAMPAIGN CYLINDER VIDEO UPLOAD
   const handleAddCampaignPageReel = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!campaignReelFile || !campaignProjectName) return triggerAlert('Fill out fields and select file', true);
@@ -231,9 +230,12 @@ export default function SuperAdminDashboard() {
       const url = await uploadFileToBucket(campaignReelFile, 'portfolio');
       if (!url) throw new Error();
 
-      await supabase.from('portfolio').insert([{ project_name: campaignProjectName, media_url: url, niche: selectedNiche }]);
+      const finalUrl = campaignReelLink ? `${url}|||${campaignReelLink}` : url;
+      await supabase.from('portfolio').insert([{ project_name: campaignProjectName, media_url: finalUrl, niche: selectedNiche }]);
+      
       triggerAlert(`Reel linked and deployed successfully under ${selectedNiche}!`);
       setCampaignProjectName('');
+      setCampaignReelLink('');
       setCampaignReelFile(null);
       fetchDashboardData();
     } catch {
@@ -251,7 +253,6 @@ export default function SuperAdminDashboard() {
     }
   };
 
-  // ── RECTIFIES FIELD MULTIPLICATION GLITCH ──
   const uniqueSettings = contentItems.filter((item, index, self) =>
     index === self.findIndex((t) => t.section_key === item.section_key)
   );
@@ -267,7 +268,6 @@ export default function SuperAdminDashboard() {
         </div>
       )}
 
-      {/* Admin Masthead branding */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', background: '#fff', padding: '24px 30px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
         <div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: 800, letterSpacing: '-0.03em', margin: 0 }}>ClaimFame Command Center</h1>
@@ -276,7 +276,6 @@ export default function SuperAdminDashboard() {
         <button onClick={() => window.location.href = '/'} style={{ padding: '10px 20px', background: '#edf2f7', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', color: '#4a5568' }}>Exit Center</button>
       </div>
 
-      {/* Navigation Sub-Deck Tabs */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '40px', background: '#edf2f7', padding: '6px', borderRadius: '40px', width: 'fit-content' }}>
         {[
           { id: 'leads', label: '📥 Inbox Leads' },
@@ -300,7 +299,6 @@ export default function SuperAdminDashboard() {
 
       {loading && <div style={{ color: '#7c3aed', fontWeight: 700, textAlign: 'center', padding: '40px' }}>Loading production inventory components...</div>}
 
-      {/* SECTION 1: LEADS INBOX */}
       {!loading && activeTab === 'leads' && (
         <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -330,14 +328,11 @@ export default function SuperAdminDashboard() {
         </div>
       )}
 
-      {/* SECTION 2: LANDING PAGE MEDIA OVERRIDES (HERO VIDEO & ABOUT PHOTO) */}
       {!loading && activeTab === 'landing' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
           
-          {/* File Upload Grid Matrix */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
             
-            {/* Box A: Screen Hero Streaming Background Video */}
             <div style={{ background: '#fff', padding: '30px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '8px' }}>🎥 Fullscreen Hero Background Video</h3>
               <p style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '20px' }}>Select an MP4 file to completely replace the main entry header loop stream asset.</p>
@@ -349,7 +344,6 @@ export default function SuperAdminDashboard() {
               {getLiveAssetUrl('hero_video_url') && <a href={getLiveAssetUrl('hero_video_url')} target="_blank" rel="noreferrer" style={{ display: 'block', marginTop: '15px', fontSize: '0.85rem', color: '#7c3aed', fontWeight: 600 }}>Link to Live Video Asset</a>}
             </div>
 
-            {/* Box B: Who We Are Creative Display Photo */}
             <div style={{ background: '#fff', padding: '30px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '8px' }}>🖼️ Who We Are Showcase Team Photo</h3>
               <p style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '20px' }}>Attach an image file to swap the display photograph next to the strategic goals section context.</p>
@@ -363,7 +357,6 @@ export default function SuperAdminDashboard() {
 
           </div>
 
-          {/* Glitch-Free Interface Text Array Control Box */}
           <div style={{ background: '#fff', padding: '35px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '25px' }}>📝 Live Page Interface Text Blocks</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -388,7 +381,6 @@ export default function SuperAdminDashboard() {
         </div>
       )}
 
-      {/* SECTION 3: HOME PAGE GENERAL CASE STUDIES REELS */}
       {!loading && activeTab === 'case_studies' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
           <div style={{ background: '#fff', padding: '30px', borderRadius: '16px', border: '1px solid #e2e8f0', height: 'fit-content' }}>
@@ -397,6 +389,10 @@ export default function SuperAdminDashboard() {
               <div>
                 <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>PROJECT NAME</label>
                 <input type="text" value={caseStudyName} onChange={(e) => setCaseStudyName(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., Mamaearth Brand Core Concept" />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>ORIGINAL LINK (Optional)</label>
+                <input type="url" value={caseStudyLink} onChange={(e) => setCaseStudyLink(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., https://instagram.com/reel/..." />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>MP4 VIDEO FILE</label>
@@ -421,7 +417,6 @@ export default function SuperAdminDashboard() {
         </div>
       )}
 
-      {/* SECTION 4: CLIENTS WEB PAGE BRANDS SECTIONS */}
       {!loading && activeTab === 'clients_page' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
           
@@ -432,6 +427,10 @@ export default function SuperAdminDashboard() {
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BRAND / CREATOR NAME</label>
                   <input type="text" value={clientProjectName} onChange={(e) => setClientProjectName(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., SarulJain - Kapiva" />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>ORIGINAL LINK (Optional)</label>
+                  <input type="url" value={clientReelLink} onChange={(e) => setClientReelLink(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., https://instagram.com/reel/..." />
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>REEL FILE DEPLOYMENT (MP4)</label>
