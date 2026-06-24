@@ -26,8 +26,10 @@ export default function SuperAdminDashboard() {
 
   // Form States for Brand Cards uploads
   const [brandCardFile, setBrandCardFile] = useState<File | null>(null);
+  const [bcLogoFile, setBcLogoFile] = useState<File | null>(null);
   const [bcName, setBcName] = useState('');
-  const [bcColor, setBcColor] = useState('#ffffff');
+  const [bcTagline, setBcTagline] = useState('');
+  const [bcColor, setBcColor] = useState('rgba(119, 138, 94, 0.9)');
 
   // Form States for Landing Page Case Studies uploads
   const [caseStudyFile, setCaseStudyFile] = useState<File | null>(null);
@@ -146,10 +148,23 @@ export default function SuperAdminDashboard() {
       const url = await uploadFileToBucket(brandCardFile, 'logos');
       if (!url) throw new Error();
 
+      let logoUrl = '';
+      if (bcLogoFile) {
+        logoUrl = await uploadFileToBucket(bcLogoFile, 'logos') || '';
+      }
+
       const currentDataStr = contentItems.find(i => i.section_key === 'brand_cards_data')?.content_value || '[]';
       let currentData = [];
       try { currentData = JSON.parse(currentDataStr); } catch(e){}
-      const newCard = { id: Date.now().toString(), brandName: bcName, bgColor: bcColor, imageUrl: url };
+      
+      const newCard = { 
+        id: Date.now().toString(), 
+        brandName: bcName, 
+        bgColor: bcColor, 
+        imageUrl: url,
+        logoUrl: logoUrl,
+        tagline: bcTagline
+      };
       const updatedData = [...currentData, newCard];
 
       const existingRecord = contentItems.find(i => i.section_key === 'brand_cards_data');
@@ -161,7 +176,9 @@ export default function SuperAdminDashboard() {
       
       triggerAlert('Brand card added successfully!');
       setBcName('');
+      setBcTagline('');
       setBrandCardFile(null);
+      setBcLogoFile(null);
       fetchDashboardData();
     } catch {
       triggerAlert('Failed adding brand card', true);
@@ -450,11 +467,19 @@ export default function SuperAdminDashboard() {
                   <input type="text" value={bcName} onChange={(e) => setBcName(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., Kapiva" />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BACKGROUND COLOR HEX</label>
-                  <input type="color" value={bcColor} onChange={(e) => setBcColor(e.target.value)} style={{ width: '100%', padding: '4px', height: '40px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BACKGROUND TINT COLOR (RGBA or HEX)</label>
+                  <input type="text" value={bcColor} onChange={(e) => setBcColor(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g. rgba(119, 138, 94, 0.9)" />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BRAND / PRODUCT IMAGE</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BRAND TAGLINE</label>
+                  <input type="text" value={bcTagline} onChange={(e) => setBcTagline(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g. Clean Nutrition Snacking Brand" />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BRAND LOGO IMAGE (Optional, Transparent PNG)</label>
+                  <input type="file" accept="image/*" onChange={(e) => setBcLogoFile(e.target.files?.[0] || null)} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BACKGROUND PRODUCT IMAGE</label>
                   <input type="file" accept="image/*" onChange={(e) => setBrandCardFile(e.target.files?.[0] || null)} required />
                 </div>
                 <button type="submit" disabled={actionLoading === 'bc_submit'} style={{ padding: '14px', background: '#2b6cb0', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>

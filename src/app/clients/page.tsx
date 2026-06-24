@@ -142,20 +142,51 @@ export default function ClientsPage() {
           
           if (brandCards.length === 0) {
             brandCards = [
-              { id: '1', brandName: 'KAPIVA', bgColor: '#778a5e', imageUrl: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=1000&auto=format&fit=crop' },
-              { id: '2', brandName: 'THE WHOLE TRUTH', bgColor: '#9c6f44', imageUrl: 'https://images.unsplash.com/photo-1622484211148-522646271a9c?q=80&w=1000&auto=format&fit=crop' },
-              { id: '3', brandName: 'PLUM', bgColor: '#88629b', imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1000&auto=format&fit=crop' },
-              { id: '4', brandName: 'SUGAR.FIT', bgColor: '#6d4c82', imageUrl: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=1000&auto=format&fit=crop' },
+              { id: '1', brandName: 'KAPIVA', bgColor: 'rgba(119, 138, 94, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=1000&auto=format&fit=crop', tagline: 'Ayurvedic Nutrition\\n& Wellness', stats: [{v: '320%', l: 'Sales Increase'}, {v: '2.8M+', l: 'Reach Generated'}, {v: '45+', l: 'Creators Activated'}] },
+              { id: '2', brandName: 'THE WHOLE TRUTH', bgColor: 'rgba(156, 111, 68, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1622484211148-522646271a9c?q=80&w=1000&auto=format&fit=crop', tagline: 'Clean Nutrition\\nSnacking Brand', stats: [{v: '200%', l: 'Growth in Followers'}, {v: '150%', l: 'Engagement Boost'}, {v: '25+', l: 'Campaigns Executed'}] },
+              { id: '3', brandName: 'PLUM', bgColor: 'rgba(136, 98, 155, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1000&auto=format&fit=crop', tagline: 'Clean, Vegan\\nBeauty', stats: [{v: '180%', l: 'Increase in Reach'}, {v: '90+', l: 'Creators Onboarded'}, {v: '60+', l: 'Pieces of Content'}] },
+              { id: '4', brandName: 'SUGAR.FIT', bgColor: 'rgba(109, 76, 130, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=1000&auto=format&fit=crop', tagline: 'Health & Fitness\\nBrand', stats: [{v: '250%', l: 'Engagement Growth'}, {v: '3M+', l: 'Impressions'}, {v: '35+', l: 'Fitness Creators'}] },
             ];
           }
 
           return (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-              {brandCards.map(c => (
-                <div key={c.id} className="reveal-up" style={{ background: c.bgColor, borderRadius: '24px', overflow: 'hidden', position: 'relative', padding: '30px', color: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', aspectRatio: '1/1', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <img src={c.imageUrl} alt={c.brandName} style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'absolute', top: 0, left: 0, padding: '20px', zIndex: 1 }} />
-                  <div style={{ position: 'absolute', top: 20, left: 20, background: '#fff', color: c.bgColor, padding: '6px 12px', borderRadius: '30px', fontWeight: 800, fontSize: '0.8rem', zIndex: 2, fontFamily: 'var(--fh)' }}>
-                    {c.brandName}
+              {brandCards.map((c: any) => (
+                <div key={c.id} className="reveal-up" style={{ borderRadius: '24px', overflow: 'hidden', position: 'relative', color: '#fff', display: 'flex', flexDirection: 'column', height: '400px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+                  
+                  {/* Background Image & Color Overlay */}
+                  <img src={c.imageUrl} alt={c.brandName} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 1 }} />
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: c.bgColor || 'rgba(0,0,0,0.5)', zIndex: 2, mixBlendMode: 'multiply' }}></div>
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%)', zIndex: 3 }}></div>
+
+                  {/* Content Overlay */}
+                  <div style={{ position: 'relative', zIndex: 4, display: 'flex', flexDirection: 'column', height: '100%', padding: '30px' }}>
+                    
+                    <div style={{ flex: 1 }}>
+                      {/* Logo or Brand Name */}
+                      {c.logoUrl ? (
+                        <img src={c.logoUrl} alt={c.brandName} style={{ height: '35px', objectFit: 'contain', marginBottom: '15px' }} />
+                      ) : (
+                        <h2 style={{ fontFamily: 'var(--fh)', fontSize: '1.8rem', fontWeight: 900, marginBottom: '15px', letterSpacing: '-0.02em', background: '#fff', color: c.bgColor.replace(/rgba?\(([^,]+),([^,]+),([^,]+).*/, 'rgb($1,$2,$3)'), padding: '4px 12px', borderRadius: '4px', display: 'inline-block' }}>{c.brandName}</h2>
+                      )}
+                      
+                      {/* Tagline */}
+                      {c.tagline && (
+                        <p style={{ fontSize: '1rem', fontWeight: 700, lineHeight: '1.3', margin: 0, whiteSpace: 'pre-line' }}>{c.tagline}</p>
+                      )}
+                    </div>
+
+                    {/* Stats Section */}
+                    {c.stats && c.stats.length > 0 && (
+                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                        {c.stats.map((s: any, i: number) => (
+                          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: i !== c.stats.length - 1 ? '1px solid rgba(255,255,255,0.3)' : 'none', paddingRight: '10px' }}>
+                            <span style={{ fontSize: '1.4rem', fontWeight: 900, fontFamily: 'var(--fh)', letterSpacing: '-0.02em' }}>{s.v}</span>
+                            <span style={{ fontSize: '0.65rem', fontWeight: 600, opacity: 0.9, lineHeight: '1.2' }}>{s.l}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
