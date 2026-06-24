@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-
+import Counter from '@/components/Counter';
 export default function Home() {
   const [buttonText, setButtonText] = useState('Send Message →');
   const [logos, setLogos] = useState<any[]>([]);
@@ -209,18 +209,40 @@ export default function Home() {
         </section>
       </div>
 
-      {/* Divider */}
-      <div style={{ width: '100%', height: '1px', background: 'var(--gm)' }} />
+      {/* ── STATS DIVIDER ── */}
+      <div className="page-section" style={{ background: 'var(--p)', color: '#fff', padding: '60px 5%' }}>
+        <div className="reveal-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', maxWidth: '1200px', margin: '0 auto', gap: '30px' }}>
+          <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
+            <h3 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '5px', fontFamily: 'var(--fh)' }}><Counter end={500} suffix="+" /></h3>
+            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Creators Activated</p>
+          </div>
+          <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
+            <h3 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '5px', fontFamily: 'var(--fh)' }}><Counter end={10} suffix="M+" /></h3>
+            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Views</p>
+          </div>
+          <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
+            <h3 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '5px', fontFamily: 'var(--fh)' }}><Counter end={50} suffix="+" /></h3>
+            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Campaigns Executed</p>
+          </div>
+          <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
+            <h3 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '5px', fontFamily: 'var(--fh)' }}><Counter end={20} suffix="+" /></h3>
+            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Brands</p>
+          </div>
+        </div>
+      </div>
 
       {/* ── HORIZONTAL VIDEO MARQUEE ── */}
       <div className="page-section" id="portfolio-wrap" style={{ background: 'var(--w)', paddingBottom: '120px', paddingTop: '60px', overflow: 'hidden' }}>
-        <div style={{ textAlign: 'center', marginBottom: '40px', padding: '0 5%' }}>
-          <div className="sec-ey reveal-up" style={{ justifyContent: 'center' }}>
-            {content['portfolio_eyebrow'] || 'Case Studies'}
+        <div style={{ textAlign: 'left', marginBottom: '60px', padding: '0 5%', maxWidth: '1400px', margin: '0 auto' }}>
+          <div className="sec-ey reveal-up" style={{ color: 'var(--p)', justifyContent: 'flex-start', marginBottom: '10px' }}>
+            — {content['portfolio_eyebrow'] || 'CASE STUDIES'}
           </div>
-          <h2 className="sec-ttl reveal-up d-1">
-            {content['portfolio_title'] || 'A Few Things We Brought To Life'}
+          <h2 className="sec-ttl reveal-up d-1" style={{ fontSize: 'clamp(2.5rem, 4vw, 3.5rem)' }}>
+            A Few Things we brought to Life.
           </h2>
+          <p className="reveal-up d-2" style={{ marginTop: '10px', fontSize: '1.1rem', color: 'var(--muted)' }}>
+            Creator-led campaigns. Real impact. Internet culture at the core.
+          </p>
         </div>
 
         {/* Marquee Wrapper */}

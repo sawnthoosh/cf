@@ -128,11 +128,8 @@ export default function ClientsPage() {
 
       {/* ── HEADER ── */}
       <div style={{ textAlign: 'center', marginBottom: '80px', padding: '0 5%' }}>
-        <div className="sec-ey reveal-up" style={{ justifyContent: 'center' }}>
-          Our Partners
-        </div>
-        <h2 className="sec-ttl reveal-up d-1" style={{ fontSize: 'clamp(3rem, 6vw, 4.5rem)' }}>
-          The Brands We Scale
+        <h2 className="sec-ttl reveal-up d-1" style={{ fontSize: 'clamp(3rem, 6vw, 4.5rem)', margin: 0 }}>
+          OUR WORK
         </h2>
       </div>
 
@@ -190,10 +187,13 @@ export default function ClientsPage() {
                       <div
                         key={`${brandName}-${idx}`}
                         className="video-marquee-card"
+                        style={{ background: 'var(--gm)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px', border: '1px solid var(--p)' }}
                       >
-                        <video className="video-marquee-asset" src={reel.media_url} autoPlay loop muted playsInline />
-                        <div className="video-card-overlay">
-                          <h4 className="video-card-creator-name">{reel.project_name || brandName}</h4>
+                        <div style={{ color: 'var(--p)', fontSize: '1.4rem', fontWeight: 800, textAlign: 'center', marginBottom: '10px', fontFamily: 'var(--fh)' }}>
+                          {reel.project_name || 'Creator'}
+                        </div>
+                        <div style={{ color: 'var(--k)', fontSize: '1.1rem', fontWeight: 600, textAlign: 'center' }}>
+                          {brandName}
                         </div>
                       </div>
                     );
