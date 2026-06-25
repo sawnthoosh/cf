@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 export default function ClientsPage() {
   const [portfolio, setPortfolio] = useState<any[]>([]);
   const [content, setContent] = useState<Record<string, string>>({});
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   // The exact list of brands you want to showcase
   const targetBrands = [
@@ -35,8 +36,9 @@ export default function ClientsPage() {
       }
     };
 
-    fetchPortfolio();
-    fetchContent();
+    Promise.all([fetchPortfolio(), fetchContent()]).then(() => {
+      setIsInitialLoad(false);
+    });
 
     // Intersection Observer for scroll animations
     const revealObserver = new IntersectionObserver((entries, observer) => {
@@ -136,6 +138,8 @@ export default function ClientsPage() {
       {/* ── BRAND CARDS SECTION ── */}
       <div className="page-section" style={{ padding: '0 5% 80px', maxWidth: '1400px', margin: '0 auto' }}>
         {(() => {
+          if (isInitialLoad) return <div style={{ height: '400px' }} />;
+          
           const bcStr = content['brand_cards_data'] || '[]';
           let brandCards: any[] = [];
           try { brandCards = JSON.parse(bcStr); } catch(e){}

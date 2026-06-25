@@ -8,6 +8,7 @@ export default function Home() {
   const [logos, setLogos] = useState<any[]>([]);
   const [portfolio, setPortfolio] = useState<any[]>([]);
   const [content, setContent] = useState<Record<string, string>>({});
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const fetchLogos = async () => {
@@ -29,9 +30,9 @@ export default function Home() {
       }
     };
 
-    fetchLogos();
-    fetchPortfolio();
-    fetchContent();
+    Promise.all([fetchLogos(), fetchPortfolio(), fetchContent()]).then(() => {
+      setIsInitialLoad(false);
+    });
 
     const cursor = document.getElementById('cursor');
     const follower = document.getElementById('cursor-follower');
@@ -149,9 +150,13 @@ export default function Home() {
       {/* ── FULLSCREEN HERO WITH PNG IMAGE LOGO ── */}
       <div id="hero" style={{ position: 'relative', width: '100%', backgroundColor: 'var(--k)' }}>
         <div className="hero-fullscreen">
-          <video key={content['hero_video_url'] || 'fallback'} className="hero-video-bg" autoPlay loop muted playsInline>
-            <source src={content['hero_video_url'] || "/bg.mp4"} type="video/mp4" />
-          </video>
+          {isInitialLoad ? (
+            <div className="hero-video-bg" style={{ backgroundColor: 'var(--k)' }} />
+          ) : (
+            <video key={content['hero_video_url'] || 'fallback'} className="hero-video-bg" autoPlay loop muted playsInline>
+              <source src={content['hero_video_url'] || "/bg.mp4"} type="video/mp4" />
+            </video>
+          )}
           <div className="hero-fullscreen-content reveal-up">
             <div className="hero-custom-logo-container hover-target">
               <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -193,7 +198,7 @@ export default function Home() {
           <div className="sec-inner">
             <div className="about-g">
               <div className="about-vis reveal-up">
-                <img src={content['about_image_url'] || "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop"} alt="Claim Fame Team" />
+                {!isInitialLoad && <img src={content['about_image_url'] || "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop"} alt="Claim Fame Team" />}
               </div>
               <div className="about-txt reveal-up d-2">
                 <div className="sec-ey">WHO WE ARE</div>
