@@ -171,7 +171,7 @@ export default function ClientsPage() {
                       {c.logoUrl ? (
                         <img src={c.logoUrl} alt={c.brandName} style={{ height: '35px', objectFit: 'contain', marginBottom: '15px' }} />
                       ) : (
-                        <h2 style={{ fontFamily: 'var(--fh)', fontSize: '1.8rem', fontWeight: 900, marginBottom: '15px', letterSpacing: '-0.02em', background: '#fff', color: c.bgColor.replace(/rgba?\(([^,]+),([^,]+),([^,]+).*/, 'rgb($1,$2,$3)'), padding: '4px 12px', borderRadius: '4px', display: 'inline-block' }}>{c.brandName}</h2>
+                        <h2 style={{ fontFamily: 'var(--fh)', fontSize: '1.8rem', fontWeight: 900, marginBottom: '15px', letterSpacing: '-0.02em', background: 'var(--w)', color: c.bgColor.replace(/rgba?\(([^,]+),([^,]+),([^,]+).*/, 'rgb($1,$2,$3)'), padding: '4px 12px', borderRadius: '4px', display: 'inline-block' }}>{c.brandName}</h2>
                       )}
                       
                       {/* Tagline */}
@@ -239,7 +239,7 @@ export default function ClientsPage() {
               <div className="video-marquee-container" style={{ marginBottom: '30px' }}>
                 <div className="video-marquee-track" style={{ animationDuration: '60s' }}>
                   {marquee1.map((reel, idx) => (
-                    <div key={`r1-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: 0 }}>
+                    <div key={`r1-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--w)', padding: 0 }}>
                       {(() => {
                         const [videoSrc, externalUrl] = (reel.media_url || '').split('|||');
                         const content = (
@@ -254,8 +254,8 @@ export default function ClientsPage() {
                                 {externalUrl && <span style={{ fontSize: '0.8rem', background: 'var(--p)', padding: '4px 8px', borderRadius: '4px', marginTop: '6px', display: 'inline-block', color: '#fff' }}>View Original ↗</span>}
                               </div>
                             </div>
-                            <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderTop: '1px solid #edf2f7' }}>
-                              <span style={{ fontWeight: 900, color: '#1a202c', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
+                            <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--w)', borderTop: '1px solid var(--gm)' }}>
+                              <span style={{ fontWeight: 900, color: 'var(--k)', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
                             </div>
                           </>
                         );
@@ -269,7 +269,7 @@ export default function ClientsPage() {
               <div className="video-marquee-container">
                 <div className="video-marquee-track" style={{ animationDirection: 'reverse', animationDuration: '65s' }}>
                   {marquee2.map((reel, idx) => (
-                    <div key={`r2-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: '#fff', padding: 0 }}>
+                    <div key={`r2-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--w)', padding: 0 }}>
                       {(() => {
                         const [videoSrc, externalUrl] = (reel.media_url || '').split('|||');
                         const content = (
@@ -284,8 +284,8 @@ export default function ClientsPage() {
                                 {externalUrl && <span style={{ fontSize: '0.8rem', background: 'var(--p)', padding: '4px 8px', borderRadius: '4px', marginTop: '6px', display: 'inline-block', color: '#fff' }}>View Original ↗</span>}
                               </div>
                             </div>
-                            <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fff', borderTop: '1px solid #edf2f7' }}>
-                              <span style={{ fontWeight: 900, color: '#1a202c', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
+                            <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--w)', borderTop: '1px solid var(--gm)' }}>
+                              <span style={{ fontWeight: 900, color: 'var(--k)', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
                             </div>
                           </>
                         );

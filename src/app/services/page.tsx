@@ -51,7 +51,7 @@ export default function ServicesPage() {
                 style={{
                   textAlign: 'left',
                   cursor: 'pointer',
-                  background: isActive ? 'var(--p)' : '#fff',
+                  background: isActive ? 'var(--p)' : 'var(--w)',
                   borderRadius: '16px',
                   boxShadow: isActive ? '0 20px 40px rgba(156, 39, 176, 0.3)' : '0 10px 30px rgba(0,0,0,0.04)',
                   transition: 'all 0.4s ease',
@@ -75,8 +75,9 @@ export default function ServicesPage() {
                     }}></div>
                     <div style={{ 
                       height: '80px', 
-                      background: '#fff', 
-                      display: 'flex', 
+                      background: 'var(--w)', 
+                      borderRadius: '16px', 
+                      display: 'flex',
                       alignItems: 'center', 
                       padding: '0 20px'
                     }}>

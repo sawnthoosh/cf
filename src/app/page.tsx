@@ -165,10 +165,9 @@ export default function Home() {
                   <br />
                   <span className="line-2">fame</span>
                 </h1>
-                {/* Sparkle Stars */}
                 <svg className="logo-sparkles" viewBox="0 0 32 32">
-                  <path d="M16 4c0 6.63-5.37 12-12 12 6.63 0 12 5.37 12 12 0-6.63 5.37-12 12-12-6.63 0-12-5.37-12-12z" fill="#fedb41" stroke="#ffffff" strokeWidth="1.5" />
-                  <path d="M28 2c0 2.21-1.79 4-4 4 2.21 0 4 1.79 4 4 0-2.21 1.79-4 4-4-2.21 0-4-1.79-4-4z" fill="#fedb41" stroke="#ffffff" strokeWidth="1" />
+                  <path d="M16 4c0 6.63-5.37 12-12 12 6.63 0 12 5.37 12 12 0-6.63 5.37-12 12-12-6.63 0-12-5.37-12-12z" fill="var(--y)" stroke="var(--w)" strokeWidth="1.5" />
+                  <path d="M28 2c0 2.21-1.79 4-4 4 2.21 0 4 1.79 4 4 0-2.21 1.79-4 4-4-2.21 0-4-1.79-4-4z" fill="var(--y)" stroke="var(--w)" strokeWidth="1" />
                 </svg>
               </div>
             </div>

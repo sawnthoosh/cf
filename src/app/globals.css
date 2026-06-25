@@ -8,16 +8,16 @@
 }
 
 :root {
-  /* CLAIM FAME PURPLE PALETTE */
-  --p: #9c27b0;    
-  --y: #d68ef2;    
-  --w: #FAF6FD;    
-  --g: #ffffff;    
-  --gm: #F1E5FA;   
-  --muted: #755E78;
-  --k: #2B0E35;    
+  /* SKYE ANNE MONOCHROMATIC PURPLE PALETTE */
+  --p: #9764CE;    
+  --y: #CBA5F1;    
+  --w: #EBE1F8;    
+  --g: #F3EDFC;    
+  --gm: #DDC8F0;   
+  --muted: #8561A5;
+  --k: #301A4A;    
   --fb: var(--font-inter), sans-serif;   
-  --fh: var(--font-poppins), sans-serif; 
+  --fh: 'Young Serif', serif; 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -278,7 +278,7 @@ nav.scrolled {
 
 /* ── MARQUEE (OUTLINE TYPOGRAPHY) ── */
 .white-strip-marquee { 
-  background: #ffffff; 
+  background: var(--w); 
   padding: 40px 0; 
   overflow: hidden; 
   display: flex; 
@@ -831,6 +831,7 @@ footer {
 }
 
 .admin-table td { 
+  background: var(--w); 
   padding: 20px; 
   border-bottom: 1px solid var(--gm); 
   vertical-align: top; 
