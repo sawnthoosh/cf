@@ -23,7 +23,7 @@ export default function ServicesPage() {
         <ul className="nlinks" id="nl">
           <li><a href="/">Home</a></li>
           <li><a href="/services" style={{ color: 'var(--p)' }}>Services</a></li>
-          <li><a href="/clients">Clients</a></li>
+          <li><a href="/clients">Our Work</a></li>
           <li><a href="/#contact-wrap" className="ncta">Get In Touch</a></li>
         </ul>
       </nav>

@@ -141,7 +141,7 @@ export default function Home() {
         <ul className="nlinks" id="nl">
           <li><a href="/" className="hover-target">Home</a></li>
           <li><a href="/services" className="hover-target">Services</a></li>
-          <li><a href="/clients" className="hover-target">Clients</a></li>
+          <li><a href="/clients" className="hover-target">Our Work</a></li>
           <li><a href="#contact-wrap" className="ncta hover-target">{content['nav_cta'] || 'Get In Touch'}</a></li>
         </ul>
         <div className="hbg hover-target" id="hbg"><span></span><span></span><span></span></div>
@@ -337,7 +337,7 @@ export default function Home() {
           <div>
             <h4 className="ft-col-ttl">Showcase</h4>
             <ul className="ft-lks">
-              <li><a href="/clients" className="hover-target">Our Clients</a></li>
+              <li><a href="/clients" className="hover-target">Our Work</a></li>
             </ul>
           </div>
 
