@@ -36,10 +36,7 @@ export default function ServicesPage() {
         </div>
         
         {/* STATIC GRID */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(3, 1fr)', 
-          gap: '24px', 
+        <div className="services-grid" style={{ 
           padding: '0 2%' 
         }}>
           {agencyServices.map((svc, index) => {

@@ -235,48 +235,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── HORIZONTAL VIDEO MARQUEE ── */}
-      <div className="page-section" id="portfolio-wrap" style={{ background: 'var(--w)', paddingBottom: '120px', paddingTop: '60px', overflow: 'hidden' }}>
-        <div style={{ textAlign: 'left', marginBottom: '60px', padding: '0 5%', maxWidth: '1400px', margin: '0 auto' }}>
-          <div className="sec-ey reveal-up" style={{ color: 'var(--p)', justifyContent: 'flex-start', marginBottom: '10px' }}>
-            — {content['portfolio_eyebrow'] || 'CASE STUDIES'}
-          </div>
-          <h2 className="sec-ttl reveal-up d-1" style={{ fontSize: 'clamp(2.5rem, 4vw, 3.5rem)' }}>
-            A Few Things we brought to Life.
-          </h2>
-          <p className="reveal-up d-2" style={{ marginTop: '10px', fontSize: '1.1rem', color: 'var(--muted)' }}>
-            Creator-led campaigns. Real impact. Internet culture at the core.
-          </p>
-        </div>
 
-        {/* Marquee Wrapper */}
-        <div className="video-marquee-container reveal-up d-3">
-          <div className="video-marquee-track">
-            {marqueeReels.map((reel, idx) => {
-              return (
-                <div
-                  key={`${reel.id}-${idx}`}
-                  className="video-marquee-card"
-                >
-                  {(() => {
-                    const [videoSrc, externalUrl] = (reel.media_url || '').split('|||');
-                    const content = (
-                      <>
-                        <video className="video-marquee-asset" src={videoSrc} autoPlay loop muted playsInline />
-                        <div className="video-card-overlay">
-                          <h4 className="video-card-creator-name">{reel.project_name}</h4>
-                          {externalUrl && <span style={{ fontSize: '0.8rem', background: 'var(--p)', padding: '4px 8px', borderRadius: '4px', marginTop: '4px', display: 'inline-block' }}>View Original ↗</span>}
-                        </div>
-                      </>
-                    );
-                    return externalUrl ? <a href={externalUrl} target="_blank" rel="noreferrer" style={{ display: 'block', height: '100%', color: 'inherit' }}>{content}</a> : content;
-                  })()}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
      
       {/* ── CONTACT ── */}
       <div className="page-section bg-gray" id="contact-wrap">
