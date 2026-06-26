@@ -229,11 +229,11 @@ nav.scrolled {
   font-family: 'Young Serif', serif;
   font-size: clamp(3.5rem, 12vw, 7.5rem);
   font-weight: 400;
-  color: var(--y);
+  color: #fedb41;
   text-transform: lowercase;
   letter-spacing: -0.07em;
   line-height: 0.8;
-  -webkit-text-stroke: 1.5px var(--w);
+  -webkit-text-stroke: 1.5px #ffffff;
   text-shadow: 5px 5px 0px var(--p);
   margin: 0;
   display: block;
