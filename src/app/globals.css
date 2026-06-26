@@ -229,14 +229,15 @@ nav.scrolled {
   font-family: 'Young Serif', serif;
   font-size: clamp(3.5rem, 12vw, 7.5rem);
   font-weight: 400;
-  color: #fedb41;
+  color: var(--y);
   text-transform: lowercase;
   letter-spacing: -0.07em;
   line-height: 0.8;
-  -webkit-text-stroke: 1.5px #ffffff;
+  -webkit-text-stroke: 1.5px var(--w);
   text-shadow: 5px 5px 0px var(--p);
   margin: 0;
   display: block;
+  text-align: center;
 }
 
 .hero-title-text span.line-1 {
@@ -245,7 +246,7 @@ nav.scrolled {
 
 .hero-title-text span.line-2 {
   display: inline-block;
-  padding-left: 0.8em;
+  padding-left: 0;
 }
 
 .logo-sparkles {
