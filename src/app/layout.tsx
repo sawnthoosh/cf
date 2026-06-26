@@ -11,7 +11,7 @@ const inter = Inter({
 
 // Poppins for headers, titles, and logos
 const poppins = Poppins({ 
-  weight: ["700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"], 
   variable: "--font-poppins" 
 });

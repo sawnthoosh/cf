@@ -16,8 +16,8 @@
   --gm: #DDC8F0;   
   --muted: #8561A5;
   --k: #301A4A;    
-  --fb: var(--font-inter), sans-serif;   
-  --fh: 'Young Serif', serif; 
+  --fb: var(--font-poppins), sans-serif;   
+  --fh: var(--font-poppins), sans-serif; 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
