@@ -286,7 +286,7 @@ export default function Home() {
                   <div className="ct-item hover-target"><div className="ct-item-ic">📞</div><div className="ct-item-tx"><a href={`tel:${content['contact_phone'] || '+919643737794'}`}>{content['contact_phone'] || '+91 96437 37794, +91 89208 00014'}</a></div></div>
                   <div className="ct-item"><div className="ct-item-ic">📍</div><div className="ct-item-tx">{content['contact_location'] || 'New Delhi, India'}</div></div>
                 </div>
-                <a href={content['contact_wa_link'] || 'https://wa.me/911234567890'} className="wa-btn hover-target" target="_blank" rel="noreferrer">{content['contact_wa_text'] || 'Chat on WhatsApp'}</a>
+                <a href={content['contact_wa_link'] || 'https://wa.me/919643737794'} className="wa-btn hover-target" target="_blank" rel="noreferrer">{content['contact_wa_text'] || 'Chat on WhatsApp'}</a>
               </div>
               <div className="ct-form reveal-up d-2">
                 <form onSubmit={handleSubmit}>
