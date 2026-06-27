@@ -236,6 +236,42 @@ export default function Home() {
       </div>
 
 
+      {/* ── HORIZONTAL VIDEO MARQUEE ── */}
+      <div className="page-section" id="portfolio-wrap" style={{ background: 'var(--w)', paddingBottom: '120px', paddingTop: '60px', overflow: 'hidden' }}>
+        <div style={{ textAlign: 'left', marginBottom: '60px', padding: '0 5%', maxWidth: '1400px', margin: '0 auto' }}>
+          <div className="sec-ey reveal-up" style={{ color: 'var(--p)', justifyContent: 'flex-start', marginBottom: '10px' }}>
+            — {content['portfolio_eyebrow'] || 'A FEW THINGS WE BROUGHT TO LIFE'}
+          </div>
+        </div>
+
+        {/* Marquee Wrapper */}
+        <div className="video-marquee-container reveal-up d-3">
+          <div className="video-marquee-track">
+            {marqueeReels.map((reel, idx) => {
+              return (
+                <div
+                  key={`${reel.id}-${idx}`}
+                  className="video-marquee-card"
+                >
+                  {(() => {
+                    const [videoSrc, externalUrl] = (reel.media_url || '').split('|||');
+                    const content = (
+                      <>
+                        <video className="video-marquee-asset" src={videoSrc} autoPlay loop muted playsInline />
+                        <div className="video-card-overlay">
+                          <h4 className="video-card-creator-name">{reel.project_name}</h4>
+                          {externalUrl && <span style={{ fontSize: '0.8rem', background: 'var(--p)', padding: '4px 8px', borderRadius: '4px', marginTop: '4px', display: 'inline-block' }}>View Original ↗</span>}
+                        </div>
+                      </>
+                    );
+                    return externalUrl ? <a href={externalUrl} target="_blank" rel="noreferrer" style={{ display: 'block', height: '100%', color: 'inherit' }}>{content}</a> : content;
+                  })()}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
      
       {/* ── CONTACT ── */}
       <div className="page-section bg-gray" id="contact-wrap">
@@ -246,8 +282,8 @@ export default function Home() {
               <div className="reveal-up d-1">
                 <div className="ct-tagline" dangerouslySetInnerHTML={{ __html: content['contact_tagline'] || 'Let\'s Build Something<br /><em class="nlogo-claim">Great Together.</em>' }} />
                 <div className="ct-items">
-                  <div className="ct-item hover-target"><div className="ct-item-ic">📧</div><div className="ct-item-tx"><a href={`mailto:${content['contact_email'] || 'hello@letsclaimfame.com'}`}>{content['contact_email'] || 'hello@letsclaimfame.com'}</a></div></div>
-                  <div className="ct-item hover-target"><div className="ct-item-ic">📞</div><div className="ct-item-tx"><a href={`tel:${content['contact_phone'] || '+911234567890'}`}>{content['contact_phone'] || '+91 12345 67890'}</a></div></div>
+                  <div className="ct-item hover-target"><div className="ct-item-ic">📧</div><div className="ct-item-tx"><a href={`mailto:${content['contact_email'] || 'kritika@letsclaimfame.com'}`}>{content['contact_email'] || 'kritika@letsclaimfame.com'}</a></div></div>
+                  <div className="ct-item hover-target"><div className="ct-item-ic">📞</div><div className="ct-item-tx"><a href={`tel:${content['contact_phone'] || '+919643737794'}`}>{content['contact_phone'] || '+91 96437 37794, +91 89208 00014'}</a></div></div>
                   <div className="ct-item"><div className="ct-item-ic">📍</div><div className="ct-item-tx">{content['contact_location'] || 'New Delhi, India'}</div></div>
                 </div>
                 <a href={content['contact_wa_link'] || 'https://wa.me/911234567890'} className="wa-btn hover-target" target="_blank" rel="noreferrer">{content['contact_wa_text'] || 'Chat on WhatsApp'}</a>
@@ -304,8 +340,8 @@ export default function Home() {
           <div>
             <h4 className="ft-col-ttl">Reach Out</h4>
             <ul className="ft-lks">
-              <li><a href="mailto:hello@letsclaimfame.com" className="hover-target">hello@letsclaimfame.com</a></li>
-              <li><a href="tel:+911234567890" className="hover-target">+91 12345 67890</a></li>
+              <li><a href="mailto:kritika@letsclaimfame.com" className="hover-target">kritika@letsclaimfame.com</a></li>
+              <li><a href="tel:+919643737794" className="hover-target">+91 96437 37794, +91 89208 00014</a></li>
               <li style={{ color: 'var(--muted)', fontSize: '0.95rem', marginTop: '10px' }}>New Delhi, India<br/>Working Globally</li>
             </ul>
           </div>
@@ -323,7 +359,7 @@ export default function Home() {
               <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
             </a>
             {/* LinkedIn */}
-            <a href={content['linkedin_url'] || "https://www.linkedin.com/company/letsclaimfame"} target="_blank" rel="noreferrer" className="hover-target" aria-label="LinkedIn">
+            <a href={content['linkedin_url'] || "https://www.linkedin.com/company/lets-claim-fame"} target="_blank" rel="noreferrer" className="hover-target" aria-label="LinkedIn">
               <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
             </a>
             {/* X (formerly Twitter) */}
