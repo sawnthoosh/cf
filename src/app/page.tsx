@@ -282,8 +282,8 @@ export default function Home() {
               <div className="reveal-up d-1">
                 <div className="ct-tagline" dangerouslySetInnerHTML={{ __html: content['contact_tagline'] || 'Let\'s Build Something<br /><em class="nlogo-claim">Great Together.</em>' }} />
                 <div className="ct-items">
-                  <div className="ct-item hover-target"><div className="ct-item-ic">📧</div><div className="ct-item-tx"><a href={`mailto:${content['contact_email'] || 'kritika@letsclaimfame.com'}`}>{content['contact_email'] || 'kritika@letsclaimfame.com'}</a></div></div>
-                  <div className="ct-item hover-target"><div className="ct-item-ic">📞</div><div className="ct-item-tx"><a href={`tel:${content['contact_phone'] || '+919643737794'}`}>{content['contact_phone'] || '+91 96437 37794, +91 89208 00014'}</a></div></div>
+                  <div className="ct-item hover-target"><div className="ct-item-ic">📧</div><div className="ct-item-tx"><a href="mailto:kritika@letsclaimfame.com">kritika@letsclaimfame.com</a></div></div>
+                  <div className="ct-item hover-target"><div className="ct-item-ic">📞</div><div className="ct-item-tx"><a href="tel:+919643737794">+91 96437 37794, +91 89208 00014</a></div></div>
                   <div className="ct-item"><div className="ct-item-ic">📍</div><div className="ct-item-tx">{content['contact_location'] || 'New Delhi, India'}</div></div>
                 </div>
                 <a href={content['contact_wa_link'] || 'https://wa.me/919643737794'} className="wa-btn hover-target" target="_blank" rel="noreferrer">{content['contact_wa_text'] || 'Chat on WhatsApp'}</a>
