@@ -12,15 +12,58 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
     "Above Humen"
   ];
 
-  const brandDefaultCreators: Record<string, string[]> = {
-    "Kapiva": ["Sarul Jain", "Nikita Mithaiwala", "Tarneet Kaur", "Harshita Agarwal", "Nikita Shah", "Neeru", "Nikita Varma", "Dr. Sowmya Rao", "Mrunalini", "The Poetic News", "Parth Shah"],
-    "Multani": ["Aashika Bhatia", "Niti Taylor", "Dr. Neha Gupta", "Varun Jhamb", "Amit Saxena", "Oh My Veggies", "Sumit Chauhan", "Arup Ghosh"],
-    "Zouk": ["Mehak", "Vidhi Shah", "Radhika Sehgal", "Henna Jain", "Steffilyne", "Shruti Naxane", "Venus Shah", "Vrushali", "Ankita", "Khushi Gupta", "Srishti"],
-    "Louis Stitch": ["Neha Sanjay", "Aryan", "Samadh", "Usman"]
+  const brandDefaultCreators: Record<string, {name: string, url: string}[]> = {
+    "Kapiva": [
+      { name: "Sarul Jain", url: "https://www.instagram.com/reel/DPQ_PEtgQz3/?igsh=MXNkNWhwam85MHh4aA==" },
+      { name: "Nikita Mithaiwala", url: "https://www.instagram.com/p/DO-3X36EZ3Q/" },
+      { name: "Tarneet Kaur", url: "https://www.instagram.com/p/DPOnDDdkv0k/" },
+      { name: "Harshita Agarwal", url: "https://www.instagram.com/reel/DO-XvTtEU-f/?igsh=NHpmdHI5aGRuOGZs" },
+      { name: "Nikita Shah", url: "https://www.instagram.com/p/DPA2lRJEjHQ/" },
+      { name: "Neeru", url: "https://www.instagram.com/reel/DVgaizBkZcF/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" },
+      { name: "Nikita Varma", url: "https://www.instagram.com/p/DQbn_QFEzVe/" },
+      { name: "Dr. Sowmya Rao", url: "https://www.instagram.com/p/DQbiXHak1vj/" },
+      { name: "Mrunalini", url: "https://www.instagram.com/p/DQb7-zzDwqA/" },
+      { name: "The Poetic News", url: "https://www.facebook.com/reel/1257428143001159/?fs=e&mibextid=wwXIfr&rdid=zawRoqoMYYXGg7rc&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2Fr%2F1D1N3KPkA3%2F%3Fmibextid%3DwwXIfr#" },
+      { name: "Parth Shah", url: "https://www.instagram.com/reels/DU8XTs9jLEU/" }
+    ],
+    "Multani": [
+      { name: "Aashika Bhatia", url: "https://www.instagram.com/p/DYhTeG1OnvD/" },
+      { name: "Niti Taylor", url: "https://www.instagram.com/p/DYbsebKPsIO/" },
+      { name: "Dr. Neha Gupta", url: "https://www.instagram.com/p/DXweXRNzoUi/" },
+      { name: "Varun Jhamb", url: "https://www.instagram.com/p/DXjlotvk3RE/" },
+      { name: "Amit Saxena", url: "https://www.instagram.com/p/DXtkH2HiAFG/" },
+      { name: "Oh My Veggies", url: "https://www.instagram.com/p/DXjD8PbkzSE/" },
+      { name: "Sumit Chauhan", url: "https://www.instagram.com/p/DXhCMs7gEcZ/" },
+      { name: "Arup Ghosh", url: "https://www.instagram.com/reels/DYBXuHzJEeP/" }
+    ],
+    "Zouk": [
+      { name: "Mehak", url: "https://www.instagram.com/reel/DRFTr1tjC10/" },
+      { name: "Vidhi Shah", url: "https://www.instagram.com/reel/DRHfKolDWem/?igsh=YTloM3doaWFjcXYw" },
+      { name: "Radhika Sehgal", url: "https://www.instagram.com/reel/DRH1Hvmk7_N/?igsh=MTdjMnA0d3o4NmVqNQ%3D%3D" },
+      { name: "Henna Jain", url: "https://www.instagram.com/reel/DRCrlDOjEb2/?igsh=dW03bDJqcWV6Mngz" },
+      { name: "Steffilyne", url: "https://www.instagram.com/reel/DREq9jJE8Uo/?igsh=MWZsdmIzYjByZDV4bw==" },
+      { name: "Shruti Naxane", url: "https://www.instagram.com/reel/DQ_uKLpjHek/?igsh=Mzl6NTloYjN2OGt2" },
+      { name: "Venus Shah", url: "https://www.instagram.com/p/DSH1VgBiSw4/" },
+      { name: "Vrushali", url: "https://www.instagram.com/reel/DSuDWUGjT6i/?igsh=ajczc3BqMWhtMm4y" },
+      { name: "Ankita", url: "https://www.instagram.com/reel/DSwZPTlE8TI/?igsh=MW1xZ2w0MjNqcHM5NQ==" },
+      { name: "Khushi Gupta", url: "https://www.instagram.com/reel/DS2WLfnjuUj/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" },
+      { name: "Srishti", url: "https://www.instagram.com/reel/DSz49arE6rD/?igsh=NDZodTFxM25lNnU5" }
+    ],
+    "Louis Stitch": [
+      { name: "Neha Sanjay", url: "https://www.instagram.com/reel/DYcVklUvgY6/?hl=en" },
+      { name: "Aryan", url: "https://www.instagram.com/reel/DYPUqsPI7op/?hl=en" },
+      { name: "Samadh", url: "https://www.instagram.com/reel/DYSBitboXba/?hl=en" },
+      { name: "Usman", url: "https://www.instagram.com/reel/DWOaQo9kgO-/?hl=en" },
+      { name: "Samadh", url: "https://www.instagram.com/reel/DWB-UACiLIb/?hl=en" },
+      { name: "Usman", url: "https://www.instagram.com/reel/DYe0hRtyWEC/?hl=en" }
+    ]
   };
 
   const getDefaultReelsForBrand = (brandName: string) => {
-    const creators = brandDefaultCreators[brandName] || ["Ananya Sharma", "Rahul Verma", "Pooja Patel", "Vikram Singh"];
+    const creators = brandDefaultCreators[brandName] || [
+      { name: "Ananya Sharma", url: "#" },
+      { name: "Rahul Verma", url: "#" }
+    ];
     const videos = [
       'https://cdn.pixabay.com/video/2021/04/12/70881-537449557_large.mp4',
       'https://cdn.pixabay.com/video/2020/03/17/33718-392520300_large.mp4',
@@ -29,8 +72,8 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
     ];
     return creators.map((creator, index) => ({
       id: `default-${brandName}-${index}`,
-      project_name: creator,
-      media_url: videos[index % videos.length],
+      project_name: creator.name,
+      media_url: `${videos[index % videos.length]}|||${creator.url}`,
       brand_name: brandName
     }));
   };
