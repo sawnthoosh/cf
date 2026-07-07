@@ -199,7 +199,7 @@ export default function Home() {
           <div className="sec-inner">
             <div className="about-g">
               <div className="about-vis reveal-up">
-                {!isInitialLoad && <img src={content['about_image_url'] || "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop"} alt="Claim Fame Team" />}
+                {!isInitialLoad && <img src={content['about_image_url'] || "/who-we-are.jpg"} alt="Claim Fame Team" />}
               </div>
               <div className="about-txt reveal-up d-2">
                 <div className="sec-ey">WHO WE ARE</div>
