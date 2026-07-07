@@ -1,14 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-
-export default function ClientsPage() {
-  const [portfolio, setPortfolio] = useState<any[]>([]);
-  const [content, setContent] = useState<Record<string, string>>({});
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-
-  // The exact list of brands you want to showcase
+export default function OurWorkSection({ portfolio, content, isInitialLoad }: { portfolio: any[], content: Record<string, string>, isInitialLoad: boolean }) {
   const targetBrands = [
     "Kapiva", 
     "Multani", 
@@ -20,71 +12,6 @@ export default function ClientsPage() {
     "Above Humen"
   ];
 
-  useEffect(() => {
-    const fetchPortfolio = async () => {
-      // Assuming your portfolio table has a 'brand_name' column to link videos to brands
-      const { data } = await supabase.from('portfolio').select('*').order('created_at', { ascending: false });
-      if (data) setPortfolio(data);
-    };
-
-    const fetchContent = async () => {
-      const { data } = await supabase.from('site_content').select('*');
-      if (data) {
-        const contentMap: Record<string, string> = {};
-        data.forEach((item: any) => { contentMap[item.section_key] = item.content_value; });
-        setContent(contentMap);
-      }
-    };
-
-    Promise.all([fetchPortfolio(), fetchContent()]).then(() => {
-      setIsInitialLoad(false);
-    });
-
-    // Intersection Observer for scroll animations
-    const revealObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-    document.querySelectorAll('.reveal-up').forEach(el => revealObserver.observe(el));
-    
-    // ── CURSOR LOGIC ──
-    const cursor = document.getElementById('cursor');
-    const follower = document.getElementById('cursor-follower');
-    let mouseX = 0, mouseY = 0, fX = 0, fY = 0;
-    let animationFrameId: number;
-
-    const onMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX; mouseY = e.clientY;
-      if (cursor) cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
-    };
-
-    if (window.innerWidth > 768 && cursor && follower) {
-      window.addEventListener('mousemove', onMouseMove);
-
-      const animateCursor = () => {
-        fX += (mouseX - fX) * 0.15; fY += (mouseY - fY) * 0.15;
-        follower.style.transform = `translate3d(${fX}px, ${fY}px, 0)`;
-        animationFrameId = requestAnimationFrame(animateCursor);
-      };
-      animateCursor();
-
-      document.querySelectorAll('a, button, input, textarea, select, .hover-target, .carousel-cylinder').forEach(el => {
-        el.addEventListener('mouseenter', () => document.body.classList.add('link-hover'));
-        el.addEventListener('mouseleave', () => document.body.classList.remove('link-hover'));
-      });
-    }
-
-    return () => {
-      window.removeEventListener('mousemove', onMouseMove);
-      if (animationFrameId) cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
-  // Brand Default Creators Map from design document
   const brandDefaultCreators: Record<string, string[]> = {
     "Kapiva": ["Sarul Jain", "Nikita Mithaiwala", "Tarneet Kaur", "Harshita Agarwal", "Nikita Shah", "Neeru", "Nikita Varma", "Dr. Sowmya Rao", "Mrunalini", "The Poetic News", "Parth Shah"],
     "Multani": ["Aashika Bhatia", "Niti Taylor", "Dr. Neha Gupta", "Varun Jhamb", "Amit Saxena", "Oh My Veggies", "Sumit Chauhan", "Arup Ghosh"],
@@ -109,25 +36,7 @@ export default function ClientsPage() {
   };
 
   return (
-    <div style={{ background: 'var(--w)', minHeight: '100vh', paddingTop: '140px' }}>
-      
-      {/* ── CURSOR ELEMENTS ── */}
-      <div id="cursor"></div>
-      <div id="cursor-follower"></div>
-
-      {/* ── NAV ── */}
-      <nav id="nav" className="scrolled">
-        <a href="/" className="nlogo hover-target">
-          <img src="/ClaimFameDP-removebg-preview.png" alt="Claim Fame" className="nav-brand-logo" />
-        </a>
-        <ul className="nlinks" id="nl">
-          <li><a href="/" className="hover-target">Home</a></li>
-          <li><a href="/services" className="hover-target">Services</a></li>
-          <li><a href="/clients" className="hover-target" style={{ color: 'var(--p)' }}>Our Work</a></li>
-          <li><a href="/#contact-wrap" className="ncta hover-target">Get In Touch</a></li>
-        </ul>
-      </nav>
-
+    <div id="our-work" style={{ background: 'var(--w)', paddingTop: '60px' }}>
       {/* ── HEADER ── */}
       <div style={{ textAlign: 'center', marginBottom: '80px', padding: '0 5%' }}>
         <h2 className="sec-ttl reveal-up d-1" style={{ fontSize: 'clamp(3rem, 6vw, 4.5rem)', margin: 0 }}>
@@ -146,10 +55,10 @@ export default function ClientsPage() {
           
           if (brandCards.length === 0) {
             brandCards = [
-              { id: '1', brandName: 'KAPIVA', bgColor: 'rgba(119, 138, 94, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=1000&auto=format&fit=crop', tagline: 'Ayurvedic Nutrition\\n& Wellness', stats: [{v: '320%', l: 'Sales Increase'}, {v: '2.8M+', l: 'Reach Generated'}, {v: '45+', l: 'Creators Activated'}] },
-              { id: '2', brandName: 'THE WHOLE TRUTH', bgColor: 'rgba(156, 111, 68, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1622484211148-522646271a9c?q=80&w=1000&auto=format&fit=crop', tagline: 'Clean Nutrition\\nSnacking Brand', stats: [{v: '200%', l: 'Growth in Followers'}, {v: '150%', l: 'Engagement Boost'}, {v: '25+', l: 'Campaigns Executed'}] },
-              { id: '3', brandName: 'PLUM', bgColor: 'rgba(136, 98, 155, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1000&auto=format&fit=crop', tagline: 'Clean, Vegan\\nBeauty', stats: [{v: '180%', l: 'Increase in Reach'}, {v: '90+', l: 'Creators Onboarded'}, {v: '60+', l: 'Pieces of Content'}] },
-              { id: '4', brandName: 'SUGAR.FIT', bgColor: 'rgba(109, 76, 130, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=1000&auto=format&fit=crop', tagline: 'Health & Fitness\\nBrand', stats: [{v: '250%', l: 'Engagement Growth'}, {v: '3M+', l: 'Impressions'}, {v: '35+', l: 'Fitness Creators'}] },
+              { id: '1', brandName: 'KAPIVA', bgColor: 'rgba(119, 138, 94, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=1000&auto=format&fit=crop', tagline: 'Ayurvedic Nutrition\n& Wellness', stats: [{v: '320%', l: 'Sales Increase'}, {v: '2.8M+', l: 'Reach Generated'}, {v: '45+', l: 'Creators Activated'}] },
+              { id: '2', brandName: 'THE WHOLE TRUTH', bgColor: 'rgba(156, 111, 68, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1622484211148-522646271a9c?q=80&w=1000&auto=format&fit=crop', tagline: 'Clean Nutrition\nSnacking Brand', stats: [{v: '200%', l: 'Growth in Followers'}, {v: '150%', l: 'Engagement Boost'}, {v: '25+', l: 'Campaigns Executed'}] },
+              { id: '3', brandName: 'PLUM', bgColor: 'rgba(136, 98, 155, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1000&auto=format&fit=crop', tagline: 'Clean, Vegan\nBeauty', stats: [{v: '180%', l: 'Increase in Reach'}, {v: '90+', l: 'Creators Onboarded'}, {v: '60+', l: 'Pieces of Content'}] },
+              { id: '4', brandName: 'SUGAR.FIT', bgColor: 'rgba(109, 76, 130, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=1000&auto=format&fit=crop', tagline: 'Health & Fitness\nBrand', stats: [{v: '250%', l: 'Engagement Growth'}, {v: '3M+', l: 'Impressions'}, {v: '35+', l: 'Fitness Creators'}] },
             ];
           }
 
@@ -299,14 +208,6 @@ export default function ClientsPage() {
           );
         })()}
       </div>
-
-      {/* ── FOOTER ── */}
-      <footer style={{ borderTop: 'none' }}>
-        <div className="ft-bot reveal-up" style={{ justifyContent: 'center' }}>
-          <span>{content['footer_copyright'] || '© 2026 Claim Fame. All rights reserved.'}</span>
-        </div>
-      </footer>
-
     </div>
   );
 }

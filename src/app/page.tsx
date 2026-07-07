@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import Counter from '@/components/Counter';
+import ServicesSection from '@/components/ServicesSection';
+import OurWorkSection from '@/components/OurWorkSection';
 export default function Home() {
   const [buttonText, setButtonText] = useState('Send Message →');
   const [logos, setLogos] = useState<any[]>([]);
@@ -140,8 +142,8 @@ export default function Home() {
         </a>
         <ul className="nlinks" id="nl">
           <li><a href="/" className="hover-target">Home</a></li>
-          <li><a href="/services" className="hover-target">Services</a></li>
-          <li><a href="/clients" className="hover-target">Our Work</a></li>
+          <li><a href="/#services" className="hover-target">Services</a></li>
+          <li><a href="/#our-work" className="hover-target">Our Work</a></li>
           <li><a href="#contact-wrap" className="ncta hover-target">{content['nav_cta'] || 'Get In Touch'}</a></li>
         </ul>
         <div className="hbg hover-target" id="hbg"><span></span><span></span><span></span></div>
@@ -236,42 +238,9 @@ export default function Home() {
       </div>
 
 
-      {/* ── HORIZONTAL VIDEO MARQUEE ── */}
-      <div className="page-section" id="portfolio-wrap" style={{ background: 'var(--w)', paddingBottom: '120px', paddingTop: '60px', overflow: 'hidden' }}>
-        <div style={{ textAlign: 'left', marginBottom: '60px', padding: '0 5%', maxWidth: '1400px', margin: '0 auto' }}>
-          <div className="sec-ey reveal-up" style={{ color: 'var(--p)', justifyContent: 'flex-start', marginBottom: '10px' }}>
-            — {content['portfolio_eyebrow'] || 'A FEW THINGS WE BROUGHT TO LIFE'}
-          </div>
-        </div>
-
-        {/* Marquee Wrapper */}
-        <div className="video-marquee-container reveal-up d-3">
-          <div className="video-marquee-track">
-            {marqueeReels.map((reel, idx) => {
-              return (
-                <div
-                  key={`${reel.id}-${idx}`}
-                  className="video-marquee-card"
-                >
-                  {(() => {
-                    const [videoSrc, externalUrl] = (reel.media_url || '').split('|||');
-                    const content = (
-                      <>
-                        <video className="video-marquee-asset" src={videoSrc} autoPlay loop muted playsInline />
-                        <div className="video-card-overlay">
-                          <h4 className="video-card-creator-name">{reel.project_name}</h4>
-                          {externalUrl && <span style={{ fontSize: '0.8rem', background: 'var(--p)', padding: '4px 8px', borderRadius: '4px', marginTop: '4px', display: 'inline-block' }}>View Original ↗</span>}
-                        </div>
-                      </>
-                    );
-                    return externalUrl ? <a href={externalUrl} target="_blank" rel="noreferrer" style={{ display: 'block', height: '100%', color: 'inherit' }}>{content}</a> : content;
-                  })()}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+      {/* ── SERVICES & OUR WORK ── */}
+      <ServicesSection />
+      <OurWorkSection portfolio={portfolio} content={content} isInitialLoad={isInitialLoad} />
      
       {/* ── CONTACT ── */}
       <div className="page-section bg-gray" id="contact-wrap">
@@ -323,7 +292,7 @@ export default function Home() {
             <h4 className="ft-col-ttl">Company</h4>
             <ul className="ft-lks">
               <li><a href="/#about-wrap" className="hover-target">About Us</a></li>
-              <li><a href="/services" className="hover-target">Our Services</a></li>
+              <li><a href="/#services" className="hover-target">Our Services</a></li>
               <li><a href="/#contact-wrap" className="hover-target">Contact Us</a></li>
             </ul>
           </div>
@@ -332,7 +301,7 @@ export default function Home() {
           <div>
             <h4 className="ft-col-ttl">Showcase</h4>
             <ul className="ft-lks">
-              <li><a href="/clients" className="hover-target">Our Work</a></li>
+              <li><a href="/#our-work" className="hover-target">Our Work</a></li>
             </ul>
           </div>
 
