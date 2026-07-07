@@ -55,10 +55,11 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
           
           if (brandCards.length === 0) {
             brandCards = [
-              { id: '1', brandName: 'KAPIVA', bgColor: 'rgba(119, 138, 94, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=1000&auto=format&fit=crop', tagline: 'Ayurvedic Nutrition\n& Wellness', stats: [{v: '320%', l: 'Sales Increase'}, {v: '2.8M+', l: 'Reach Generated'}, {v: '45+', l: 'Creators Activated'}] },
-              { id: '2', brandName: 'THE WHOLE TRUTH', bgColor: 'rgba(156, 111, 68, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1622484211148-522646271a9c?q=80&w=1000&auto=format&fit=crop', tagline: 'Clean Nutrition\nSnacking Brand', stats: [{v: '200%', l: 'Growth in Followers'}, {v: '150%', l: 'Engagement Boost'}, {v: '25+', l: 'Campaigns Executed'}] },
-              { id: '3', brandName: 'PLUM', bgColor: 'rgba(136, 98, 155, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=1000&auto=format&fit=crop', tagline: 'Clean, Vegan\nBeauty', stats: [{v: '180%', l: 'Increase in Reach'}, {v: '90+', l: 'Creators Onboarded'}, {v: '60+', l: 'Pieces of Content'}] },
-              { id: '4', brandName: 'SUGAR.FIT', bgColor: 'rgba(109, 76, 130, 0.9)', imageUrl: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=1000&auto=format&fit=crop', tagline: 'Health & Fitness\nBrand', stats: [{v: '250%', l: 'Engagement Growth'}, {v: '3M+', l: 'Impressions'}, {v: '35+', l: 'Fitness Creators'}] },
+              { id: '1', brandName: 'KAPIVA', bgColor: 'rgba(119, 138, 94, 0.8)', imageUrl: '/kapiva-dia.jpeg', tagline: 'Ayurvedic Nutrition\n& Wellness', stats: [{v: '320%', l: 'Sales Increase'}, {v: '2.8M+', l: 'Reach Generated'}] },
+              { id: '2', brandName: 'MULTANI', bgColor: 'rgba(156, 111, 68, 0.8)', imageUrl: '/multani.jpeg', tagline: 'Holistic Ayurvedic\nHealing', stats: [{v: '200%', l: 'Growth in Followers'}, {v: '150%', l: 'Engagement Boost'}] },
+              { id: '3', brandName: 'LOUIS STITCH', bgColor: 'rgba(40, 40, 40, 0.8)', imageUrl: '/louis-stitch-shoe.jpeg', tagline: 'Premium Men\'s\nFashion', stats: [{v: '180%', l: 'Increase in Reach'}, {v: '90+', l: 'Creators Onboarded'}] },
+              { id: '4', brandName: 'TRUEBASICS', bgColor: 'rgba(109, 76, 130, 0.8)', imageUrl: '/truebasics.jpeg', tagline: 'Science-Backed\nSupplements', stats: [{v: '250%', l: 'Engagement Growth'}, {v: '3M+', l: 'Impressions'}] },
+              { id: '5', brandName: 'ZOUK', bgColor: 'rgba(176, 60, 60, 0.8)', imageUrl: '/zouk-bag.jpeg', tagline: 'Uniquely Indian\nVegan Bags', stats: [{v: '400%', l: 'Sales Boost'}, {v: '50+', l: 'Campaigns'}] },
             ];
           }
 
