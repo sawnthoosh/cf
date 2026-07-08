@@ -49,7 +49,8 @@ export default function ServicesSection() {
                     flex: 1, 
                     backgroundColor: 'var(--gm)',
                     backgroundImage: `url(${svc.image})`,
-                    backgroundSize: 'cover',
+                    backgroundSize: 'contain',
+                    backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center',
                     borderTopLeftRadius: '16px',
                     borderTopRightRadius: '16px'
