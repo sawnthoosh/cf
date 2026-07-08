@@ -133,6 +133,7 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
                   </div>
                 </div>
               ))}
+              </div>
             </div>
           );
         })()}
