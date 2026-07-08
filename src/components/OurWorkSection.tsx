@@ -104,9 +104,10 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
           }
 
           return (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-              {brandCards.map((c: any) => (
-                <div key={c.id} style={{ borderRadius: '24px', overflow: 'hidden', position: 'relative', color: '#fff', display: 'flex', flexDirection: 'column', height: '400px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+            <div className="video-marquee-container" style={{ margin: '0 -5.5vw' }}>
+              <div className="video-marquee-track" style={{ animationDuration: '30s' }}>
+                {[...brandCards, ...brandCards, ...brandCards, ...brandCards].map((c: any, index: number) => (
+                  <div key={`${c.id}-${index}`} style={{ width: '320px', flexShrink: 0, margin: '0 10px', borderRadius: '24px', overflow: 'hidden', position: 'relative', color: '#fff', display: 'flex', flexDirection: 'column', height: '400px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
                   
                   {/* Background Image & Color Overlay */}
                   <img src={c.imageUrl} alt={c.brandName} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 1 }} />
@@ -129,18 +130,6 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
                         <p style={{ fontSize: '1rem', fontWeight: 700, lineHeight: '1.3', margin: 0, whiteSpace: 'pre-line' }}>{c.tagline}</p>
                       )}
                     </div>
-
-                    {/* Stats Section */}
-                    {c.stats && c.stats.length > 0 && (
-                      <div style={{ borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: '20px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-                        {c.stats.map((s: any, i: number) => (
-                          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', borderRight: i !== c.stats.length - 1 ? '1px solid rgba(255,255,255,0.3)' : 'none', paddingRight: '10px' }}>
-                            <span style={{ fontSize: '1.4rem', fontWeight: 900, fontFamily: 'var(--fh)', letterSpacing: '-0.02em' }}>{s.v}</span>
-                            <span style={{ fontSize: '0.65rem', fontWeight: 600, opacity: 0.9, lineHeight: '1.2' }}>{s.l}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
