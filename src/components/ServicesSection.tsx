@@ -16,7 +16,7 @@ export default function ServicesSection() {
 
   return (
     <div className="page-section" id="services" style={{ padding: '80px 2%', maxWidth: '1400px', margin: '0 auto', textAlign: 'center', background: 'var(--w)' }}>
-      <div className="sec-ey reveal-up" style={{ color: 'var(--p)', fontSize: '0.9rem', fontWeight: 700, letterSpacing: '1.5px', marginBottom: '15px', justifyContent: 'center' }}>— OUR SERVICES —</div>
+      <div className="sec-ey reveal-up" style={{ display: 'flex', color: 'var(--p)', fontSize: '0.9rem', fontWeight: 700, letterSpacing: '1.5px', marginBottom: '15px', justifyContent: 'center', width: '100%' }}>— OUR SERVICES —</div>
       <div className="reveal-up d-1" style={{ position: 'relative', display: 'inline-block', marginBottom: '60px' }}>
         <h2 className="sec-ttl" style={{ margin: 0, fontSize: '3.5rem' }}>What We Do</h2>
         <div style={{ position: 'absolute', bottom: '-15px', left: '50%', transform: 'translateX(-50%)', width: '50px', height: '4px', background: 'var(--p)', borderRadius: '2px' }}></div>
