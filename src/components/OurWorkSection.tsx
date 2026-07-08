@@ -65,10 +65,7 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
       { name: "Rahul Verma", url: "#" }
     ];
     const videos = [
-      'https://cdn.pixabay.com/video/2021/04/12/70881-537449557_large.mp4',
-      'https://cdn.pixabay.com/video/2020/03/17/33718-392520300_large.mp4',
-      'https://cdn.pixabay.com/video/2020/09/11/49622-458145244_large.mp4',
-      'https://cdn.pixabay.com/video/2021/11/04/94595-645851174_large.mp4'
+      '/bg.mp4'
     ];
     return creators.map((creator, index) => ({
       id: `default-${brandName}-${index}`,
