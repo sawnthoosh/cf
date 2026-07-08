@@ -110,14 +110,14 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
                   <div key={`${c.id}-${index}`} style={{ width: '320px', flexShrink: 0, margin: '0 10px', borderRadius: '24px', overflow: 'hidden', position: 'relative', color: '#fff', display: 'flex', flexDirection: 'column', height: '400px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
                   
                   {/* Background Image & Color Overlay */}
-                  <img src={c.imageUrl} alt={c.brandName} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 1 }} />
+                  <img src={c.imageUrl} alt={c.brandName} style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'absolute', top: 0, left: 0, zIndex: 1 }} />
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: c.bgColor || 'rgba(0,0,0,0.5)', zIndex: 2, mixBlendMode: 'multiply' }}></div>
                   <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%)', zIndex: 3 }}></div>
 
                   {/* Content Overlay */}
-                  <div style={{ position: 'relative', zIndex: 4, display: 'flex', flexDirection: 'column', height: '100%', padding: '30px' }}>
+                  <div style={{ position: 'relative', zIndex: 4, display: 'flex', flexDirection: 'column', height: '100%', padding: '30px', justifyContent: 'flex-end' }}>
                     
-                    <div style={{ flex: 1 }}>
+                    <div>
                       {/* Logo or Brand Name */}
                       {c.logoUrl ? (
                         <img src={c.logoUrl} alt={c.brandName} style={{ height: '35px', objectFit: 'contain', marginBottom: '15px' }} />
