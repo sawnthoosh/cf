@@ -107,31 +107,25 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
             <div className="video-marquee-container" style={{ margin: '0 -5.5vw' }}>
               <div className="video-marquee-track" style={{ animationDuration: '30s' }}>
                 {[...brandCards, ...brandCards, ...brandCards, ...brandCards].map((c: any, index: number) => (
-                  <div key={`${c.id}-${index}`} style={{ width: '320px', flexShrink: 0, margin: '0 10px', borderRadius: '24px', overflow: 'hidden', position: 'relative', color: '#fff', display: 'flex', flexDirection: 'column', height: '400px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
-                  
-                  {/* Background Image & Color Overlay */}
-                  <img src={c.imageUrl} alt={c.brandName} style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'absolute', top: 0, left: 0, zIndex: 1 }} />
-                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: c.bgColor || 'rgba(0,0,0,0.5)', zIndex: 2, mixBlendMode: 'multiply' }}></div>
-                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%)', zIndex: 3 }}></div>
-
-                  {/* Content Overlay */}
-                  <div style={{ position: 'relative', zIndex: 4, display: 'flex', flexDirection: 'column', height: '100%', padding: '30px', justifyContent: 'flex-end' }}>
+                  <div key={`${c.id}-${index}`} style={{ width: '320px', flexShrink: 0, margin: '0 10px', borderRadius: '24px', overflow: 'hidden', color: '#fff', display: 'flex', flexDirection: 'column', height: '400px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', background: c.bgColor || 'var(--w)' }}>
                     
-                    <div>
-                      {/* Logo or Brand Name */}
+                    {/* Top: Image Section */}
+                    <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                      <img src={c.imageUrl} alt={c.brandName} style={{ width: '100%', height: '100%', objectFit: 'contain', position: 'absolute', top: 0, left: 0, zIndex: 1 }} />
+                    </div>
+
+                    {/* Bottom: Text Section */}
+                    <div style={{ padding: '25px', background: 'rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                       {c.logoUrl ? (
-                        <img src={c.logoUrl} alt={c.brandName} style={{ height: '35px', objectFit: 'contain', marginBottom: '15px' }} />
+                        <img src={c.logoUrl} alt={c.brandName} style={{ height: '35px', objectFit: 'contain', marginBottom: '10px' }} />
                       ) : (
-                        <h2 style={{ fontFamily: 'var(--fh)', fontSize: '1.8rem', fontWeight: 900, marginBottom: '15px', letterSpacing: '-0.02em', background: 'var(--w)', color: c.bgColor.replace(/rgba?\(([^,]+),([^,]+),([^,]+).*/, 'rgb($1,$2,$3)'), padding: '4px 12px', borderRadius: '4px', display: 'inline-block' }}>{c.brandName}</h2>
+                        <h2 style={{ fontFamily: 'var(--fh)', fontSize: '1.6rem', fontWeight: 900, marginBottom: '8px', letterSpacing: '-0.02em', background: 'var(--w)', color: c.bgColor.replace(/rgba?\(([^,]+),([^,]+),([^,]+).*/, 'rgb($1,$2,$3)'), padding: '4px 12px', borderRadius: '4px', display: 'inline-block', alignSelf: 'flex-start' }}>{c.brandName}</h2>
                       )}
-                      
-                      {/* Tagline */}
                       {c.tagline && (
                         <p style={{ fontSize: '1rem', fontWeight: 700, lineHeight: '1.3', margin: 0, whiteSpace: 'pre-line' }}>{c.tagline}</p>
                       )}
                     </div>
                   </div>
-                </div>
               ))}
               </div>
             </div>
