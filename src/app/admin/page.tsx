@@ -386,19 +386,60 @@ export default function SuperAdminDashboard() {
           </div>
 
           <div style={{ background: '#fff', padding: '35px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '25px' }}>📝 Live Page Interface Text Blocks</h3>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '8px' }}>📝 Live Page Text Editor</h3>
+            <p style={{ fontSize: '0.85rem', color: '#718096', marginBottom: '25px' }}>Edit any text on the website here and click Save — changes go live instantly.</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {uniqueSettings.filter(i => !i.section_key.includes('url') && !i.section_key.includes('image') && !i.section_key.includes('video') && i.section_key !== 'brand_cards_data').map(item => {
-                const domFieldId = `field-${item.id}`;
+              {[
+                { key: 'hero_marquee_text', label: '🎬 Hero Marquee Text', desc: 'The scrolling text banner below the hero logo', placeholder: 'THE REAL FAME STORY STARTS HERE!' },
+                { key: 'about_headline', label: '🏠 About Section Headline', desc: 'The big heading in the "Who We Are" section', placeholder: 'Helping brands claim their spotlight...' },
+                { key: 'about_body', label: '🏠 About Section Body Text', desc: 'The paragraph below the headline in "Who We Are"', placeholder: 'We partner with brands with ambitions...' },
+                { key: 'stat1_label', label: '📊 Stat #1 Label (500+)', desc: 'Label under the first stat counter', placeholder: 'Creators Activated' },
+                { key: 'stat2_label', label: '📊 Stat #2 Label (10M+)', desc: 'Label under the second stat counter', placeholder: 'Views' },
+                { key: 'stat3_label', label: '📊 Stat #3 Label (50+)', desc: 'Label under the third stat counter', placeholder: 'Campaigns Executed' },
+                { key: 'stat4_label', label: '📊 Stat #4 Label (20+)', desc: 'Label under the fourth stat counter', placeholder: 'Brands' },
+                { key: 'contact_eyebrow', label: '📬 Contact Eyebrow Text', desc: 'Small label above the contact headline', placeholder: 'Get In Touch' },
+                { key: 'contact_tagline', label: '📬 Contact Headline (HTML)', desc: 'The big headline in the contact section — supports HTML like <br />', placeholder: "Let's Build Something<br /><em>Great Together.</em>" },
+                { key: 'contact_email', label: '📧 Contact Email Address', desc: 'Email shown in contact section and footer', placeholder: 'kritika@letsclaimfame.com' },
+                { key: 'contact_phone', label: '📞 Contact Phone Number', desc: 'Phone number shown in contact section and footer', placeholder: '+91 96437 37794, +91 89208 00014' },
+                { key: 'contact_location', label: '📍 Contact Location', desc: 'Location shown in contact section and footer', placeholder: 'New Delhi, India' },
+                { key: 'contact_wa_link', label: '💬 WhatsApp Link', desc: 'Full WhatsApp URL for the chat button', placeholder: 'https://wa.me/919643737794' },
+                { key: 'contact_wa_text', label: '💬 WhatsApp Button Text', desc: 'Label on the WhatsApp chat button', placeholder: 'Chat on WhatsApp' },
+                { key: 'footer_tagline', label: '🦶 Footer Tagline', desc: 'The short description paragraph in the footer', placeholder: 'Helping brands claim their spotlight...' },
+                { key: 'nav_cta', label: '🔗 Nav CTA Button Text', desc: 'Text on the top-right navigation button', placeholder: 'Get In Touch' },
+                { key: 'instagram_url', label: '📸 Instagram Profile URL', desc: 'Full Instagram URL for the footer icon link', placeholder: 'https://www.instagram.com/letsclaimfame' },
+                { key: 'linkedin_url', label: '💼 LinkedIn Profile URL', desc: 'Full LinkedIn URL for the footer icon link', placeholder: 'https://www.linkedin.com/company/lets-claim-fame' },
+              ].map(field => {
+                const existing = contentItems.find(i => i.section_key === field.key);
+                const domFieldId = `tf-${field.key}`;
                 return (
-                  <div key={item.id} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#7c3aed', textTransform: 'uppercase' }}>{item.section_key.replace(/_/g, ' ')}</label>
-                    <div style={{ display: 'flex', gap: '15px' }}>
-                      <textarea id={domFieldId} defaultValue={item.content_value} rows={item.content_value.length > 80 ? 3 : 1} style={{ flex: 1, padding: '12px 16px', background: '#f7fafc', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.95rem', resize: 'vertical', outline: 'none' }} />
-                      <button onClick={() => {
-                        const textarea = document.getElementById(domFieldId) as HTMLTextAreaElement;
-                        if (textarea) handleUpdateTextValue(item.section_key, item.id, textarea.value);
-                      }} style={{ padding: '12px 24px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>Save</button>
+                  <div key={field.key} style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '20px' }}>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 800, color: '#2d3748', marginBottom: '2px' }}>{field.label}</label>
+                    <p style={{ fontSize: '0.78rem', color: '#718096', margin: '0 0 10px' }}>{field.desc}</p>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                      <textarea
+                        id={domFieldId}
+                        defaultValue={existing?.content_value || ''}
+                        rows={field.key.includes('body') || field.key.includes('tagline') || field.key.includes('footer') ? 3 : 1}
+                        placeholder={field.placeholder}
+                        style={{ flex: 1, padding: '10px 14px', background: '#f7fafc', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '0.9rem', resize: 'vertical', outline: 'none', fontFamily: 'inherit' }}
+                      />
+                      <button
+                        onClick={async () => {
+                          const el = document.getElementById(domFieldId) as HTMLTextAreaElement;
+                          if (!el) return;
+                          const val = el.value;
+                          if (existing) {
+                            await supabase.from('site_content').update({ content_value: val }).eq('id', existing.id);
+                          } else {
+                            await supabase.from('site_content').insert([{ section_key: field.key, content_value: val }]);
+                          }
+                          triggerAlert(`${field.label} saved!`);
+                          fetchDashboardData();
+                        }}
+                        style={{ padding: '10px 20px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', alignSelf: 'flex-start' }}
+                      >
+                        Save
+                      </button>
                     </div>
                   </div>
                 );

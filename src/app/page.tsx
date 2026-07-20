@@ -180,14 +180,14 @@ export default function Home() {
         <div className="white-strip-marquee">
           <div className="marquee-track hover-target">
             <div className="marquee-text-group">
-              <span className="marquee-outline-text">THE REAL FAME STORY STARTS HERE!</span>
-              <span className="marquee-outline-text">THE REAL FAME STORY STARTS HERE!</span>
-              <span className="marquee-outline-text">THE REAL FAME STORY STARTS HERE!</span>
+              <span className="marquee-outline-text">{content['hero_marquee_text'] || 'THE REAL FAME STORY STARTS HERE!'}</span>
+              <span className="marquee-outline-text">{content['hero_marquee_text'] || 'THE REAL FAME STORY STARTS HERE!'}</span>
+              <span className="marquee-outline-text">{content['hero_marquee_text'] || 'THE REAL FAME STORY STARTS HERE!'}</span>
             </div>
             <div className="marquee-text-group" aria-hidden="true">
-              <span className="marquee-outline-text">THE REAL FAME STORY STARTS HERE!</span>
-              <span className="marquee-outline-text">THE REAL FAME STORY STARTS HERE!</span>
-              <span className="marquee-outline-text">THE REAL FAME STORY STARTS HERE!</span>
+              <span className="marquee-outline-text">{content['hero_marquee_text'] || 'THE REAL FAME STORY STARTS HERE!'}</span>
+              <span className="marquee-outline-text">{content['hero_marquee_text'] || 'THE REAL FAME STORY STARTS HERE!'}</span>
+              <span className="marquee-outline-text">{content['hero_marquee_text'] || 'THE REAL FAME STORY STARTS HERE!'}</span>
             </div>
           </div>
         </div>
@@ -204,10 +204,10 @@ export default function Home() {
               <div className="about-txt reveal-up d-2">
                 <div className="sec-ey">WHO WE ARE</div>
                 <h2 className="sec-ttl" style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)', lineHeight: '1.2', marginBottom: '30px' }}>
-                  Helping brands claim their spotlight with the perfect blend of strategy, creativity, and impact.
+                  {content['about_headline'] || 'Helping brands claim their spotlight with the perfect blend of strategy, creativity, and impact.'}
                 </h2>
                 <p>
-                  We partner with brands with ambitions to create attention, influence, and impact through influencer marketing, PR, social media, performance marketing, and production.
+                  {content['about_body'] || 'We partner with brands with ambitions to create attention, influence, and impact through influencer marketing, PR, social media, performance marketing, and production.'}
                 </p>
               </div>
             </div>
@@ -220,19 +220,19 @@ export default function Home() {
         <div className="reveal-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', maxWidth: '1200px', margin: '0 auto', gap: '30px' }}>
           <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
             <h3 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '5px', fontFamily: 'var(--fh)' }}><Counter end={500} suffix="+" /></h3>
-            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Creators Activated</p>
+            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>{content['stat1_label'] || 'Creators Activated'}</p>
           </div>
           <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
             <h3 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '5px', fontFamily: 'var(--fh)' }}><Counter end={10} suffix="M+" /></h3>
-            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Views</p>
+            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>{content['stat2_label'] || 'Views'}</p>
           </div>
           <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
             <h3 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '5px', fontFamily: 'var(--fh)' }}><Counter end={50} suffix="+" /></h3>
-            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Campaigns Executed</p>
+            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>{content['stat3_label'] || 'Campaigns Executed'}</p>
           </div>
           <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
             <h3 style={{ fontSize: '3.5rem', fontWeight: 900, marginBottom: '5px', fontFamily: 'var(--fh)' }}><Counter end={20} suffix="+" /></h3>
-            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Brands</p>
+            <p style={{ fontSize: '1.1rem', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>{content['stat4_label'] || 'Brands'}</p>
           </div>
         </div>
       </div>
@@ -251,8 +251,8 @@ export default function Home() {
               <div className="reveal-up d-1">
                 <div className="ct-tagline" dangerouslySetInnerHTML={{ __html: content['contact_tagline'] || 'Let\'s Build Something<br /><em class="nlogo-claim">Great Together.</em>' }} />
                 <div className="ct-items">
-                  <div className="ct-item hover-target"><div className="ct-item-ic">📧</div><div className="ct-item-tx"><a href="mailto:kritika@letsclaimfame.com">kritika@letsclaimfame.com</a></div></div>
-                  <div className="ct-item hover-target"><div className="ct-item-ic">📞</div><div className="ct-item-tx"><a href="tel:+919643737794">+91 96437 37794, +91 89208 00014</a></div></div>
+                  <div className="ct-item hover-target"><div className="ct-item-ic">📧</div><div className="ct-item-tx"><a href={`mailto:${content['contact_email'] || 'kritika@letsclaimfame.com'}`}>{content['contact_email'] || 'kritika@letsclaimfame.com'}</a></div></div>
+                  <div className="ct-item hover-target"><div className="ct-item-ic">📞</div><div className="ct-item-tx"><a href={`tel:${content['contact_phone'] || '+919643737794'}`}>{content['contact_phone'] || '+91 96437 37794, +91 89208 00014'}</a></div></div>
                   <div className="ct-item"><div className="ct-item-ic">📍</div><div className="ct-item-tx">{content['contact_location'] || 'New Delhi, India'}</div></div>
                 </div>
                 <a href={content['contact_wa_link'] || 'https://wa.me/919643737794'} className="wa-btn hover-target" target="_blank" rel="noreferrer">{content['contact_wa_text'] || 'Chat on WhatsApp'}</a>
@@ -283,7 +283,7 @@ export default function Home() {
               <img src="/ClaimFameDP-removebg-preview.png" alt="Claim Fame" style={{ width: '175px', height: 'auto', objectFit: 'contain', marginBottom: '24px', display: 'block' }} />
             </a>
             <p className="ft-tag">
-              Helping brands claim their spotlight with the perfect blend of strategy, creativity, and impact. We build presence, not just campaigns.
+              {content['footer_tagline'] || 'Helping brands claim their spotlight with the perfect blend of strategy, creativity, and impact. We build presence, not just campaigns.'}
             </p>
           </div>
 
@@ -309,9 +309,9 @@ export default function Home() {
           <div>
             <h4 className="ft-col-ttl">Reach Out</h4>
             <ul className="ft-lks">
-              <li><a href="mailto:kritika@letsclaimfame.com" className="hover-target">kritika@letsclaimfame.com</a></li>
-              <li><a href="tel:+919643737794" className="hover-target">+91 96437 37794, +91 89208 00014</a></li>
-              <li style={{ color: 'var(--muted)', fontSize: '0.95rem', marginTop: '10px' }}>New Delhi, India<br/>Working Globally</li>
+              <li><a href={`mailto:${content['contact_email'] || 'kritika@letsclaimfame.com'}`} className="hover-target">{content['contact_email'] || 'kritika@letsclaimfame.com'}</a></li>
+              <li><a href={`tel:${content['contact_phone'] || '+919643737794'}`} className="hover-target">{content['contact_phone'] || '+91 96437 37794, +91 89208 00014'}</a></li>
+              <li style={{ color: 'var(--muted)', fontSize: '0.95rem', marginTop: '10px' }}>{content['contact_location'] || 'New Delhi, India'}<br/>Working Globally</li>
             </ul>
           </div>
 
