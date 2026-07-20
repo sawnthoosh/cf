@@ -34,6 +34,10 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Claim Fame | Agency",
   description: "The real fame story starts here.",
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 export default function RootLayout({

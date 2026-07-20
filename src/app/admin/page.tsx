@@ -1,13 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 export default function SuperAdminDashboard() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'leads' | 'landing' | 'case_studies' | 'clients_page' | 'campaigns_page'>('leads');
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [portfolioItems, setPortfolioItems] = useState<any[]>([]);
   const [contentItems, setContentItems] = useState<any[]>([]);
+  const [authChecked, setAuthChecked] = useState(false);
   
   // Loading & UI Action States
   const [loading, setLoading] = useState(false);
@@ -39,7 +42,15 @@ export default function SuperAdminDashboard() {
   const [bcColor, setBcColor] = useState('rgba(119, 138, 94, 0.9)');
 
   useEffect(() => {
-    fetchDashboardData();
+    // Auth guard: redirect to login if no active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.replace('/admin/login');
+      } else {
+        setAuthChecked(true);
+        fetchDashboardData();
+      }
+    });
   }, []);
 
   const triggerAlert = (text: string, isError = false) => {
@@ -73,12 +84,17 @@ export default function SuperAdminDashboard() {
         .from(bucketName)
         .upload(fileName, file, { cacheControl: '3600', upsert: true });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        triggerAlert(`Upload failed: ${uploadError.message}`, true);
+        return null;
+      }
 
       const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
       return data.publicUrl;
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error('Upload exception:', err);
+      triggerAlert(`Upload error: ${err?.message || 'Unknown error'}`, true);
       return null;
     }
   };
@@ -259,6 +275,15 @@ export default function SuperAdminDashboard() {
 
   const getLiveAssetUrl = (key: string) => uniqueSettings.find(i => i.section_key === key)?.content_value || '';
 
+  // Don't render until auth check is complete
+  if (!authChecked) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui', color: '#7c3aed', fontSize: '1.1rem', fontWeight: 700 }}>
+        Verifying access...
+      </div>
+    );
+  }
+
   return (
     <div style={{ background: '#f8f9fa', minHeight: '100vh', padding: '40px 5%', fontFamily: 'system-ui, sans-serif', color: '#2d3748' }}>
       
@@ -273,7 +298,10 @@ export default function SuperAdminDashboard() {
           <h1 style={{ fontSize: '1.8rem', fontWeight: 800, letterSpacing: '-0.03em', margin: 0 }}>ClaimFame Command Center</h1>
           <p style={{ margin: 0, color: '#718096', fontSize: '0.9rem', marginTop: '4px' }}>Real-time section asset manager & secure routing interface platform.</p>
         </div>
-        <button onClick={() => window.location.href = '/'} style={{ padding: '10px 20px', background: '#edf2f7', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', color: '#4a5568' }}>Exit Center</button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={async () => { await supabase.auth.signOut(); router.replace('/admin/login'); }} style={{ padding: '10px 20px', background: '#fff5f5', border: '1px solid #fed7d7', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', color: '#c53030' }}>Sign Out</button>
+          <button onClick={() => window.location.href = '/'} style={{ padding: '10px 20px', background: '#edf2f7', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', color: '#4a5568' }}>Exit Center</button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: '40px', background: '#edf2f7', padding: '6px', borderRadius: '40px', width: 'fit-content' }}>
@@ -360,7 +388,7 @@ export default function SuperAdminDashboard() {
           <div style={{ background: '#fff', padding: '35px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '25px' }}>📝 Live Page Interface Text Blocks</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              {uniqueSettings.filter(i => !i.section_key.includes('url') && !i.section_key.includes('image') && !i.section_key.includes('video')).map(item => {
+              {uniqueSettings.filter(i => !i.section_key.includes('url') && !i.section_key.includes('image') && !i.section_key.includes('video') && i.section_key !== 'brand_cards_data').map(item => {
                 const domFieldId = `field-${item.id}`;
                 return (
                   <div key={item.id} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
