@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 
 export default function SuperAdminDashboard() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'leads' | 'landing' | 'case_studies' | 'clients_page' | 'campaigns_page'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'landing' | 'clients_page'>('leads');
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [portfolioItems, setPortfolioItems] = useState<any[]>([]);
   const [contentItems, setContentItems] = useState<any[]>([]);
@@ -17,29 +17,19 @@ export default function SuperAdminDashboard() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [alert, setAlert] = useState<{ text: string; isError: boolean } | null>(null);
 
-  // Form States for Case Study uploads
-  const [caseStudyFile, setCaseStudyFile] = useState<File | null>(null);
-  const [caseStudyName, setCaseStudyName] = useState('');
-  const [caseStudyLink, setCaseStudyLink] = useState('');
-
   // Form States for Client Page Reels uploads
   const [clientReelFile, setClientReelFile] = useState<File | null>(null);
   const [clientProjectName, setClientProjectName] = useState('');
   const [clientReelLink, setClientReelLink] = useState('');
-  const [selectedBrand, setSelectedBrand] = useState('Kapiva');
-
-  // Form States for Niche Campaigns uploads
-  const [campaignReelFile, setCampaignReelFile] = useState<File | null>(null);
-  const [campaignProjectName, setCampaignProjectName] = useState('');
-  const [campaignReelLink, setCampaignReelLink] = useState('');
-  const [selectedNiche, setSelectedNiche] = useState('Health & Fitness');
+  const [clientViews, setClientViews] = useState('');
+  const [clientBrandName, setClientBrandName] = useState('');
 
   // Form States for Brand Cards uploads
   const [brandCardFile, setBrandCardFile] = useState<File | null>(null);
-  const [bcLogoFile, setBcLogoFile] = useState<File | null>(null);
   const [bcName, setBcName] = useState('');
   const [bcTagline, setBcTagline] = useState('');
   const [bcColor, setBcColor] = useState('rgba(119, 138, 94, 0.9)');
+  const [hexColor, setHexColor] = useState('#778a5e');
 
   useEffect(() => {
     // Auth guard: redirect to login if no active session
@@ -124,48 +114,13 @@ export default function SuperAdminDashboard() {
     }
   };
 
-  const handleUpdateTextValue = async (keyName: string, id: string, newValue: string) => {
-    const { error } = await supabase.from('site_content').update({ content_value: newValue }).eq('id', id);
-    if (error) triggerAlert('Failed to update text block', true);
-    else triggerAlert('Text copy changes saved live!');
-  };
-
-  const handleAddCaseStudy = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!caseStudyFile || !caseStudyName) return triggerAlert('Provide project name and attach file', true);
-    
-    setActionLoading('case_study_submit');
-    try {
-      const url = await uploadFileToBucket(caseStudyFile, 'portfolio');
-      if (!url) throw new Error();
-
-      const finalUrl = caseStudyLink ? `${url}|||${caseStudyLink}` : url;
-      await supabase.from('portfolio').insert([{ project_name: caseStudyName, media_url: finalUrl, is_case_study: true }]);
-      
-      triggerAlert('Case study deployed successfully!');
-      setCaseStudyName('');
-      setCaseStudyLink('');
-      setCaseStudyFile(null);
-      fetchDashboardData();
-    } catch {
-      triggerAlert('Failed uploading case study reel', true);
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
   const handleAddBrandCard = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!brandCardFile || !bcName) return triggerAlert('Fill out all fields', true);
+    if (!brandCardFile || !bcName) return triggerAlert('Fill out all required fields', true);
     setActionLoading('bc_submit');
     try {
       const url = await uploadFileToBucket(brandCardFile, 'logos');
       if (!url) throw new Error();
-
-      let logoUrl = '';
-      if (bcLogoFile) {
-        logoUrl = await uploadFileToBucket(bcLogoFile, 'logos') || '';
-      }
 
       const currentDataStr = contentItems.find(i => i.section_key === 'brand_cards_data')?.content_value || '[]';
       let currentData = [];
@@ -176,7 +131,6 @@ export default function SuperAdminDashboard() {
         brandName: bcName, 
         bgColor: bcColor, 
         imageUrl: url,
-        logoUrl: logoUrl,
         tagline: bcTagline
       };
       const updatedData = [...currentData, newCard];
@@ -192,7 +146,6 @@ export default function SuperAdminDashboard() {
       setBcName('');
       setBcTagline('');
       setBrandCardFile(null);
-      setBcLogoFile(null);
       fetchDashboardData();
     } catch {
       triggerAlert('Failed adding brand card', true);
@@ -215,56 +168,46 @@ export default function SuperAdminDashboard() {
 
   const handleAddClientPageReel = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!clientReelFile || !clientProjectName) return triggerAlert('Fill out all fields and attach video file', true);
+    if (!clientReelFile || !clientProjectName || !clientBrandName) return triggerAlert('Fill out creator name, brand name, and attach video file', true);
 
     setActionLoading('client_reel_submit');
     try {
       const url = await uploadFileToBucket(clientReelFile, 'portfolio');
       if (!url) throw new Error();
 
-      const finalUrl = clientReelLink ? `${url}|||${clientReelLink}` : url;
-      await supabase.from('portfolio').insert([{ project_name: clientProjectName, media_url: finalUrl, brand_name: selectedBrand }]);
+      // Format: videoUrl|||instaLink|||viewsCount
+      let finalUrl = url;
+      if (clientReelLink || clientViews) {
+        finalUrl = `${url}|||${clientReelLink || ''}|||${clientViews || ''}`;
+      }
+      await supabase.from('portfolio').insert([{ project_name: clientProjectName, media_url: finalUrl, brand_name: clientBrandName }]);
       
-      triggerAlert(`Reel linked and deployed successfully under ${selectedBrand}!`);
+      triggerAlert(`Reel uploaded successfully under ${clientBrandName}!`);
       setClientProjectName('');
       setClientReelLink('');
+      setClientViews('');
+      setClientBrandName('');
       setClientReelFile(null);
       fetchDashboardData();
     } catch {
-      triggerAlert('Failed uploading brand reel asset', true);
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const handleAddCampaignPageReel = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!campaignReelFile || !campaignProjectName) return triggerAlert('Fill out fields and select file', true);
-
-    setActionLoading('campaign_reel_submit');
-    try {
-      const url = await uploadFileToBucket(campaignReelFile, 'portfolio');
-      if (!url) throw new Error();
-
-      const finalUrl = campaignReelLink ? `${url}|||${campaignReelLink}` : url;
-      await supabase.from('portfolio').insert([{ project_name: campaignProjectName, media_url: finalUrl, niche: selectedNiche }]);
-      
-      triggerAlert(`Reel linked and deployed successfully under ${selectedNiche}!`);
-      setCampaignProjectName('');
-      setCampaignReelLink('');
-      setCampaignReelFile(null);
-      fetchDashboardData();
-    } catch {
-      triggerAlert('Failed uploading campaign niche asset', true);
+      triggerAlert('Failed uploading reel asset', true);
     } finally {
       setActionLoading(null);
     }
   };
 
   const handlePurgeAssetRecord = async (id: string) => {
-    if (confirm('Are you completely sure you want to permanently delete this video reel asset?')) {
+    if (confirm('Are you sure you want to permanently delete this video reel asset?')) {
       await supabase.from('portfolio').delete().eq('id', id);
-      triggerAlert('Video completely cleared from rotation.');
+      triggerAlert('Video deleted successfully.');
+      fetchDashboardData();
+    }
+  };
+
+  const handleDeleteSubmission = async (id: string) => {
+    if (confirm('Delete this form submission permanently?')) {
+      await supabase.from('form_submissions').delete().eq('id', id);
+      triggerAlert('Submission deleted.');
       fetchDashboardData();
     }
   };
@@ -274,6 +217,16 @@ export default function SuperAdminDashboard() {
   );
 
   const getLiveAssetUrl = (key: string) => uniqueSettings.find(i => i.section_key === key)?.content_value || '';
+
+  // Convert hex color to rgba helper
+  const handleHexColorChange = (hex: string) => {
+    setHexColor(hex);
+    // Convert hex to rgb with 0.85 opacity
+    const r = parseInt(hex.slice(1, 3), 16) || 0;
+    const g = parseInt(hex.slice(3, 5), 16) || 0;
+    const b = parseInt(hex.slice(5, 7), 16) || 0;
+    setBcColor(`rgba(${r}, ${g}, ${b}, 0.85)`);
+  };
 
   // Don't render until auth check is complete
   if (!authChecked) {
@@ -296,7 +249,7 @@ export default function SuperAdminDashboard() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', background: '#fff', padding: '24px 30px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
         <div>
           <h1 style={{ fontSize: '1.8rem', fontWeight: 800, letterSpacing: '-0.03em', margin: 0 }}>ClaimFame Command Center</h1>
-          <p style={{ margin: 0, color: '#718096', fontSize: '0.9rem', marginTop: '4px' }}>Real-time section asset manager & secure routing interface platform.</p>
+          <p style={{ margin: 0, color: '#718096', fontSize: '0.9rem', marginTop: '4px' }}>Real-time section asset manager & website editor.</p>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button onClick={async () => { await supabase.auth.signOut(); router.replace('/admin/login'); }} style={{ padding: '10px 20px', background: '#fff5f5', border: '1px solid #fed7d7', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', color: '#c53030' }}>Sign Out</button>
@@ -308,8 +261,7 @@ export default function SuperAdminDashboard() {
         {[
           { id: 'leads', label: '📥 Inbox Leads' },
           { id: 'landing', label: '🏠 Hero & Who We Are' },
-          { id: 'case_studies', label: '💎 Home Case Studies' },
-          { id: 'clients_page', label: '🤝 Clients (By Brand)' }
+          { id: 'clients_page', label: '🤝 Clients & Brand Cards' }
         ].map(tab => (
           <button
             key={tab.id}
@@ -325,7 +277,7 @@ export default function SuperAdminDashboard() {
         ))}
       </div>
 
-      {loading && <div style={{ color: '#7c3aed', fontWeight: 700, textAlign: 'center', padding: '40px' }}>Loading production inventory components...</div>}
+      {loading && <div style={{ color: '#7c3aed', fontWeight: 700, textAlign: 'center', padding: '40px' }}>Loading data...</div>}
 
       {!loading && activeTab === 'leads' && (
         <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
@@ -334,23 +286,38 @@ export default function SuperAdminDashboard() {
               <tr style={{ background: '#f7fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                 <th style={{ padding: '18px 24px', fontSize: '0.8rem', fontWeight: 700, color: '#718096' }}>CONTACT DETAILS</th>
                 <th style={{ padding: '18px 24px', fontSize: '0.8rem', fontWeight: 700, color: '#718096' }}>SERVICE EXPECTATION & MESSAGE</th>
+                <th style={{ padding: '18px 24px', fontSize: '0.8rem', fontWeight: 700, color: '#718096', textAlign: 'center' }}>ACTIONS</th>
               </tr>
             </thead>
             <tbody>
-              {submissions.map(sub => (
-                <tr key={sub.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                  <td style={{ padding: '24px', width: '35%' }}>
-                    <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#1a202c' }}>{sub.name}</div>
-                    <div style={{ color: '#7c3aed', fontSize: '0.85rem', fontWeight: 600, marginTop: '2px' }}>{sub.email}</div>
-                    {sub.phone && <div style={{ color: '#4a5568', fontSize: '0.85rem', marginTop: '2px' }}>📞 {sub.phone}</div>}
-                    {sub.brand && <div style={{ fontWeight: 700, fontSize: '0.85rem', background: '#edf2f7', padding: '4px 8px', borderRadius: '4px', display: 'inline-block', marginTop: '6px' }}>Brand: {sub.brand}</div>}
-                  </td>
-                  <td style={{ padding: '24px', width: '65%' }}>
-                    <span style={{ background: '#f5f3ff', color: '#7c3aed', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, display: 'inline-block', marginBottom: '8px' }}>{sub.service}</span>
-                    <p style={{ margin: 0, fontSize: '0.95rem', color: '#4a5568', lineHeight: '1.5' }}>{sub.message}</p>
-                  </td>
+              {submissions.length === 0 ? (
+                <tr>
+                  <td colSpan={3} style={{ padding: '30px', textAlign: 'center', color: '#a0aec0' }}>No submissions yet.</td>
                 </tr>
-              ))}
+              ) : (
+                submissions.map(sub => (
+                  <tr key={sub.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                    <td style={{ padding: '24px', width: '35%' }}>
+                      <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#1a202c' }}>{sub.name}</div>
+                      <div style={{ color: '#7c3aed', fontSize: '0.85rem', fontWeight: 600, marginTop: '2px' }}>{sub.email}</div>
+                      {sub.phone && <div style={{ color: '#4a5568', fontSize: '0.85rem', marginTop: '2px' }}>📞 {sub.phone}</div>}
+                      {sub.brand && <div style={{ fontWeight: 700, fontSize: '0.85rem', background: '#edf2f7', padding: '4px 8px', borderRadius: '4px', display: 'inline-block', marginTop: '6px' }}>Brand: {sub.brand}</div>}
+                    </td>
+                    <td style={{ padding: '24px', width: '50%' }}>
+                      <span style={{ background: '#f5f3ff', color: '#7c3aed', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, display: 'inline-block', marginBottom: '8px' }}>{sub.service}</span>
+                      <p style={{ margin: 0, fontSize: '0.95rem', color: '#4a5568', lineHeight: '1.5' }}>{sub.message}</p>
+                    </td>
+                    <td style={{ padding: '24px', width: '15%', textAlign: 'center' }}>
+                      <button
+                        onClick={() => handleDeleteSubmission(sub.id)}
+                        style={{ padding: '8px 16px', background: '#e53e3e', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 700, cursor: 'pointer', fontSize: '0.85rem' }}
+                      >
+                        🗑 Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -379,7 +346,7 @@ export default function SuperAdminDashboard() {
                 const file = e.target.files?.[0];
                 if (file) handleStaticMediaOverride('about_image_url', file);
               }} />
-              {actionLoading === 'about_image_url' && <p style={{ color: '#7c3aed', fontWeight: 700, fontSize: '0.85rem', marginTop: '10px' }}>Syncing vector data maps...</p>}
+              {actionLoading === 'about_image_url' && <p style={{ color: '#7c3aed', fontWeight: 700, fontSize: '0.85rem', marginTop: '10px' }}>Syncing image data...</p>}
               {getLiveAssetUrl('about_image_url') && <img src={getLiveAssetUrl('about_image_url')} alt="About Showcase" style={{ height: '60px', marginTop: '15px', borderRadius: '6px', border: '1px solid #e2e8f0', display: 'block' }} />}
             </div>
 
@@ -412,10 +379,11 @@ export default function SuperAdminDashboard() {
                 const existing = contentItems.find(i => i.section_key === field.key);
                 const domFieldId = `tf-${field.key}`;
                 return (
-                  <div key={field.key} style={{ borderBottom: '1px solid #f0f0f0', paddingBottom: '20px' }}>
-                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 800, color: '#2d3748', marginBottom: '2px' }}>{field.label}</label>
-                    <p style={{ fontSize: '0.78rem', color: '#718096', margin: '0 0 10px' }}>{field.desc}</p>
-                    <div style={{ display: 'flex', gap: '10px' }}>
+                    <div key={field.key} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                      <div style={{ width: '220px', flexShrink: 0 }}>
+                        <label style={{ fontWeight: 700, fontSize: '0.85rem', display: 'block', color: '#2d3748' }}>{field.label}</label>
+                        <span style={{ fontSize: '0.75rem', color: '#718096', display: 'block' }}>{field.desc}</span>
+                      </div>
                       <textarea
                         id={domFieldId}
                         defaultValue={existing?.content_value || ''}
@@ -436,12 +404,25 @@ export default function SuperAdminDashboard() {
                           triggerAlert(`${field.label} saved!`);
                           fetchDashboardData();
                         }}
-                        style={{ padding: '10px 20px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', alignSelf: 'flex-start' }}
+                        style={{ padding: '10px 20px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
                       >
                         Save
                       </button>
+                      {existing && (
+                        <button
+                          onClick={async () => {
+                            if (window.confirm(`Delete the "${field.label}" entry? This cannot be undone.`)) {
+                              await supabase.from('site_content').delete().eq('id', existing.id);
+                              triggerAlert(`${field.label} deleted.`);
+                              fetchDashboardData();
+                            }
+                          }}
+                          style={{ padding: '10px 20px', background: '#e53e3e', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}
+                        >
+                          Delete
+                        </button>
+                      )}
                     </div>
-                  </div>
                 );
               })}
             </div>
@@ -450,111 +431,138 @@ export default function SuperAdminDashboard() {
         </div>
       )}
 
-      {!loading && activeTab === 'case_studies' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
-          <div style={{ background: '#fff', padding: '30px', borderRadius: '16px', border: '1px solid #e2e8f0', height: 'fit-content' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '20px' }}>Deploy Home Case Study Reel</h3>
-            <form onSubmit={handleAddCaseStudy} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>PROJECT NAME</label>
-                <input type="text" value={caseStudyName} onChange={(e) => setCaseStudyName(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., Mamaearth Brand Core Concept" />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>ORIGINAL LINK (Optional)</label>
-                <input type="url" value={caseStudyLink} onChange={(e) => setCaseStudyLink(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., https://instagram.com/reel/..." />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>MP4 VIDEO FILE</label>
-                <input type="file" accept="video/*" onChange={(e) => setCaseStudyFile(e.target.files?.[0] || null)} required />
-              </div>
-              <button type="submit" disabled={actionLoading === 'case_study_submit'} style={{ padding: '14px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>
-                {actionLoading === 'case_study_submit' ? 'Uploading...' : 'Inject into Main Carousel →'}
-              </button>
-            </form>
-          </div>
-          <div style={{ background: '#fff', padding: '30px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '20px' }}>Active Landing Page Cylinder Wheels</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {portfolioItems.filter(i => i.is_case_study || (!i.brand_name && !i.niche)).map(item => (
-                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#f7fafc', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
-                  <span style={{ fontWeight: 700 }}>{item.project_name}</span>
-                  <button onClick={() => handlePurgeAssetRecord(item.id)} style={{ padding: '6px 12px', color: '#e53e3e', background: '#fff', border: '1px solid #e53e3e', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>Delete</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
       {!loading && activeTab === 'clients_page' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
           
+          {/* SECTION 1: REELS UPLOAD & REELS LIST */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
             <div style={{ background: '#fff', padding: '30px', borderRadius: '16px', border: '1px solid #e2e8f0', height: 'fit-content' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '20px' }}>Link Video Asset into Client Page Reels</h3>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '8px' }}>🎥 Upload Campaign Reel Card</h3>
+              <p style={{ fontSize: '0.8rem', color: '#718096', marginBottom: '20px' }}>All 4 details on the reel card are customizable here.</p>
+              
               <form onSubmit={handleAddClientPageReel} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BRAND / CREATOR NAME</label>
-                  <input type="text" value={clientProjectName} onChange={(e) => setClientProjectName(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., SarulJain - Kapiva" />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>1. CREATOR NAME (shown on reel overlay)</label>
+                  <input type="text" value={clientProjectName} onChange={(e) => setClientProjectName(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., Neha Sanjay" required />
                 </div>
+
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>ORIGINAL LINK (Optional)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>2. BRAND NAME (shown at reel card bottom)</label>
+                  <input type="text" value={clientBrandName} onChange={(e) => setClientBrandName(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., Kapiva, Zouk, Louis Stitch" required />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>3. VIEWS COUNT (shown on reel overlay)</label>
+                  <input type="text" value={clientViews} onChange={(e) => setClientViews(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., 523K" />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>4. INSTAGRAM REEL LINK (Optional)</label>
                   <input type="url" value={clientReelLink} onChange={(e) => setClientReelLink(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., https://instagram.com/reel/..." />
                 </div>
+
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>REEL FILE DEPLOYMENT (MP4)</label>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>5. REEL VIDEO FILE (MP4)</label>
                   <input type="file" accept="video/*" onChange={(e) => setClientReelFile(e.target.files?.[0] || null)} required />
                 </div>
-                <button type="submit" disabled={actionLoading === 'client_reel_submit'} style={{ padding: '14px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>
-                  {actionLoading === 'client_reel_submit' ? 'Processing File...' : 'Upload Reel'}
+
+                <button type="submit" disabled={actionLoading === 'client_reel_submit'} style={{ padding: '14px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', marginTop: '10px' }}>
+                  {actionLoading === 'client_reel_submit' ? 'Processing File...' : 'Upload Reel →'}
                 </button>
               </form>
             </div>
+
             <div style={{ background: '#fff', padding: '30px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '20px' }}>Active Clients Page Reels</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {portfolioItems.filter(i => i.brand_name).map(item => (
-                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#f7fafc', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
-                    <div>
-                      <div style={{ fontWeight: 700 }}>{item.project_name}</div>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#7c3aed' }}>Assigned Video</span>
-                    </div>
-                    <button onClick={() => handlePurgeAssetRecord(item.id)} style={{ padding: '6px 12px', color: '#e53e3e', background: '#fff', border: '1px solid #e53e3e', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>Delete</button>
-                  </div>
-                ))}
-              </div>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '20px' }}>Active Campaign Reels ({portfolioItems.length})</h3>
+              {portfolioItems.length === 0 ? (
+                <p style={{ color: '#a0aec0', fontSize: '0.9rem' }}>No uploaded reels yet. Use the form on the left to upload reels.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {portfolioItems.map(item => {
+                    const parts = (item.media_url || '').split('|||');
+                    const viewsText = parts[2] || '';
+                    return (
+                      <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#f7fafc', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
+                        <div>
+                          <div style={{ fontWeight: 800, fontSize: '1rem', color: '#1a202c' }}>{item.project_name}</div>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '6px', flexWrap: 'wrap' }}>
+                            {item.brand_name && <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#7c3aed', background: '#f5f3ff', padding: '3px 10px', borderRadius: '4px' }}>Brand: {item.brand_name}</span>}
+                            {viewsText && <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2b6cb0', background: '#ebf8ff', padding: '3px 10px', borderRadius: '4px' }}>Views: {viewsText}</span>}
+                          </div>
+                        </div>
+                        <button onClick={() => handlePurgeAssetRecord(item.id)} style={{ padding: '8px 14px', color: '#e53e3e', background: '#fff', border: '1px solid #fed7d7', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>Delete</button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
+          {/* SECTION 2: BRAND CARDS */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' }}>
             <div style={{ background: '#fff', padding: '30px', borderRadius: '16px', border: '1px solid #e2e8f0', height: 'fit-content' }}>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '20px' }}>Add Brand Photo Card</h3>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '20px' }}>🏷️ Add Brand Photo Card</h3>
               <form onSubmit={handleAddBrandCard} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BRAND NAME</label>
-                  <input type="text" value={bcName} onChange={(e) => setBcName(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., Kapiva" />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BRAND NAME (shown at bottom box)</label>
+                  <input type="text" value={bcName} onChange={(e) => setBcName(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g., KAPIVA, MULTANI, ZOUK" required />
                 </div>
+                
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BACKGROUND TINT COLOR (RGBA or HEX)</label>
-                  <input type="text" value={bcColor} onChange={(e) => setBcColor(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g. rgba(119, 138, 94, 0.9)" />
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BACKGROUND TINT COLOR</label>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
+                    <input 
+                      type="color" 
+                      value={hexColor} 
+                      onChange={(e) => handleHexColorChange(e.target.value)} 
+                      style={{ width: '45px', height: '40px', border: 'none', borderRadius: '6px', cursor: 'pointer', background: 'none' }} 
+                    />
+                    <input 
+                      type="text" 
+                      value={bcColor} 
+                      onChange={(e) => setBcColor(e.target.value)} 
+                      style={{ flex: 1, padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none', fontSize: '0.85rem' }} 
+                      placeholder="e.g. rgba(119, 138, 94, 0.9) or #778a5e" 
+                    />
+                  </div>
+                  {/* Preset quick buttons */}
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {[
+                      { name: 'Olive Green', rgba: 'rgba(119, 138, 94, 0.9)', hex: '#778a5e' },
+                      { name: 'Multani Brown', rgba: 'rgba(156, 111, 68, 0.9)', hex: '#9c6f44' },
+                      { name: 'Charcoal Dark', rgba: 'rgba(40, 40, 40, 0.9)', hex: '#282828' },
+                      { name: 'Truebasics Purple', rgba: 'rgba(109, 76, 130, 0.9)', hex: '#6d4c82' },
+                      { name: 'Zouk Red', rgba: 'rgba(176, 60, 60, 0.9)', hex: '#b03c3c' }
+                    ].map(p => (
+                      <button
+                        key={p.name}
+                        type="button"
+                        onClick={() => { setBcColor(p.rgba); setHexColor(p.hex); }}
+                        style={{ padding: '4px 8px', background: p.hex, color: '#fff', border: 'none', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        {p.name}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BRAND TAGLINE</label>
                   <input type="text" value={bcTagline} onChange={(e) => setBcTagline(e.target.value)} style={{ width: '100%', padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} placeholder="e.g. Clean Nutrition Snacking Brand" />
                 </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BRAND LOGO IMAGE (Optional, Transparent PNG)</label>
-                  <input type="file" accept="image/*" onChange={(e) => setBcLogoFile(e.target.files?.[0] || null)} />
-                </div>
+
                 <div>
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, marginBottom: '6px' }}>BACKGROUND PRODUCT IMAGE</label>
                   <input type="file" accept="image/*" onChange={(e) => setBrandCardFile(e.target.files?.[0] || null)} required />
                 </div>
-                <button type="submit" disabled={actionLoading === 'bc_submit'} style={{ padding: '14px', background: '#2b6cb0', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>
+
+                <button type="submit" disabled={actionLoading === 'bc_submit'} style={{ padding: '14px', background: '#2b6cb0', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', marginTop: '10px' }}>
                   {actionLoading === 'bc_submit' ? 'Processing File...' : 'Upload Brand Card'}
                 </button>
               </form>
             </div>
+
             <div style={{ background: '#fff', padding: '30px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '20px' }}>Active Brand Cards</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -562,15 +570,19 @@ export default function SuperAdminDashboard() {
                   const bcStr = contentItems.find(i => i.section_key === 'brand_cards_data')?.content_value || '[]';
                   try {
                     const cards = JSON.parse(bcStr);
+                    if (cards.length === 0) return <p style={{ color: '#a0aec0', fontSize: '0.9rem' }}>No custom brand cards added yet.</p>;
                     return cards.map((c: any) => (
                       <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#f7fafc', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                           <div style={{ width: '40px', height: '40px', background: c.bgColor, borderRadius: '8px', overflow: 'hidden' }}>
                             <img src={c.imageUrl} alt={c.brandName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           </div>
-                          <div style={{ fontWeight: 700 }}>{c.brandName}</div>
+                          <div>
+                            <div style={{ fontWeight: 800 }}>{c.brandName}</div>
+                            {c.tagline && <div style={{ fontSize: '0.75rem', color: '#718096' }}>{c.tagline}</div>}
+                          </div>
                         </div>
-                        <button onClick={() => handlePurgeBrandCard(c.id)} style={{ padding: '6px 12px', color: '#e53e3e', background: '#fff', border: '1px solid #e53e3e', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>Delete</button>
+                        <button onClick={() => handlePurgeBrandCard(c.id)} style={{ padding: '6px 12px', color: '#e53e3e', background: '#fff', border: '1px solid #fed7d7', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>Delete</button>
                       </div>
                     ));
                   } catch(e) { return null; }
@@ -581,8 +593,6 @@ export default function SuperAdminDashboard() {
 
         </div>
       )}
-
-
 
     </div>
   );
