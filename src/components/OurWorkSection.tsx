@@ -56,36 +56,80 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
       </div>
 
       {/* ── 2 ROWS MIXED MARQUEES ── */}
-      {portfolio && portfolio.length > 0 && (
-        <div style={{ paddingBottom: '120px', overflow: 'hidden' }}>
-          {(() => {
-            const allReels = [...portfolio];
-            const midpoint = Math.ceil(allReels.length / 2);
-            const row1 = allReels.slice(0, midpoint);
-            const row2 = allReels.slice(midpoint);
+      {(() => {
+        const defaultReels = [
+          { id: 'd1', project_name: 'Sarul Jain', brand_name: 'Kapiva', media_url: '/bg.mp4|||https://www.instagram.com/reel/DPQ_PEtgQz3/|||476K' },
+          { id: 'd2', project_name: 'Aashika Bhatia', brand_name: 'Multani', media_url: '/bg.mp4|||https://www.instagram.com/p/DYhTeG1OnvD/|||523K' },
+          { id: 'd3', project_name: 'Neha Sanjay', brand_name: 'Louis Stitch', media_url: '/bg.mp4|||https://www.instagram.com/reel/DYcVklUvgY6/|||617K' },
+          { id: 'd4', project_name: 'Vrushali', brand_name: 'Zouk', media_url: '/bg.mp4|||https://www.instagram.com/reel/DSuDWUGjT6i/|||429K' },
+          { id: 'd5', project_name: 'Tarneet Kaur', brand_name: 'Kapiva', media_url: '/bg.mp4|||https://www.instagram.com/p/DPOnDDdkv0k/|||382K' },
+          { id: 'd6', project_name: 'Shruti Naxane', brand_name: 'Zouk', media_url: '/bg.mp4|||https://www.instagram.com/reel/DQ_uKLpjHek/|||664K' },
+        ];
 
-            const getMarqueeItems = (items: any[]) => {
-              if (items.length === 0) return [];
-              let repeated = [...items];
-              while (repeated.length < 10) {
-                repeated = [...repeated, ...items];
-              }
-              return [...repeated, ...repeated];
-            };
+        const allReels = portfolio && portfolio.length > 0 ? portfolio : defaultReels;
+        const midpoint = Math.ceil(allReels.length / 2);
+        const row1 = allReels.slice(0, midpoint);
+        const row2 = allReels.slice(midpoint);
 
-            const marquee1 = getMarqueeItems(row1);
-            const marquee2 = getMarqueeItems(row2);
+        const getMarqueeItems = (items: any[]) => {
+          if (items.length === 0) return [];
+          let repeated = [...items];
+          while (repeated.length < 10) {
+            repeated = [...repeated, ...items];
+          }
+          return [...repeated, ...repeated];
+        };
 
-            return (
-              <div className="reveal-up">
-                <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-                  <h3 style={{ fontFamily: 'var(--fh)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: 'var(--k)' }}>Campaign Reels That Delivered</h3>
+        const marquee1 = getMarqueeItems(row1);
+        const marquee2 = getMarqueeItems(row2);
+
+        return (
+          <div style={{ paddingBottom: '120px', overflow: 'hidden' }}>
+            <div className="reveal-up">
+              <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                <h3 style={{ fontFamily: 'var(--fh)', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 900, color: 'var(--k)' }}>Campaign Reels That Delivered</h3>
+              </div>
+              
+              <div className="video-marquee-container" style={{ marginBottom: '30px' }}>
+                <div className="video-marquee-track" style={{ animationDuration: '60s' }}>
+                  {marquee1.map((reel, idx) => (
+                    <div key={`r1-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--w)', padding: 0 }}>
+                      {(() => {
+                        const urlParts = (reel.media_url || '').split('|||');
+                        const videoSrc = urlParts[0] || '';
+                        const externalUrl = urlParts[1] || '';
+                        const viewsCount = urlParts[2] || '';
+                        const content = (
+                          <>
+                            <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
+                              <video className="video-marquee-asset" src={videoSrc} autoPlay loop muted playsInline />
+                              <div className="video-card-overlay" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)', padding: '20px 16px 12px' }}>
+                                <h4 className="video-card-creator-name" style={{ fontSize: '1.1rem', marginBottom: '6px' }}>{reel.project_name}</h4>
+                                {viewsCount && (
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>
+                                    ▶ {viewsCount}
+                                  </div>
+                                )}
+                                {externalUrl && <span style={{ fontSize: '0.8rem', background: 'var(--p)', padding: '4px 8px', borderRadius: '4px', marginTop: '6px', display: 'inline-block', color: '#fff' }}>View Original ↗</span>}
+                              </div>
+                            </div>
+                            <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--w)', borderTop: '1px solid var(--gm)' }}>
+                              <span style={{ fontWeight: 900, color: 'var(--k)', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
+                            </div>
+                          </>
+                        );
+                        return externalUrl ? <a href={externalUrl} target="_blank" rel="noreferrer" style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'inherit', textDecoration: 'none' }}>{content}</a> : content;
+                      })()}
+                    </div>
+                  ))}
                 </div>
-                
-                <div className="video-marquee-container" style={{ marginBottom: '30px' }}>
-                  <div className="video-marquee-track" style={{ animationDuration: '60s' }}>
-                    {marquee1.map((reel, idx) => (
-                      <div key={`r1-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--w)', padding: 0 }}>
+              </div>
+
+              {marquee2.length > 0 && (
+                <div className="video-marquee-container">
+                  <div className="video-marquee-track" style={{ animationDirection: 'reverse', animationDuration: '65s' }}>
+                    {marquee2.map((reel, idx) => (
+                      <div key={`r2-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--w)', padding: 0 }}>
                         {(() => {
                           const urlParts = (reel.media_url || '').split('|||');
                           const videoSrc = urlParts[0] || '';
@@ -116,48 +160,11 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
                     ))}
                   </div>
                 </div>
-
-                {marquee2.length > 0 && (
-                  <div className="video-marquee-container">
-                    <div className="video-marquee-track" style={{ animationDirection: 'reverse', animationDuration: '65s' }}>
-                      {marquee2.map((reel, idx) => (
-                        <div key={`r2-${idx}`} className="video-marquee-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--w)', padding: 0 }}>
-                          {(() => {
-                            const urlParts = (reel.media_url || '').split('|||');
-                            const videoSrc = urlParts[0] || '';
-                            const externalUrl = urlParts[1] || '';
-                            const viewsCount = urlParts[2] || '';
-                            const content = (
-                              <>
-                                <div style={{ flex: 1, position: 'relative', overflow: 'hidden', borderRadius: '16px 16px 0 0' }}>
-                                  <video className="video-marquee-asset" src={videoSrc} autoPlay loop muted playsInline />
-                                  <div className="video-card-overlay" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)', padding: '20px 16px 12px' }}>
-                                    <h4 className="video-card-creator-name" style={{ fontSize: '1.1rem', marginBottom: '6px' }}>{reel.project_name}</h4>
-                                    {viewsCount && (
-                                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#fff', fontSize: '0.9rem', fontWeight: 700 }}>
-                                        ▶ {viewsCount}
-                                      </div>
-                                    )}
-                                    {externalUrl && <span style={{ fontSize: '0.8rem', background: 'var(--p)', padding: '4px 8px', borderRadius: '4px', marginTop: '6px', display: 'inline-block', color: '#fff' }}>View Original ↗</span>}
-                                  </div>
-                                </div>
-                                <div style={{ height: '55px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--w)', borderTop: '1px solid var(--gm)' }}>
-                                  <span style={{ fontWeight: 900, color: 'var(--k)', letterSpacing: '-0.02em', fontSize: '1.1rem' }}>{reel.brand_name || 'Creator'}</span>
-                                </div>
-                              </>
-                            );
-                            return externalUrl ? <a href={externalUrl} target="_blank" rel="noreferrer" style={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'inherit', textDecoration: 'none' }}>{content}</a> : content;
-                          })()}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-        </div>
-      )}
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
