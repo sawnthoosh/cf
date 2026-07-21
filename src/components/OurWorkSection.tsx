@@ -61,8 +61,8 @@ export default function OurWorkSection({ portfolio, content, isInitialLoad }: { 
           {(() => {
             const allReels = [...portfolio];
             const midpoint = Math.ceil(allReels.length / 2);
-            const row1 = allReels.slice(0, midpoint.length ? midpoint : allReels.length);
-            const row2 = allReels.length > 1 ? allReels.slice(midpoint) : allReels;
+            const row1 = allReels.slice(0, midpoint);
+            const row2 = allReels.slice(midpoint);
 
             const getMarqueeItems = (items: any[]) => {
               if (items.length === 0) return [];
