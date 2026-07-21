@@ -35,7 +35,12 @@ export const metadata: Metadata = {
   title: "Claim Fame | Agency",
   description: "The real fame story starts here.",
   icons: {
-    icon: '/favicon.png',
+    icon: [
+      { url: '/favicon.png', type: 'image/png' },
+      { url: '/favicon.ico' },
+      { url: '/icon.png', type: 'image/png' }
+    ],
+    shortcut: '/favicon.png',
     apple: '/favicon.png',
   },
 };
